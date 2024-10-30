@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viewer</title>
+    <!-- The Viewer CSS -->
+    <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99.*/style.min.css" type="text/css">
+
+    <!-- Developer CSS -->
+    <style>
+        body {
+            margin: 0;
+        }
+        #MyViewerDiv {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            background-color: #F0F8FF;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="forgeViewer"></div>
+
+    <!-- The Viewer JS -->
+    <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99.*/viewer3D.min.js"></script>
+    <script>
+        window.addEventListener("message", (event) => {
+            if (event.origin !== window.location.origin) return;
+            if(typeof event.data === 'object' && event.data.type == 'viewer'){
+                initViewer(event.data)
+            }
+        });
+    </script>
+    <script>
+        function initViewer(data){
+            var viewer;
+            var options = {
+                env: 'AutodeskProduction',
+                useADP: false,
+                accessToken: data.accessToken, // remove scheme and get only token
+                useCredentials: true,
+            };
+            // var documentId = '/AutodeskDM/Services/api/vault/v2/vaults/1/file-versions/9496/svf/bubble.json';
+            Autodesk.Viewing.Initializer(options, function onInitialized(){
+                var htmlDiv = document.getElementById('forgeViewer');
+                viewer = new Autodesk.Viewing.GuiViewer3D(htmlDiv);
+                var startedCode = viewer.start();
+                if (startedCode > 0) {
+                    console.error('Failed to create a Viewer: WebGL not supported.');
+                    return;
+                }
+                console.log('Initialization complete, loading a model next...');
+
+                Autodesk.Viewing.Document.load(data.documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+            });
+
+            function onDocumentLoadSuccess(doc) {
+                var defaultModel = doc.getRoot().getDefaultGeometry();
+                viewer.loadDocumentNode(doc, defaultModel);
+            }
+
+            function onDocumentLoadFailure(viewerErrorCode) {
+                console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+            }
+        }
+    </script>
+  </body>
+</html>
