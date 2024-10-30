@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaultDataAPISampleApp", "VaultDataAPISampleApp\VaultDataAPISampleApp.csproj", "{BC86F537-12E1-4C66-9A2E-CDBF632852DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Debug|Any CPU.Build.0 = Debug|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Debug|x64.ActiveCfg = Debug|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Debug|x64.Build.0 = Debug|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Release|Any CPU.ActiveCfg = Release|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Release|Any CPU.Build.0 = Release|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Release|x64.ActiveCfg = Release|x64
+		{BC86F537-12E1-4C66-9A2E-CDBF632852DB}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8974AB39-EE0A-4C92-A018-21EDFEFE81D8}
+	EndGlobalSection
+EndGlobal

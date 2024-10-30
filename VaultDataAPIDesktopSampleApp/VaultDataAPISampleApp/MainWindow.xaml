@@ -1,0 +1,198 @@
+﻿<Window x:Class="VaultDataAPISampleApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+        xmlns:local="clr-namespace:VaultDataAPISampleApp.Converters"
+        mc:Ignorable="d"
+        Title="Vault Data API Sample App" Height="900" Width="1200" Icon="/favicon-32x32.png">
+    <Window.Resources>
+        <local:TabToVisibilityConverter x:Key="TabToVisibilityConverter"/>
+        <local:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="64"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Margin="8" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="70"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="ClientID" Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" Text="" Margin="0, 0, 8, 0" Height="22" VerticalAlignment="Center">
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None" AlignmentX="Left" AlignmentY="Center">
+                                                <VisualBrush.Visual>
+                                                    <Label Content="Client ID" Foreground="Gray"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBox x:Name="BaseUrl" Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="" Margin="8, 0, 8, 0" Height="22" VerticalAlignment="Center">
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="">
+                                    <Setter Property="Background">
+                                        <Setter.Value>
+                                            <VisualBrush Stretch="None" AlignmentX="Left" AlignmentY="Center">
+                                                <VisualBrush.Visual>
+                                                    <Label Content="Server" Foreground="Gray"/>
+                                                </VisualBrush.Visual>
+                                            </VisualBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <ComboBox x:Name="VaultList" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" SelectionChanged="Vault_SelectionChanged" Margin="8, 0, 8, 0" />
+                <Button Grid.Row="0" Grid.Column="3" Click="Login_Click" Margin="8, 0, 0, 0" Background="LightBlue">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border" Background="#0696D7" BorderBrush="#FAFAFA" BorderThickness="1" CornerRadius="2">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ContentPresenter.Content>
+                                        <TextBlock x:Name="buttonText" Text="Sign In" Foreground="#FFFFFF"/>
+                                    </ContentPresenter.Content>
+                                </ContentPresenter>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="BorderBrush" Value="DarkGray" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="2" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="BorderBrush" Value="DarkGray" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="4" />
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter TargetName="border" Property="BorderBrush" Value="DarkGray" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                    <Setter Property="BorderThickness" Value="2" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                <Label Grid.Row="1" Grid.Column="0">
+                    <Hyperlink NavigateUri="https://aps.autodesk.com/myapps/" RequestNavigate="Hyperlink_RequestNavigate">
+                        Get Client ID
+                    </Hyperlink>
+                </Label>
+            </Grid>
+        </Border>
+        <Border Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="95"/>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="1" Content="Total file count:" VerticalAlignment="Top" Visibility="{Binding SelectedTab, Converter={StaticResource TabToVisibilityConverter}, ConverterParameter=0}"/>
+                <Label Grid.Row="0" Grid.Column="2" Name="FileCount" VerticalAlignment="Top" Visibility="{Binding SelectedTab, Converter={StaticResource TabToVisibilityConverter}, ConverterParameter=0}"/>
+                <Button Grid.Row="0" Grid.Column="3" Content="Get Files" Click="GetFile_Click" Panel.ZIndex="1" VerticalAlignment="Top" Margin="8, 0, 8, 0" Visibility="{Binding SelectedTab, Converter={StaticResource TabToVisibilityConverter}, ConverterParameter=0}"/>
+                <Label Grid.Row="0" Grid.Column="1" Content="Total user count:" VerticalAlignment="Top" Visibility="{Binding SelectedTab, Converter={StaticResource TabToVisibilityConverter}, ConverterParameter=1}"/>
+                <Label Grid.Row="0" Grid.Column="2" Name="UserCount" VerticalAlignment="Top" Visibility="{Binding SelectedTab, Converter={StaticResource TabToVisibilityConverter}, ConverterParameter=1}"/>
+                <Button Grid.Row="0" Grid.Column="3" Content="Get Users" Click="GetUser_Click" Panel.ZIndex="1" VerticalAlignment="Top" Margin="8, 0, 8, 0" Visibility="{Binding SelectedTab, Converter={StaticResource TabToVisibilityConverter}, ConverterParameter=1}"/>
+
+                <TabControl Grid.RowSpan="2" Grid.ColumnSpan="4" Margin="8, 0, 8, 0" SelectedIndex="{Binding SelectedTab}">
+                    <TabItem Header="File information">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="93" />
+                                <ColumnDefinition Width="162"/>
+                                <ColumnDefinition Width="45"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Label x:Name="DataBackgroundText" Panel.ZIndex="1" Content="No data to display" FontSize="24" Foreground="#3C3C3C" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,253,0,0" Visibility="Visible"/>
+                            <Image x:Name="DataBackgroundImage" Panel.ZIndex="1" Grid.Column="0" Source="/Resources/EmptyStateData.png" Stretch="None" Visibility="Visible"/>
+                            <ListView Grid.Column="0" x:Name="FileListView" Background="#FFEEEEEE" BorderBrush="{x:Null}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                                        <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
+                                        <GridViewColumn Header="State" DisplayMemberBinding="{Binding State}" Width="100"/>
+                                        <GridViewColumn Header="Revision" DisplayMemberBinding="{Binding Revision}" Width="100"/>
+                                        <GridViewColumn Header="Category" DisplayMemberBinding="{Binding Category}" Width="100"/>
+                                        <GridViewColumn Header="LastModifiedDate" DisplayMemberBinding="{Binding LastModifiedDate}" Width="100"/>
+                                        <GridViewColumn Header="CreateUserName" DisplayMemberBinding="{Binding CreateUserName}" Width="100"/>
+                                        <GridViewColumn Header="CheckinDate" DisplayMemberBinding="{Binding CheckinDate}" Width="100"/>
+                                        <GridViewColumn Header="Version" DisplayMemberBinding="{Binding Version}" Width="100"/>
+                                        <GridViewColumn Header="Size" DisplayMemberBinding="{Binding Size}" Width="100"/>
+                                        <GridViewColumn Header="CreateUserName" DisplayMemberBinding="{Binding CreateUserName}" Width="100"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Label Content="Data Visualization" Grid.Column="1" Margin="8,0,8,0" Grid.ColumnSpan="3" FontWeight="Bold"/>
+                            <Label x:Name="ChartBackgroundText" Panel.ZIndex="1" Grid.Column="1" Grid.ColumnSpan="3" Content="No charts to display" FontSize="24" Foreground="#3C3C3C" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="39,253,0,0" Visibility="Visible"/>
+                            <Image x:Name="ChartBackgroundImage" Panel.ZIndex="1" Grid.Column="1" Grid.ColumnSpan="3" Source="/Resources/EmptyStateCharts.png" Stretch="None" Visibility="Visible"/>
+                            <lvc:PieChart Name="PieChart" Grid.Column="1" LegendLocation="Bottom" Grid.ColumnSpan="3" Background="WhiteSmoke" >
+                                <lvc:PieChart.Series>
+                                    <lvc:PieSeries Title="Ipt file" Values="0" Fill="#E0AF4B" />
+                                    <lvc:PieSeries Title="Iam file" Values="0" Fill="#E1E154" />
+                                    <lvc:PieSeries Title="Dwg file" Values="0" Fill="#689ED4" />
+                                    <lvc:PieSeries Title="Dwf file" Values="0" Fill="#9C6BCE" />
+                                    <lvc:PieSeries Title="Other file" Values="0" Fill="#B2B2B5" />
+                                </lvc:PieChart.Series>
+                            </lvc:PieChart>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="User information">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Label x:Name="UserDataBackgroundText" Content="No data to display" FontSize="24" Foreground="#3C3C3C" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,253,0,0" Visibility="Visible"/>
+                            <Image x:Name="UserDataBackgroundImage" Grid.Column="0" Source="/Resources/EmptyStateData.png" Stretch="None" Visibility="Visible"/>
+                            <ListView Grid.Row="1" x:Name="UserListView" Background="Transparent">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
+                                        <GridViewColumn Header="Email" DisplayMemberBinding="{Binding Email}" Width="200"/>
+                                        <GridViewColumn Header="SystemName" DisplayMemberBinding="{Binding SystemName}" Width="200"/>
+                                        <GridViewColumn Header="AuthTypes" DisplayMemberBinding="{Binding AuthTypes}" Width="200"/>
+                                        <GridViewColumn Header="CreateDate" DisplayMemberBinding="{Binding CreateDate}" Width="200"/>
+                                        <GridViewColumn Header="IsActive" DisplayMemberBinding="{Binding IsActive}" Width="100"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>
