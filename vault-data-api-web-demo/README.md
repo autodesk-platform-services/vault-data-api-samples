@@ -60,4 +60,4 @@ Alova.js helps with the generation of API client code based on the Open API Spec
 ## Viewer Integration
 Viewer is loaded in an iFrame. Once the translation is confirmed, pass the svf URL and token details to the viewer using window.postMessage.
 
-![FlowChart](./flowchart.png)
+![FlowChart](./viewer_integration.png)
