@@ -16,12 +16,14 @@ Before you build the connector, please:
 
 1. Install the "Power Query SDK" extensions for VS Code.
 2. Change the `client_id` and `redirect_uri` values in the `VaultDataAPIPowerBIConnector.pq` file.
+3. Update the `vault_id` value to the vault you want to query. You can get the vault ID using the `Get Vaults (vault/v2/vaults)` endpoint.
 
 Example code:
 
 ```python
 client_id = "RnDabRYTESTAPPVjVh6WHs8tL66pThOpfIG2QhQFVA";
 redirect_uri = "http://localhost:8080/";
+vault_id = "101";
 ```
 
 Run the build task from terminal to generate the VaultDataAPIPowerBIConnector.mez file
