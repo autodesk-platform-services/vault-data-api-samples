@@ -43,7 +43,7 @@ VaultDataAPIPowerBIConnector = [
 // UI Export definition
 //
 VaultDataAPIPowerBIConnector.UI = [
-    Beta = true,
+    Beta = false,
     Category = "Other",
     ButtonText = {Extension.LoadString("ButtonTitle"), Extension.LoadString("ButtonHelp")},
     SourceImage = VaultDataAPIPowerBIConnector.Icons,
