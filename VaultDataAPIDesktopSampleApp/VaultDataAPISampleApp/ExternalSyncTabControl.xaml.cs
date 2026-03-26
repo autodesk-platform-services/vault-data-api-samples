@@ -255,9 +255,19 @@ namespace VaultDataAPISampleApp
                 var tasks = await VaultAPIService.Instance.BatchCreateExtSyncTasksAsync(requests);
                 if (tasks == null) return;
 
-                SyncTasksGrid.ItemsSource = tasks;
-                SyncTasksEmptyText.Visibility = Visibility.Collapsed;
-                SetStatus($"Batch created {tasks.Count} task(s) for {selectedItems.Count} item(s).");
+                if (tasks.Count == 0)
+                {
+                    SyncTasksGrid.ItemsSource = null;
+                    SyncTasksEmptyText.Text = "No external sync tasks were created.";
+                    SyncTasksEmptyText.Visibility = Visibility.Visible;
+                    SetStatus("No external sync tasks were created.");
+                }
+                else
+                {
+                    SyncTasksGrid.ItemsSource = tasks;
+                    SyncTasksEmptyText.Visibility = Visibility.Collapsed;
+                    SetStatus($"Batch created {tasks.Count} task(s) for {selectedItems.Count} item(s).");
+                }
             }
             else
             {

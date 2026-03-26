@@ -368,7 +368,7 @@ namespace VaultDataAPISampleApp
 
         public async Task<ExtSyncInfoResponse> GetItemVersionExtSyncInfoAsync(string itemVersionId, string infoName)
         {
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/item-versions/{itemVersionId}/ext-sync-infos/{infoName}");
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/item-versions/{itemVersionId}/ext-sync-infos/{Uri.EscapeDataString(infoName)}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -398,7 +398,7 @@ namespace VaultDataAPISampleApp
 
         public async Task<ExtSyncInfoResponse> GetItemExtSyncInfoAsync(string itemId, string infoName)
         {
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/items/{itemId}/ext-sync-infos/{infoName}");
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/items/{itemId}/ext-sync-infos/{Uri.EscapeDataString(infoName)}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
