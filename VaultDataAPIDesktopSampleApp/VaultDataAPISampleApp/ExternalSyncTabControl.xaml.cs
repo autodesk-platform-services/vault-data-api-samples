@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -33,6 +34,7 @@ namespace VaultDataAPISampleApp
 
         private readonly ObservableCollection<ItemVersionResponse> _itemsData = new ObservableCollection<ItemVersionResponse>();
         private bool _isRefreshingSyncInfo;
+        private CancellationTokenSource _syncInfoCts;
 
         public ExternalSyncTabControl()
         {
@@ -156,7 +158,10 @@ namespace VaultDataAPISampleApp
         private async System.Threading.Tasks.Task RefreshSyncInfoForItemAsync(ItemVersionResponse item, string loadingStatusMessage)
         {
             if (item == null) return;
-            if (_isRefreshingSyncInfo) return;
+
+            _syncInfoCts?.Cancel();
+            _syncInfoCts = new CancellationTokenSource();
+            var cts = _syncInfoCts;
 
             SetSyncInfoRefreshBusy(true);
             ClearSyncInfoCards();
@@ -173,6 +178,7 @@ namespace VaultDataAPISampleApp
                 var itemMasterId = item.Item?.Id;
                 if (string.IsNullOrWhiteSpace(itemMasterId))
                 {
+                    if (cts.IsCancellationRequested) return;
                     ClearSyncInfoCards();
                     SyncInfoEmptyText.Text = $"Item '{item.Number}' has no master id.";
                     SyncInfoEmptyText.Visibility = Visibility.Visible;
@@ -181,6 +187,8 @@ namespace VaultDataAPISampleApp
                 }
 
                 var syncInfoResult = await VaultAPIService.Instance.GetItemExtSyncInfosAsync(itemMasterId);
+                if (cts.IsCancellationRequested) return;
+
                 var infos = syncInfoResult?.Results;
                 if (infos != null && infos.Count > 0)
                 {
@@ -199,7 +207,8 @@ namespace VaultDataAPISampleApp
             }
             finally
             {
-                SetSyncInfoRefreshBusy(false);
+                if (!cts.IsCancellationRequested)
+                    SetSyncInfoRefreshBusy(false);
             }
         }
 

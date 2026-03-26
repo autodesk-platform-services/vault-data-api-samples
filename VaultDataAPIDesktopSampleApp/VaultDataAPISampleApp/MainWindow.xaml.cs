@@ -106,7 +106,7 @@ namespace VaultDataAPISampleApp
 
         private void GetUserData()
         {
-            _ = VaultAPIService.Instance.GetUsers().ContinueWith((task) =>
+            _ = VaultAPIService.Instance.GetUsersAsync().ContinueWith((task) =>
             {
                 if (task.Result != null)
                 {
@@ -138,7 +138,7 @@ namespace VaultDataAPISampleApp
 
         private void GetFileData()
         {
-            _ = VaultAPIService.Instance.GetFiles().ContinueWith((task) =>
+            _ = VaultAPIService.Instance.GetFilesAsync().ContinueWith((task) =>
             {
                 if (task.Result != null)
                 {
@@ -279,7 +279,7 @@ namespace VaultDataAPISampleApp
 
         private void GetVaults()
         {
-            _ = VaultAPIService.Instance.GetVaults().ContinueWith((task) =>
+            _ = VaultAPIService.Instance.GetVaultsAsync().ContinueWith((task) =>
             {
                 if ((task.Status != System.Threading.Tasks.TaskStatus.Faulted) && (task.Result != null))
                 {
