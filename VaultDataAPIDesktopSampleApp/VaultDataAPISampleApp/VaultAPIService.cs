@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
 using System.Text;
@@ -201,6 +202,207 @@ namespace VaultDataAPISampleApp
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<PaginationResponse<VaultResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<CursorPaginationResponse<ItemVersionResponse>> GetItemVersionsAsync(int limit = 50)
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/item-versions?limit={limit}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CursorPaginationResponse<ItemVersionResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<Dictionary<string, string>> GetExtSyncConfigsAsync()
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/vault-options/ext-sync-configs");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<Dictionary<string, string>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<ExtSyncTaskResponse> CreateExtSyncTaskAsync(CreateExtSyncTaskRequest request)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultServer.Id}/ext-sync-tasks", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ExtSyncTaskResponse>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<CursorPaginationResponse<ExtSyncTaskResponse>> GetExtSyncTasksAsync(int limit = 10, string cursorState = null)
+        {
+            var url = $"vaults/{vaultServer.Id}/ext-sync-tasks?limit={limit}";
+            if (!string.IsNullOrEmpty(cursorState))
+                url += $"&cursorState={Uri.EscapeDataString(cursorState)}";
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CursorPaginationResponse<ExtSyncTaskResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<ExtSyncTaskResponse> GetExtSyncTaskByIdAsync(string id)
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/ext-sync-tasks/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ExtSyncTaskResponse>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<bool> DeleteExtSyncTaskAsync(string id)
+        {
+            HttpResponseMessage response = await client.DeleteAsync($"vaults/{vaultServer.Id}/ext-sync-tasks/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return false;
+            }
+        }
+
+        public async Task<ExtSyncTaskResponse> ResubmitExtSyncTaskAsync(string id)
+        {
+            var content = new StringContent("{}", Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultServer.Id}/ext-sync-tasks/{id}:resubmit", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ExtSyncTaskResponse>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<List<ExtSyncTaskResponse>> FindExtSyncTasksByEntityIdsAsync(FindExtSyncTasksByEntityIdsRequest request)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultServer.Id}/ext-sync-tasks:find-by-entity-ids", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<ExtSyncTaskResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<List<ExtSyncTaskResponse>> BatchCreateExtSyncTasksAsync(List<CreateExtSyncTaskRequest> requests)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(requests), Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultServer.Id}/ext-sync-tasks:batch-create", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<ExtSyncTaskResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<CursorPaginationResponse<ExtSyncInfoResponse>> GetItemVersionExtSyncInfosAsync(string itemVersionId, int limit = 10)
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/item-versions/{itemVersionId}/ext-sync-infos?limit={limit}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CursorPaginationResponse<ExtSyncInfoResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<ExtSyncInfoResponse> GetItemVersionExtSyncInfoAsync(string itemVersionId, string infoName)
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/item-versions/{itemVersionId}/ext-sync-infos/{infoName}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ExtSyncInfoResponse>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<CursorPaginationResponse<ExtSyncInfoResponse>> GetItemExtSyncInfosAsync(string itemId, int limit = 10)
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/items/{itemId}/ext-sync-infos?limit={limit}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<CursorPaginationResponse<ExtSyncInfoResponse>>(responseContent);
+            }
+            else
+            {
+                await ShowErrorDialogAsync(response);
+                return null;
+            }
+        }
+
+        public async Task<ExtSyncInfoResponse> GetItemExtSyncInfoAsync(string itemId, string infoName)
+        {
+            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultServer.Id}/items/{itemId}/ext-sync-infos/{infoName}");
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<ExtSyncInfoResponse>(responseContent);
             }
             else
             {

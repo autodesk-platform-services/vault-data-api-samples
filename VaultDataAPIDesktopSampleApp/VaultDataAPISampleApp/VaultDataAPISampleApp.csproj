@@ -83,6 +83,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="CreateTaskConfirmWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ExternalSyncTabControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -95,6 +103,14 @@
       <DependentUpon>ADSKLoginWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CreateTaskConfirmWindow.xaml.cs">
+      <DependentUpon>CreateTaskConfirmWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExternalSyncTabControl.xaml.cs">
+      <DependentUpon>ExternalSyncTabControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -104,10 +120,13 @@
     <Compile Include="Converters\TabToVisibilityConverter.cs" />
     <Compile Include="Models\AccessTokenResponse.cs" />
     <Compile Include="Models\ErrorResponse.cs" />
+    <Compile Include="Models\ExtSyncInfoResponse.cs" />
+    <Compile Include="Models\ExtSyncTaskResponse.cs" />
     <Compile Include="Models\FileResponse.cs" />
     <Compile Include="Models\FileVersionResponse.cs" />
     <Compile Include="Models\FolderResponse.cs" />
     <Compile Include="Models\GroupResponse.cs" />
+    <Compile Include="Models\ItemVersionResponse.cs" />
     <Compile Include="Models\PaginationResponse.cs" />
     <Compile Include="Models\SessionResponse.cs" />
     <Compile Include="Models\UserResponse.cs" />

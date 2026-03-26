@@ -190,6 +190,9 @@
                             </ListView>
                         </Grid>
                     </TabItem>
+                    <TabItem Header="External Sync">
+                        <views:ExternalSyncTabControl/>
+                    </TabItem>
                 </TabControl>
             </Grid>
         </Border>
