@@ -3,8 +3,10 @@ import GlobalFetch from 'alova/fetch';
 import reactHook from 'alova/react';
 import { createApis, withConfigType } from './createApis';
 
+export const VAULT_API_BASE_URL = '/AutodeskDM/Services/api/vault/v2'
+
 export const alovaInstance = createAlova({
-  baseURL: '/AutodeskDM/Services/api/vault/v1',
+  baseURL: VAULT_API_BASE_URL,
   statesHook: reactHook,
   requestAdapter: GlobalFetch(),
   beforeRequest: method => {},
