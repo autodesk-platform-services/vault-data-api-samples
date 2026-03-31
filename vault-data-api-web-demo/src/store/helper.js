@@ -573,7 +573,7 @@ export const fetchLifecycleDefinitions = async (session) => {
             const nextUrl = new URL(response.pagination.nextUrl, location.origin)
             const nextCursor = nextUrl.searchParams.get('cursorState')
             if(nextCursor){
-                cursor = nextCursor
+                cursor = encodeURIComponent(nextCursor)
             }
         }
     }while(cursor)
@@ -584,7 +584,15 @@ export const updateFileLifecycleStates = async (session, payload = {}) => {
     if(!session?.vaultId || !session?.token){
         throw new Error('No active Vault session.')
     }
-    const sanitizedRequests = (payload.updateLifecycleStateRequests || []).map((item) => {
+    const rawRequests = payload.updateLifecycleStateRequests
+    const requestsArray =
+        rawRequests == null ? [] :
+        Array.isArray(rawRequests) ? rawRequests :
+        null
+    if(requestsArray === null){
+        throw new Error('updateLifecycleStateRequests must be an array.')
+    }
+    const sanitizedRequests = requestsArray.map((item) => {
         const request = {
             entityUrl: String(item?.entityUrl || '').trim(),
             lifecycleStateUrl: String(item?.lifecycleStateUrl || '').trim(),
@@ -596,7 +604,7 @@ export const updateFileLifecycleStates = async (session, payload = {}) => {
             request.revision = String(item.revision)
         }
         if(!request.entityUrl || !request.lifecycleStateUrl){
-            throw new Error('entityUrl and lifecycleStateUrl are required and must be full v2 URLs.')
+            throw new Error('entityUrl and lifecycleStateUrl are required and must be non-empty strings.')
         }
         return request
     })
