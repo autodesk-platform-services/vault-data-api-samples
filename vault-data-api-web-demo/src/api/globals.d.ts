@@ -16,7 +16,7 @@
  * **Do not edit the file manually.**
  */
 import type { Alova, AlovaMethodCreateConfig, AlovaGenerics, Method } from 'alova';
-import type { $$userConfigMap, alovaInstance } from '.';
+import type { $$userConfigMap, alovaInstance } from './index';
 import type apiDefinitions from './apiDefinitions';
 
 type CollapsedAlova = typeof alovaInstance;
@@ -89,8 +89,62 @@ type Alova2Method<
       >
     : never;
 
+export type GroupExtended = object;
+export type Url = string;
+export interface VaultOption {
+  id?: string;
+  /**
+   * The name of the option
+   */
+  name?: string;
+  /**
+   * The value of the option
+   */
+  value?: string;
+  /**
+   * The relative URL to access this object.
+   */
+  url?: Url;
+}
+export type HistoryOptionsEnum = 'All' | 'ReleasedOnly' | 'ReleasedAndRevisionTip' | 'RevisionTip';
+export type RevisionOptionsEnum = 'AllRevision' | 'CurrentRevision';
+export type BOMTypeEnum = 'Latest' | 'Historic';
+export interface Job {
+  /**
+   * A unique identifier for the job.
+   */
+  id?: string;
+  /**
+   * The job type.
+   */
+  jobType?: string;
+  /**
+   * The priority of the job. A lower number means a higher priority. 1 is the lowest possible number.
+   */
+  priority?: number;
+  /**
+   * A description of the job.
+   */
+  description?: string;
+  /**
+   * The relative URL to access this object.
+   */
+  url?: Url;
+  /**
+   * An array of parameters which provide meta-data about the job.
+   */
+  params?: Record<string, string>;
+  /**
+   * The status of the job.
+   */
+  status?: 'Ready' | 'Running' | 'Success' | 'Failure';
+  /**
+   * In a multi-site environment, this property tells if the file is on the local site.
+   */
+  isOnSite?: string;
+}
 export type IndexingStatus = 'IndexingComplete' | 'IndexingProperties' | 'IndexingContent' | 'NA';
-export type CursorBasedPagination = {
+export interface CursorBasedPagination {
   /**
    * Limit requested for the current search
    */
@@ -109,10 +163,9 @@ export type CursorBasedPagination = {
    * Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
    */
   nextUrl?: string;
-};
+}
 export type AuthTypeEnum = 'ActiveDirectory' | 'Vault' | 'Autodesk';
-export type Url = string;
-export type Group = {
+export interface Group {
   /**
    * The identifier for the object.
    */
@@ -126,10 +179,9 @@ export type Group = {
    * AuthType Enum
    * ---
    * The authentication type.
-   *
-   *   ActiveDirectory,
-   *   Vault,
-   *   Autodesk
+   * ActiveDirectory,
+   * Vault,
+   * Autodesk
    */
   authTypes?: AuthTypeEnum;
   /**
@@ -148,17 +200,16 @@ export type Group = {
    * The relative URL to access this object.
    */
   url?: Url;
-};
-export type GroupCollection = {
+}
+export interface GroupCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: Group[];
-};
-export type GroupExtended = object;
-export type Account = {
+}
+export interface Account {
   id?: string;
   /**
    * The name of the account for signin purposes.
@@ -176,8 +227,8 @@ export type Account = {
    * The relative URL to access this object.
    */
   url?: Url;
-};
-export type ProfileAttributeDefinition = {
+}
+export interface ProfileAttributeDefinition {
   /**
    * The profile attribute id.
    */
@@ -199,8 +250,8 @@ export type ProfileAttributeDefinition = {
    * The relative URL to access this object.
    */
   url?: Url;
-};
-export type ProfileAttributeDefinitionCollection = {
+}
+export interface ProfileAttributeDefinitionCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -211,8 +262,8 @@ export type ProfileAttributeDefinitionCollection = {
    * ---
    */
   results?: ProfileAttributeDefinition;
-};
-export type Role = {
+}
+export interface Role {
   /**
    * A unique identifier of the role.
    */
@@ -233,16 +284,16 @@ export type Role = {
    * The relative URL to access this object.
    */
   url?: Url;
-};
-export type RoleCollection = {
+}
+export interface RoleCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: Role[];
-};
-export type Vault = {
+}
+export interface Vault {
   /**
    * The name of the Knowledge Vault. This is also the name of the database.
    */
@@ -255,8 +306,8 @@ export type Vault = {
    * The relative URL to access this object.
    */
   url?: Url;
-};
-export type User = {
+}
+export interface User {
   /**
    * A unique number that the Vault uses to reference the user.
    */
@@ -273,10 +324,9 @@ export type User = {
    * AuthType Enum
    * ---
    * The authentication type.
-   *
-   *   ActiveDirectory,
-   *   Vault,
-   *   Autodesk
+   * ActiveDirectory,
+   * Vault,
+   * Autodesk
    */
   authTypes?: AuthTypeEnum;
   systemName?: string;
@@ -292,12 +342,11 @@ export type User = {
    * The relative URL to access this object.
    */
   url?: Url;
-};
-export type Session = {
+}
+export interface Session {
   id?: string;
   /**
    * The access token
-   * [required]
    */
   accessToken: string;
   /**
@@ -310,60 +359,43 @@ export type Session = {
    * ---
    */
   userInformation?: User;
-};
-export type VaultOption = {
-  id?: string;
-  /**
-   * The name of the option
-   */
-  name?: string;
-  /**
-   * The value of the option
-   */
-  value?: string;
-  /**
-   * The relative URL to access this object.
-   */
-  url?: Url;
-};
-export type VaultOptionCollection = {
+}
+export interface VaultOptionCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: VaultOption[];
-};
-export type UserCollection = {
+}
+export interface UserCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: User[];
-};
+}
 export type UserExtended = object;
-export type AccountCollection = {
+export interface AccountCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: Account[];
-};
-export type VaultCollection = {
+}
+export interface VaultCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: Vault[];
-};
-export type ChangeOrderExtended = object;
-export type PropertyDefinition = {
+}
+export interface PropertyDefinition {
   /**
    * Get the unique identifier for a server-based property definition
-   * [required]
    */
   id: string;
   /**
@@ -372,17 +404,14 @@ export type PropertyDefinition = {
   url?: Url;
   /**
    * Get or sets the Display name for this Property Definition
-   * [required]
    */
   displayName: string;
   /**
    * Get the System Name for this Property Definition.
-   * [required]
    */
   systemName: string;
   /**
    * The value defined in SQL database.
-   * [required]
    */
   dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image';
   /**
@@ -397,8 +426,8 @@ export type PropertyDefinition = {
    * Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
    */
   initialValue?: string;
-};
-export type Property = {
+}
+export interface Property {
   /**
    * Unique identifier for a server-based property definition
    */
@@ -412,8 +441,8 @@ export type Property = {
    * The property value associated with the entity and PropertyDefinition
    */
   value?: string;
-};
-export type ChangeOrder = {
+}
+export interface ChangeOrder {
   /**
    * Master Id of this Change Order. The Master Id uniquely identifies this Change Order object
    */
@@ -474,54 +503,31 @@ export type ChangeOrder = {
    * Get if the Change Order is currently locked.
    */
   isReadOnly?: boolean;
-};
-export type ChangeOrderCollection = {
+}
+export type FileVersionExtended = object;
+export interface Markup {
+  id?: string;
+  parentId?: string;
   /**
-   * Cursor-based pagination
+   * User
    * ---
    */
-  pagination?: CursorBasedPagination;
-  results?: (ChangeOrderExtended | ChangeOrder)[];
-  included?: {
-    propertyDefinition?: Record<string, PropertyDefinition>;
-  };
-};
-export type FileVersionExtended = object;
-export type FileClassificationEnum =
-  | 'None'
-  | 'DesignVisualization'
-  | 'DesignDocument'
-  | 'ConfigurationMember'
-  | 'ConfigurationFactory'
-  | 'ElectricalProject'
-  | 'DesignSubstitute'
-  | 'DesignRepresentation'
-  | 'DesignPresentation';
-export type VersionTypeEnum = 'None' | 'Latest' | 'LatestReleased';
-export type FileObject = {
+  createdByUser?: User;
+  createDateTime?: string;
   /**
-   * File MasterId
-   * [required]
+   * User
+   * ---
    */
-  id: string;
+  updatedByUser?: User;
+  updateDateTime?: string;
+  data?: string;
+  thumbnail?: string;
   /**
    * The relative URL to access this object.
-   * [required]
    */
-  url: Url;
-  /**
-   * Version Type Enum
-   * ---
-   */
-  versionType?: VersionTypeEnum;
-  /**
-   * File Version Extended
-   * ---
-   * file version extended object
-   */
-  fileVersion?: FileVersionExtended;
-};
-export type Folder = {
+  url?: Url;
+}
+export interface Folder {
   /**
    * Get the unique identifier for this folder
    */
@@ -580,22 +586,275 @@ export type Folder = {
    */
   isCloaked?: boolean;
   properties?: Property[];
-};
+}
+export type VersionTypeEnum = 'None' | 'Latest' | 'LatestReleased';
+export interface Item {
+  /**
+   * MasterId of the item
+   */
+  id: string;
+  /**
+   * The relative URL to access this object.
+   */
+  url: Url;
+  /**
+   * Version Type Enum
+   * ---
+   */
+  versionType?: VersionTypeEnum;
+  /**
+   * Item Version
+   * ---
+   * The unique identifier for the object.
+   */
+  itemVersion?: ItemVersion;
+}
+export interface ItemVersion {
+  /**
+   * Item Iteration Id
+   */
+  id?: string;
+  /**
+   * The relative URL to access this object.
+   */
+  url?: Url;
+  /**
+   * The Item number.
+   */
+  number?: string;
+  /**
+   * The version number, which is a sequential number given to each version. For example, if this value is 5, then the object is the 5th version.
+   */
+  version?: number;
+  /**
+   * The display value for the revision.
+   */
+  revision?: string;
+  comment?: string;
+  /**
+   * The display title.
+   */
+  title?: string;
+  /**
+   * Life cycle state of the item
+   */
+  state?: string;
+  stateColor?: number;
+  name?: string;
+  /**
+   * Category assigned to the item
+   */
+  category?: string;
+  categoryColor?: number;
+  entityType?: string;
+  isReadOnly?: boolean;
+  /**
+   * If true, the logged-in user is restricted from seeing this item.
+   */
+  isCloaked?: boolean;
+  /**
+   * Flag to check if an latest Item's  version is obsolete
+   */
+  isLatestObsolete?: boolean;
+  item?: Item;
+  properties?: Property[];
+}
+export interface FileObject {
+  /**
+   * File MasterId
+   */
+  id: string;
+  /**
+   * The relative URL to access this object.
+   */
+  url: Url;
+  /**
+   * Version Type Enum
+   * ---
+   */
+  versionType?: VersionTypeEnum;
+  /**
+   * File Version Extended
+   * ---
+   * file version extended object
+   */
+  fileVersion?: FileVersionExtended;
+}
+export interface Entity {
+  /**
+   * A unique identifier for the object
+   */
+  id: string;
+  /**
+   * Name of the entity
+   */
+  name: string;
+  /**
+   * The full vault path if Entity is a folder
+   */
+  fullName?: string;
+  number?: string;
+  /**
+   * Category information  about this entity
+   */
+  category?: string;
+  /**
+   * Category color
+   */
+  categoryColor?: number;
+  entityType?: string;
+  /**
+   * Version number if entity is an Iteration object
+   */
+  version?: number;
+  /**
+   * Tells the date and time that this version of the entity was created in the Vault.
+   */
+  createDate?: string;
+  lastModifiedDate?: string;
+  /**
+   * Revision information about this entity.
+   */
+  revision?: string;
+  /**
+   * The name of the life cycle state for the entity
+   */
+  state?: string;
+  /**
+   * The color of the state.
+   */
+  stateColor?: number;
+  parentFolderId?: string;
+  /**
+   * Folder
+   * ---
+   * folder object
+   */
+  parent?: Folder;
+  isCheckedOut?: boolean;
+  createUserName?: string;
+  checkinDate?: string;
+  checkoutDate?: string;
+  size?: number;
+  /**
+   * The relative URL to access this object.
+   */
+  url?: Url;
+  hasVisualizationAttachment?: boolean;
+  checkoutUserName?: string;
+  isLibrary?: boolean;
+  isReadOnly?: boolean;
+  isCloaked?: boolean;
+  /**
+   * File - we cannot directly use File as class name, as it's occupied.
+   * ---
+   */
+  file?: FileObject;
+  /**
+   * Item
+   * ---
+   */
+  item?: Item;
+  subfolderCount?: number;
+  children?: string;
+  properties?: Property[];
+}
+export interface LinkEntity {
+  name?: string;
+  /**
+   * Get the unique identifier for this link object
+   */
+  id?: string;
+  createDate?: string;
+  createUserName?: string;
+  entityType?: string;
+  /**
+   * The relative URL to access this object.
+   */
+  url?: Url;
+  /**
+   * Entity
+   * ---
+   * A generic entity object with all supported fields.
+   */
+  toEntity?: Entity;
+  /**
+   * Folder
+   * ---
+   * folder object
+   */
+  fromEntity?: Folder;
+}
+export interface SearchCriteria {
+  /**
+   * URL string to the property definition
+   */
+  propertyDefinitionUrl?: string;
+  /**
+   * Represents the operator used for the search
+   */
+  operator:
+    | 'Unknown'
+    | 'Contains'
+    | 'DoesNotContain'
+    | 'IsExactly'
+    | 'IsEmpty'
+    | 'IsNotEmpty'
+    | 'GreaterThan'
+    | 'GreaterThanOrEqualTo'
+    | 'LessThan'
+    | 'LessThanOrEqualTo'
+    | 'NotEqualTo';
+  /**
+   * The value to use for the search
+   */
+  searchString?: string;
+}
+export interface SortCriteria {
+  /**
+   * URL string to the property definition
+   */
+  propertyDefinitionUrl?: string;
+  /**
+   * If true, the sort is ascending. If false, the sort is descending.
+   */
+  ascending?: boolean;
+}
+export type ChangeOrderExtended = object;
+export interface ChangeOrderCollection {
+  /**
+   * Cursor-based pagination
+   * ---
+   */
+  pagination?: CursorBasedPagination;
+  results?: (ChangeOrderExtended | ChangeOrder)[];
+  included?: {
+    propertyDefinition?: Record<string, PropertyDefinition>;
+  };
+}
+export type FileClassificationEnum =
+  | 'None'
+  | 'DesignVisualization'
+  | 'DesignDocument'
+  | 'ConfigurationMember'
+  | 'ConfigurationFactory'
+  | 'ElectricalProject'
+  | 'DesignSubstitute'
+  | 'DesignRepresentation'
+  | 'DesignPresentation';
 export type FileVisualizationAttachmentStatusEnum =
   | 'None'
   | 'Syncronized'
   | 'NotSyncronized'
   | 'UserVerified'
   | 'Legacy';
-export type FileVersion = {
+export interface FileVersion {
   /**
    * File IterationId
-   * [required]
    */
   id: string;
   /**
    * The name of the file. This value applies to all versions of the file
-   * [required]
    */
   name: string;
   /**
@@ -610,16 +869,15 @@ export type FileVersion = {
    * File Classification Enum
    * ---
    * The classification of the file.
-   *
-   *   None,
-   *   DesignVisualization,
-   *   DesignDocument,
-   *   ConfigurationMember,
-   *   ConfigurationFactory,
-   *   ElectricalProject,
-   *   DesignSubstitute,
-   *   DesignRepresentation,
-   *   DesignPresentation
+   * None,
+   * DesignVisualization,
+   * DesignDocument,
+   * ConfigurationMember,
+   * ConfigurationFactory,
+   * ElectricalProject,
+   * DesignSubstitute,
+   * DesignRepresentation,
+   * DesignPresentation
    */
   classification?: FileClassificationEnum;
   entityType?: string;
@@ -698,12 +956,11 @@ export type FileVersion = {
    * File Visualization Attachment Status Enum
    * ---
    * The design visualization attachment status of the file.
-   *
-   *   None,
-   *   Syncronized,
-   *   NotSyncronized,
-   *   UserVerified,
-   *   Legacy
+   * None,
+   * Syncronized,
+   * NotSyncronized,
+   * UserVerified,
+   * Legacy
    */
   visualizationAttachmentStatus?: FileVisualizationAttachmentStatusEnum;
   isReadOnly?: boolean;
@@ -716,8 +973,8 @@ export type FileVersion = {
    */
   isOnSite?: boolean;
   properties?: Property[];
-};
-export type FileVersionCollection = {
+}
+export interface FileVersionCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -728,20 +985,20 @@ export type FileVersionCollection = {
     folder?: Record<string, Folder>;
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
-export type EntityCollection = {
+}
+export interface EntityCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
-  results?: unknown[];
+  results?: FileVersion[];
   included?: {
     folder?: Record<string, Folder>;
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
-export type ECOComment2 = {
+}
+export interface ECOComment2 {
   id?: string;
   /**
    * The relative URL to access this object.
@@ -754,14 +1011,9 @@ export type ECOComment2 = {
   state?: string;
   numberOfAttachments?: number;
   replies?: ECOComment[];
-  /**
-   * ECO Comment
-   * ---
-   * Change Order Comment object
-   */
   parent?: ECOComment;
-};
-export type ECOComment = {
+}
+export interface ECOComment {
   id?: string;
   /**
    * The relative URL to access this object.
@@ -780,93 +1032,16 @@ export type ECOComment = {
    * Change Order Comment object duplicate(ECOComment) to allow them to reference to each other
    */
   parent?: ECOComment2;
-};
-export type ECOCommentCollection = {
+}
+export interface ECOCommentCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: ECOComment[];
-};
-export type Item = {
-  /**
-   * MasterId of the item
-   * [required]
-   */
-  id: string;
-  /**
-   * The relative URL to access this object.
-   * [required]
-   */
-  url: Url;
-  /**
-   * Version Type Enum
-   * ---
-   */
-  versionType?: VersionTypeEnum;
-  /**
-   * Item Version
-   * ---
-   * The unique identifier for the object.
-   */
-  itemVersion?: ItemVersion;
-};
-export type ItemVersion = {
-  /**
-   * Item Iteration Id
-   */
-  id?: string;
-  /**
-   * The relative URL to access this object.
-   */
-  url?: Url;
-  /**
-   * The Item number.
-   */
-  number?: string;
-  /**
-   * The version number, which is a sequential number given to each version. For example, if this value is 5, then the object is the 5th version.
-   */
-  version?: number;
-  /**
-   * The display value for the revision.
-   */
-  revision?: string;
-  comment?: string;
-  /**
-   * The display title.
-   */
-  title?: string;
-  /**
-   * Life cycle state of the item
-   */
-  state?: string;
-  stateColor?: number;
-  name?: string;
-  /**
-   * Category assigned to the item
-   */
-  category?: string;
-  categoryColor?: number;
-  entityType?: string;
-  isReadOnly?: boolean;
-  /**
-   * If true, the logged-in user is restricted from seeing this item.
-   */
-  isCloaked?: boolean;
-  /**
-   * Flag to check if an latest Item's  version is obsolete
-   */
-  isLatestObsolete?: boolean;
-  /**
-   * Item
-   * ---
-   */
-  item?: Item;
-  properties?: Property[];
-};
-export type ItemVersionCollection = {
+}
+export interface ItemVersionCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -876,45 +1051,23 @@ export type ItemVersionCollection = {
   included?: {
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
-export type Markup = {
-  id?: string;
-  parentId?: string;
-  /**
-   * User
-   * ---
-   */
-  createdByUser?: User;
-  createDateTime?: string;
-  /**
-   * User
-   * ---
-   */
-  updatedByUser?: User;
-  updateDateTime?: string;
-  data?: string;
-  thumbnail?: string;
-  /**
-   * The relative URL to access this object.
-   */
-  url?: Url;
-};
-export type MarkupCollection = {
+}
+export interface MarkupCollection {
   results?: Markup[];
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
-};
+}
 export type FileAssociationTypeEnum = 'Dependency' | 'Attachment';
-export type FileAssociation = {
+export interface FileAssociation {
   /**
    * File Version Extended
    * ---
    * file version extended object
    */
-  parentFile?: FileVersionExtended;
+  parentFile?: object;
   /**
    * File Version Extended
    * ---
@@ -927,8 +1080,8 @@ export type FileAssociation = {
    * File association options.
    */
   fileAssocType?: FileAssociationTypeEnum;
-};
-export type FileAssocCollection = {
+}
+export interface FileAssocCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -939,11 +1092,9 @@ export type FileAssocCollection = {
     folder?: Record<string, Folder>;
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
-export type HistoryOptionsEnum = 'All' | 'ReleasedOnly' | 'ReleasedAndRevisionTip' | 'RevisionTip';
-export type RevisionOptionsEnum = 'AllRevision' | 'CurrentRevision';
+}
 export type FolderExtended = object;
-export type FolderCollection = {
+export interface FolderCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -954,7 +1105,7 @@ export type FolderCollection = {
     folder?: Record<string, Folder>;
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
+}
 export type ItemAssociationTypeEnum =
   | 'Primary'
   | 'Secondary'
@@ -964,7 +1115,7 @@ export type ItemAssociationTypeEnum =
   | 'SecondarySub'
   | 'PinnedAttachment'
   | 'NotPinnedAttachment';
-export type ItemAssociatedFileVersion = {
+export interface ItemAssociatedFileVersion {
   /**
    * Item Association Type Enum
    * ---
@@ -977,8 +1128,8 @@ export type ItemAssociatedFileVersion = {
    * file version extended object
    */
   file?: FileVersionExtended;
-};
-export type ItemAssociatedFileVersionCollection = {
+}
+export interface ItemAssociatedFileVersionCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -989,9 +1140,8 @@ export type ItemAssociatedFileVersionCollection = {
     folder?: Record<string, Folder>;
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
-export type BOMTypeEnum = 'Latest' | 'Historic';
-export type ItemBomLink = {
+}
+export interface ItemBomLink {
   /**
    * Id of the BOM Component (only valid when BOM row is a component - not assigned an item)
    */
@@ -1067,8 +1217,8 @@ export type ItemBomLink = {
    */
   positionNumber?: string;
   properties?: Property[];
-};
-export type ItemBomOccurrence = {
+}
+export interface ItemBomOccurrence {
   /**
    * The top most Item of the BOM.
    */
@@ -1094,11 +1244,11 @@ export type ItemBomOccurrence = {
    * The path to the occurrence in the BOM. The format is the list of Item Master IDs separated by the '/' delimiter.
    */
   path?: string;
-};
+}
 export type BOMStructureEnum = 'Normal' | 'Purchased' | 'Inseperable' | 'Phantom' | 'Reference' | 'DynamicPhantom';
 export type ComponentTypeEnum = 'Part' | 'Assembly' | 'Virtual' | 'Standard' | 'Purchased' | 'Document';
 export type XRefTypeEnum = 'Internal' | 'External';
-export type BOMComponent = {
+export interface BOMComponent {
   /**
    * Indicates if a BOM component is cloaked
    */
@@ -1107,13 +1257,12 @@ export type BOMComponent = {
    * BOM Structure Enum
    * ---
    * An enumerated value representing the BOMStructure value of Component.
-   *
-   *   Normal = 0,
-   *   Purchased = 1,
-   *   Inseperable = 2,
-   *   Phantom = 3,
-   *   Reference = 4,
-   *   DynamicPhantom = 5
+   * Normal = 0,
+   * Purchased = 1,
+   * Inseperable = 2,
+   * Phantom = 3,
+   * Reference = 4,
+   * DynamicPhantom = 5
    */
   bOMStructure?: BOMStructureEnum;
   /**
@@ -1128,13 +1277,12 @@ export type BOMComponent = {
    * Component Type Enum
    * ---
    * An enumerated value specifying the type of component.  Enum of Component Type
-   *
-   *   Part = 1,
-   *   Assembly = 2,
-   *   Virtual = 3,
-   *   Standard = 4,
-   *   Purchased = 5,
-   *   Document = 6
+   * Part = 1,
+   * Assembly = 2,
+   * Virtual = 3,
+   * Standard = 4,
+   * Purchased = 5,
+   * Document = 6
    */
   componentType?: ComponentTypeEnum;
   /**
@@ -1146,9 +1294,8 @@ export type BOMComponent = {
    * ---
    * An enumerated value that specifies whether the Component is internal or external in relation to the design file.
    * Enum of XRefType
-   *
-   *   Internal = 0,
-   *   External = 1
+   * Internal = 0,
+   * External = 1
    */
   xRefType?: XRefTypeEnum;
   /**
@@ -1160,8 +1307,8 @@ export type BOMComponent = {
    * For Components with a XRefType of "external", XRefID represents the FileID of the design file associated with that component. For "internal" Components, XRefID should be set to -1.
    */
   xRefId?: string;
-};
-export type BOMLinksAndRevisions = {
+}
+export interface BOMLinksAndRevisions {
   /**
    * An array of Items.
    */
@@ -1182,8 +1329,8 @@ export type BOMLinksAndRevisions = {
    * Array of BOM components in this BOM
    */
   bOMComponents?: BOMComponent[];
-};
-export type ItemCollection = {
+}
+export interface ItemCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -1197,149 +1344,8 @@ export type ItemCollection = {
   included?: {
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
-export type Job = {
-  /**
-   * A unique identifier for the job.
-   */
-  id?: string;
-  /**
-   * The job type.
-   */
-  jobType?: string;
-  /**
-   * The priority of the job. A lower number means a higher priority. 1 is the lowest possible number.
-   */
-  priority?: number;
-  /**
-   * A description of the job.
-   */
-  description?: string;
-  /**
-   * The relative URL to access this object.
-   */
-  url?: Url;
-  /**
-   * An array of parameters which provide meta-data about the job.
-   */
-  params?: Record<string, string>;
-  /**
-   * The status of the job.
-   */
-  status?: 'Ready' | 'Running' | 'Success' | 'Failure';
-  /**
-   * In a multi-site environment, this property tells if the file is on the local site.
-   */
-  isOnSite?: string;
-};
-export type Entity = {
-  /**
-   * A unique identifier for the object
-   * [required]
-   */
-  id: string;
-  /**
-   * Name of the entity
-   * [required]
-   */
-  name: string;
-  /**
-   * The full vault path if Entity is a folder
-   */
-  fullName?: string;
-  number?: string;
-  /**
-   * Category information  about this entity
-   */
-  category?: string;
-  /**
-   * Category color
-   */
-  categoryColor?: number;
-  entityType?: string;
-  /**
-   * Version number if entity is an Iteration object
-   */
-  version?: number;
-  /**
-   * Tells the date and time that this version of the entity was created in the Vault.
-   */
-  createDate?: string;
-  lastModifiedDate?: string;
-  /**
-   * Revision information about this entity.
-   */
-  revision?: string;
-  /**
-   * The name of the life cycle state for the entity
-   */
-  state?: string;
-  /**
-   * The color of the state.
-   */
-  stateColor?: number;
-  parentFolderId?: string;
-  /**
-   * Folder
-   * ---
-   * folder object
-   */
-  parent?: Folder;
-  isCheckedOut?: boolean;
-  createUserName?: string;
-  checkinDate?: string;
-  checkoutDate?: string;
-  size?: number;
-  /**
-   * The relative URL to access this object.
-   */
-  url?: Url;
-  hasVisualizationAttachment?: boolean;
-  checkoutUserName?: string;
-  isLibrary?: boolean;
-  isReadOnly?: boolean;
-  isCloaked?: boolean;
-  /**
-   * File - we cannot directly use File as class name, as it's occupied.
-   * ---
-   */
-  file?: FileObject;
-  /**
-   * Item
-   * ---
-   */
-  item?: Item;
-  subfolderCount?: number;
-  children?: string;
-  properties?: Property[];
-};
-export type LinkEntity = {
-  name?: string;
-  /**
-   * Get the unique identifier for this link object
-   */
-  id?: string;
-  createDate?: string;
-  createUserName?: string;
-  entityType?: string;
-  /**
-   * The relative URL to access this object.
-   */
-  url?: Url;
-  /**
-   * Entity
-   * ---
-   * A generic entity object with all supported fields.
-   */
-  toEntity?: Entity;
-  /**
-   * Folder
-   * ---
-   * folder object
-   */
-  fromEntity?: Folder;
-};
-export type LinkCollection = {
+}
+export interface LinkCollection {
   /**
    * Cursor-based pagination
    * ---
@@ -1350,52 +1356,16 @@ export type LinkCollection = {
     folder?: Record<string, Folder>;
     propertyDefinition?: Record<string, PropertyDefinition>;
   };
-};
+}
 export type PropertyDefinitionExtended = object;
-export type PropertyDefinitionCollection = {
+export interface PropertyDefinitionCollection {
   /**
    * Cursor-based pagination
    * ---
    */
   pagination?: CursorBasedPagination;
   results?: (PropertyDefinition | PropertyDefinitionExtended)[];
-};
-export type SearchCriteria = {
-  /**
-   * URL string to the property definition
-   */
-  propertyDefinitionUrl?: string;
-  /**
-   * Represents the operator used for the search
-   * [required]
-   */
-  operator:
-    | 'Unknown'
-    | 'Contains'
-    | 'DoesNotContain'
-    | 'IsExactly'
-    | 'IsEmpty'
-    | 'IsNotEmpty'
-    | 'GreaterThan'
-    | 'GreaterThanOrEqualTo'
-    | 'LessThan'
-    | 'LessThanOrEqualTo'
-    | 'NotEqualTo';
-  /**
-   * The value to use for the search
-   */
-  searchString?: string;
-};
-export type SortCriteria = {
-  /**
-   * URL string to the property definition
-   */
-  propertyDefinitionUrl?: string;
-  /**
-   * If true, the sort is ascending. If false, the sort is descending.
-   */
-  ascending?: boolean;
-};
+}
 declare global {
   interface Apis {
     global: {
@@ -1410,12 +1380,12 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = unknown
+       * type Response = null
        * ```
        */
-      getApiSpec<Config extends Alova2MethodConfig<unknown>>(
+      getApiSpec<Config extends Alova2MethodConfig<null>>(
         config?: Config
-      ): Alova2Method<unknown, 'global.getApiSpec', Config>;
+      ): Alova2Method<null, 'global.getApiSpec', Config>;
       /**
        * ---
        *
@@ -1475,7 +1445,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -1499,6 +1469,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Group
+       *   // [items] end
        *   results?: Array<{
        *     // The identifier for the object.
        *     id?: string
@@ -1507,10 +1480,9 @@ declare global {
        *     systemName?: string
        *     // [title] AuthType Enum
        *     // The authentication type.
-       *     //
-       *     //   ActiveDirectory,
-       *     //   Vault,
-       *     //   Autodesk
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
        *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *     // The date the Group was created.
        *     createDate?: string
@@ -1529,7 +1501,7 @@ declare global {
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -1570,9 +1542,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
-       *   // [required]
        *   authType: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        * }
        * ```
@@ -1597,13 +1567,7 @@ declare global {
       getAccountByAuthType<
         Config extends Alova2MethodConfig<Account> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
-            /**
-             * [required]
-             */
             authType: 'ActiveDirectory' | 'Vault' | 'Autodesk';
           };
         }
@@ -1625,7 +1589,7 @@ declare global {
        *   // Types the profile attribute definition is associated with. Allowed values: User, Group or All
        *   'filter[association]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -1675,7 +1639,7 @@ declare global {
             'filter[association]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -1699,7 +1663,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -1726,9 +1689,6 @@ declare global {
       getProfileAttributeDefinitionById<
         Config extends Alova2MethodConfig<ProfileAttributeDefinition> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -1748,7 +1708,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -1772,6 +1732,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Role
+       *   // [items] end
        *   results?: Array<{
        *     // A unique identifier of the role.
        *     id?: string
@@ -1792,7 +1755,7 @@ declare global {
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -1816,7 +1779,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -1842,9 +1804,6 @@ declare global {
       getRoleById<
         Config extends Alova2MethodConfig<Role> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -1883,7 +1842,6 @@ declare global {
        * type Response = {
        *   id?: string
        *   // The access token
-       *   // [required]
        *   accessToken: string
        *   // [title] Vault
        *   vaultInformation?: {
@@ -1904,10 +1862,9 @@ declare global {
        *     email?: string
        *     // [title] AuthType Enum
        *     // The authentication type.
-       *     //
-       *     //   ActiveDirectory,
-       *     //   Vault,
-       *     //   Autodesk
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
        *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *     systemName?: string
        *     // The date that the user was created.
@@ -1915,7 +1872,7 @@ declare global {
        *     // Is the user active
        *     isActive?: string
        *     // The relative URL to access this object.
-       *     url?: Url
+       *     url?: string
        *   }
        * }
        * ```
@@ -1974,7 +1931,6 @@ declare global {
        * type Response = {
        *   id?: string
        *   // The access token
-       *   // [required]
        *   accessToken: string
        *   // [title] Vault
        *   vaultInformation?: {
@@ -1995,10 +1951,9 @@ declare global {
        *     email?: string
        *     // [title] AuthType Enum
        *     // The authentication type.
-       *     //
-       *     //   ActiveDirectory,
-       *     //   Vault,
-       *     //   Autodesk
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
        *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *     systemName?: string
        *     // The date that the user was created.
@@ -2006,7 +1961,7 @@ declare global {
        *     // Is the user active
        *     isActive?: string
        *     // The relative URL to access this object.
-       *     url?: Url
+       *     url?: string
        *   }
        * }
        * ```
@@ -2041,7 +1996,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -2053,7 +2007,6 @@ declare global {
        * type Response = {
        *   id?: string
        *   // The access token
-       *   // [required]
        *   accessToken: string
        *   // [title] Vault
        *   vaultInformation?: {
@@ -2074,10 +2027,9 @@ declare global {
        *     email?: string
        *     // [title] AuthType Enum
        *     // The authentication type.
-       *     //
-       *     //   ActiveDirectory,
-       *     //   Vault,
-       *     //   Autodesk
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
        *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *     systemName?: string
        *     // The date that the user was created.
@@ -2085,7 +2037,7 @@ declare global {
        *     // Is the user active
        *     isActive?: string
        *     // The relative URL to access this object.
-       *     url?: Url
+       *     url?: string
        *   }
        * }
        * ```
@@ -2093,9 +2045,6 @@ declare global {
       getSessionById<
         Config extends Alova2MethodConfig<Session> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -2114,7 +2063,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -2123,21 +2071,18 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = unknown
+       * type Response = object
        * ```
        */
       deleteSession<
-        Config extends Alova2MethodConfig<unknown> & {
+        Config extends Alova2MethodConfig<object> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
       >(
         config: Config
-      ): Alova2Method<unknown, 'global.deleteSession', Config>;
+      ): Alova2Method<object, 'global.deleteSession', Config>;
       /**
        * ---
        *
@@ -2153,7 +2098,7 @@ declare global {
        *   // Filters and returns items with exact match
        *   'filter[name]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -2177,6 +2122,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Vault Option
+       *   // [items] end
        *   results?: Array<{
        *     id?: string
        *     // The name of the option
@@ -2198,7 +2146,7 @@ declare global {
             'filter[name]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -2340,12 +2288,12 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = unknown
+       * type Response = object
        * ```
        */
-      deleteSystemOptionById<Config extends Alova2MethodConfig<unknown>>(
+      deleteSystemOptionById<Config extends Alova2MethodConfig<object>>(
         config?: Config
-      ): Alova2Method<unknown, 'global.deleteSystemOptionById', Config>;
+      ): Alova2Method<object, 'global.deleteSystemOptionById', Config>;
       /**
        * ---
        *
@@ -2359,7 +2307,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -2383,6 +2331,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] User
+       *   // [items] end
        *   results?: Array<{
        *     // A unique number that the Vault uses to reference the user.
        *     id?: string
@@ -2392,10 +2343,9 @@ declare global {
        *     email?: string
        *     // [title] AuthType Enum
        *     // The authentication type.
-       *     //
-       *     //   ActiveDirectory,
-       *     //   Vault,
-       *     //   Autodesk
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
        *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *     systemName?: string
        *     // The date that the user was created.
@@ -2403,7 +2353,7 @@ declare global {
        *     // Is the user active
        *     isActive?: string
        *     // The relative URL to access this object.
-       *     url?: Url
+       *     url?: string
        *   }>
        * }
        * ```
@@ -2413,7 +2363,7 @@ declare global {
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -2437,7 +2387,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -2452,9 +2401,6 @@ declare global {
       getUserById<
         Config extends Alova2MethodConfig<UserExtended> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -2473,7 +2419,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -2495,6 +2440,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Account
+       *   // [items] end
        *   results?: Array<{
        *     id?: string
        *     // The name of the account for signin purposes.
@@ -2512,9 +2460,6 @@ declare global {
       getUserAccounts<
         Config extends Alova2MethodConfig<AccountCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -2533,9 +2478,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
-       *   // [required]
        *   authType: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        * }
        * ```
@@ -2560,13 +2503,7 @@ declare global {
       getUsersAccountByAuthType<
         Config extends Alova2MethodConfig<Account> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
-            /**
-             * [required]
-             */
             authType: 'ActiveDirectory' | 'Vault' | 'Autodesk';
           };
         }
@@ -2586,7 +2523,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -2610,6 +2547,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Vault
+       *   // [items] end
        *   results?: Array<{
        *     // The name of the Knowledge Vault. This is also the name of the database.
        *     name?: string
@@ -2626,7 +2566,7 @@ declare global {
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -2650,7 +2590,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -2672,9 +2611,6 @@ declare global {
       getVaultById<
         Config extends Alova2MethodConfig<Vault> & {
           pathParams: {
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -2695,7 +2631,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -2714,17 +2649,17 @@ declare global {
        *   // Search filter to include only open change orders.  e.g. filter[openCOsOnly]=true
        *   'filter[openCOsOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies sorting criteria for search results. Supports multi-sort and accepted values for sort-order: asc, desc.  Ex: sort = Revision desc,Name asc
        *   sort?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -2748,6 +2683,16 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] Change Order Extended
+       *   // change order extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] Change Order
+       *   // change order object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
@@ -2776,24 +2721,23 @@ declare global {
        *         entityType?: string
        *         // Number of File Attachments
        *         numberOfAttachments?: number
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -2814,7 +2758,27 @@ declare global {
        *       }
        *   )[]
        *   included?: {
-       *     propertyDefinition?: Record<string, PropertyDefinition>
+       *     propertyDefinition?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *     >
        *   }
        * }
        * ```
@@ -2822,9 +2786,6 @@ declare global {
       getChangeOrders<
         Config extends Alova2MethodConfig<ChangeOrderCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
@@ -2846,10 +2807,10 @@ declare global {
             'filter[openCOsOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -2862,7 +2823,7 @@ declare global {
             sort?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -2886,9 +2847,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -2923,24 +2882,23 @@ declare global {
        *   entityType?: string
        *   // Number of File Attachments
        *   numberOfAttachments?: number
+       *   // [items] start
+       *   // [title] Property
+       *   // [items] end
        *   properties?: Array<{
        *     // Unique identifier for a server-based property definition
        *     propertyDefinitionId?: string
        *     // [title] Property Definition
        *     definition?: {
        *       // Get the unique identifier for a server-based property definition
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *       // Get or sets the Display name for this Property Definition
-       *       // [required]
        *       displayName: string
        *       // Get the System Name for this Property Definition.
-       *       // [required]
        *       systemName: string
        *       // The value defined in SQL database.
-       *       // [required]
        *       dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *       // Get or sets whether this Property Definition is Active.
        *       active?: boolean
@@ -2964,13 +2922,7 @@ declare global {
       getChangeOrderById<
         Config extends Alova2MethodConfig<ChangeOrder> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -2989,9 +2941,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -3004,15 +2954,15 @@ declare global {
        *   // Include only associated files that are in consumable(released) state. default: option[releasedOnly]=false
        *   'option[releasedOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -3036,14 +2986,22 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version Extended
+       *   // file version extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
        *         // File IterationId
-       *         // [required]
        *         id: string
        *         // The name of the file. This value applies to all versions of the file
-       *         // [required]
        *         name: string
        *         // Category information about this file
        *         category?: string
@@ -3051,16 +3009,15 @@ declare global {
        *         categoryColor?: number
        *         // [title] File Classification Enum
        *         // The classification of the file.
-       *         //
-       *         //   None,
-       *         //   DesignVisualization,
-       *         //   DesignDocument,
-       *         //   ConfigurationMember,
-       *         //   ConfigurationFactory,
-       *         //   ElectricalProject,
-       *         //   DesignSubstitute,
-       *         //   DesignRepresentation,
-       *         //   DesignPresentation
+       *         // None,
+       *         // DesignVisualization,
+       *         // DesignDocument,
+       *         // ConfigurationMember,
+       *         // ConfigurationFactory,
+       *         // ElectricalProject,
+       *         // DesignSubstitute,
+       *         // DesignRepresentation,
+       *         // DesignPresentation
        *         classification?:
        *           | 'None'
        *           | 'DesignVisualization'
@@ -3089,16 +3046,14 @@ declare global {
        *         // [title] File - we cannot directly use File as class name, as it's occupied.
        *         file?: {
        *           // File MasterId
-       *           // [required]
        *           id: string
        *           // The relative URL to access this object.
-       *           // [required]
        *           url: string
        *           // [title] Version Type Enum
        *           versionType?: 'None' | 'Latest' | 'LatestReleased'
        *           // [title] File Version Extended
        *           // file version extended object
-       *           fileVersion?: FileVersionExtended
+       *           fileVersion?: object
        *         }
        *         // [title] Folder
        *         // folder object
@@ -3106,7 +3061,7 @@ declare global {
        *           // Get the unique identifier for this folder
        *           id?: string
        *           // The relative URL to access this object.
-       *           url?: Url
+       *           url?: string
        *           // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *           name?: string
        *           // Get the full vault path for this folder (ie. $/Folder1)
@@ -3132,24 +3087,23 @@ declare global {
        *           isReadOnly?: boolean
        *           // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *           isCloaked?: boolean
+       *           // [items] start
+       *           // [title] Property
+       *           // [items] end
        *           properties?: Array<{
        *             // Unique identifier for a server-based property definition
        *             propertyDefinitionId?: string
        *             // [title] Property Definition
        *             definition?: {
        *               // Get the unique identifier for a server-based property definition
-       *               // [required]
        *               id: string
        *               // The relative URL to access this object.
-       *               url?: Url
+       *               url?: string
        *               // Get or sets the Display name for this Property Definition
-       *               // [required]
        *               displayName: string
        *               // Get the System Name for this Property Definition.
-       *               // [required]
        *               systemName: string
        *               // The value defined in SQL database.
-       *               // [required]
        *               dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *               // Get or sets whether this Property Definition is Active.
        *               active?: boolean
@@ -3175,162 +3129,52 @@ declare global {
        *         // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
        *         size?: number
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Flag to determine if valid VizAttachmentStatus (Not None)
        *         hasVisualizationAttachment?: boolean
        *         // [title] File Visualization Attachment Status Enum
        *         // The design visualization attachment status of the file.
-       *         //
-       *         //   None,
-       *         //   Syncronized,
-       *         //   NotSyncronized,
-       *         //   UserVerified,
-       *         //   Legacy
+       *         // None,
+       *         // Syncronized,
+       *         // NotSyncronized,
+       *         // UserVerified,
+       *         // Legacy
        *         visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
        *         isReadOnly?: boolean
        *         // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
        *         isCloaked?: boolean
        *         // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
        *         isOnSite?: boolean
-       *         properties?: Array<Property>
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
        *       }
        *   )[]
-       *   included?: {
-       *     folder?: Record<string, Folder>
-       *     propertyDefinition?: Record<
-       *       string,
-       *       {
-       *         // Get the unique identifier for a server-based property definition
-       *         // [required]
-       *         id: string
-       *         // The relative URL to access this object.
-       *         url?: Url
-       *         // Get or sets the Display name for this Property Definition
-       *         // [required]
-       *         displayName: string
-       *         // Get the System Name for this Property Definition.
-       *         // [required]
-       *         systemName: string
-       *         // The value defined in SQL database.
-       *         // [required]
-       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
-       *         // Get or sets whether this Property Definition is Active.
-       *         active?: boolean
-       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
-       *         isSystem?: boolean
-       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
-       *         initialValue?: string
-       *       }
-       *     >
-       *   }
-       * }
-       * ```
-       */
-      getChangeOrderRelatedFiles<
-        Config extends Alova2MethodConfig<FileVersionCollection> & {
-          pathParams: {
-            /**
-             * [required]
-             */
-            vaultId: string;
-            /**
-             * [required]
-             */
-            id: string;
-          };
-          params: {
-            /**
-             * Include only associated files that are in consumable(released) state. default: option[releasedOnly]=false
-             */
-            'option[releasedOnly]'?: boolean;
-            /**
-             * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
-             */
-            'option[extendedModels]'?: boolean;
-            /**
-             * The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
-             */
-            'option[propDefIds]'?: string;
-            /**
-             * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
-             */
-            limit?: number;
-            /**
-             * Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
-             */
-            cursorState?: string;
-          };
-        }
-      >(
-        config: Config
-      ): Alova2Method<FileVersionCollection, 'vault.getChangeOrderRelatedFiles', Config>;
-      /**
-       * ---
-       *
-       * [GET] Get all change order associated entities by its ID
-       *
-       * **path:** /vaults/{vaultId}/change-orders/{id}/associated-entities
-       *
-       * ---
-       *
-       * **Path Parameters**
-       * ```ts
-       * type PathParameters = {
-       *   // [required]
-       *   vaultId: string
-       *   // [required]
-       *   id: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Query Parameters**
-       * ```ts
-       * type QueryParameters = {
-       *   // Include only associated items that are consumable. default: option[releasedItemsOnly]=false
-       *   'option[releasedItemsOnly]'?: boolean
-       *   // Include only associated files that are in consumable(released) state.. default: option[releasedFilesOnly]=false
-       *   'option[releasedFilesOnly]'?: boolean
-       *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
-       *   'option[extendedModels]'?: boolean
-       *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
-       *   'option[propDefIds]'?: string
-       *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
-       *   limit?: number
-       *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
-       *   cursorState?: string
-       * }
-       * ```
-       *
-       * ---
-       *
-       * **Response**
-       * ```ts
-       * type Response = {
-       *   // [title] Cursor-based pagination
-       *   pagination?: {
-       *     // Limit requested for the current search
-       *     limit?: number
-       *     // Number of total hits. If this value is larger than the objects returned, then multiple searches will have to be performed to get the complete result set.
-       *     totalResults?: number
-       *     // [title] Indexing Status
-       *     // The status of the indexing engine.
-       *     indexingStatus?: 'IndexingComplete' | 'IndexingProperties' | 'IndexingContent' | 'NA'
-       *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
-       *     nextUrl?: string
-       *   }
-       *   results?: unknown[]
        *   included?: {
        *     folder?: Record<
        *       string,
@@ -3338,7 +3182,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -3364,24 +3208,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -3399,18 +3242,380 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *     >
+       *   }
+       * }
+       * ```
+       */
+      getChangeOrderRelatedFiles<
+        Config extends Alova2MethodConfig<FileVersionCollection> & {
+          pathParams: {
+            vaultId: string;
+            id: string;
+          };
+          params: {
+            /**
+             * Include only associated files that are in consumable(released) state. default: option[releasedOnly]=false
+             */
+            'option[releasedOnly]'?: boolean;
+            /**
+             * If true, the response will include additional detailed information for each entity. Examples include:
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             */
+            'option[extendedModels]'?: boolean;
+            /**
+             * The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
+             */
+            'option[propDefIds]'?: string;
+            /**
+             * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             */
+            limit?: number;
+            /**
+             * Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
+             */
+            cursorState?: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<FileVersionCollection, 'vault.getChangeOrderRelatedFiles', Config>;
+      /**
+       * ---
+       *
+       * [GET] Get all change order associated entities by its ID
+       *
+       * **path:** /vaults/{vaultId}/change-orders/{id}/associated-entities
+       *
+       * ---
+       *
+       * **Path Parameters**
+       * ```ts
+       * type PathParameters = {
+       *   vaultId: string
+       *   id: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Query Parameters**
+       * ```ts
+       * type QueryParameters = {
+       *   // Include only associated items that are consumable. default: option[releasedItemsOnly]=false
+       *   'option[releasedItemsOnly]'?: boolean
+       *   // Include only associated files that are in consumable(released) state.. default: option[releasedFilesOnly]=false
+       *   'option[releasedFilesOnly]'?: boolean
+       *   // If true, the response will include additional detailed information for each entity. Examples include:
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   'option[extendedModels]'?: boolean
+       *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
+       *   'option[propDefIds]'?: string
+       *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   limit?: number
+       *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
+       *   cursorState?: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   // [title] Cursor-based pagination
+       *   pagination?: {
+       *     // Limit requested for the current search
+       *     limit?: number
+       *     // Number of total hits. If this value is larger than the objects returned, then multiple searches will have to be performed to get the complete result set.
+       *     totalResults?: number
+       *     // [title] Indexing Status
+       *     // The status of the indexing engine.
+       *     indexingStatus?: 'IndexingComplete' | 'IndexingProperties' | 'IndexingContent' | 'NA'
+       *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
+       *     nextUrl?: string
+       *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params1] end
+       *   // [items] end
+       *   results?: {
+       *     // File IterationId
+       *     id: string
+       *     // The name of the file. This value applies to all versions of the file
+       *     name: string
+       *     // Category information about this file
+       *     category?: string
+       *     // Category color
+       *     categoryColor?: number
+       *     // [title] File Classification Enum
+       *     // The classification of the file.
+       *     // None,
+       *     // DesignVisualization,
+       *     // DesignDocument,
+       *     // ConfigurationMember,
+       *     // ConfigurationFactory,
+       *     // ElectricalProject,
+       *     // DesignSubstitute,
+       *     // DesignRepresentation,
+       *     // DesignPresentation
+       *     classification?:
+       *       | 'None'
+       *       | 'DesignVisualization'
+       *       | 'DesignDocument'
+       *       | 'ConfigurationMember'
+       *       | 'ConfigurationFactory'
+       *       | 'ElectricalProject'
+       *       | 'DesignSubstitute'
+       *       | 'DesignRepresentation'
+       *       | 'DesignPresentation'
+       *     entityType?: string
+       *     // The version of the file. A file that has just been added to the Vault, will have 1 as its VerNum
+       *     version?: number
+       *     // Tells the date and time that this version of the file was created in the Vault. For the first version of a file, this date will match CkInDate. For later versions, this value will have the time when the previous version was checked out.
+       *     createDate?: string
+       *     // The last modified date of the file. This value is set by the client that uploaded the file.
+       *     lastModifiedDate?: string
+       *     // Revision information about this file.
+       *     revision?: string
+       *     // The name of the life cycle state for the current file
+       *     state?: string
+       *     // The color of the state.
+       *     stateColor?: number
+       *     // FolderId of the parent the current file  resides in
+       *     parentFolderId?: string
+       *     // [title] File - we cannot directly use File as class name, as it's occupied.
+       *     file?: {
+       *       // File MasterId
+       *       id: string
+       *       // The relative URL to access this object.
+       *       url: string
+       *       // [title] Version Type Enum
+       *       versionType?: 'None' | 'Latest' | 'LatestReleased'
+       *       // [title] File Version Extended
+       *       // file version extended object
+       *       fileVersion?: object
+       *     }
+       *     // [title] Folder
+       *     // folder object
+       *     parent?: {
+       *       // Get the unique identifier for this folder
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *       name?: string
+       *       // Get the full vault path for this folder (ie. $/Folder1)
+       *       fullName?: string
+       *       // Get the date and time that the folder was created.
+       *       createDate?: string
+       *       // Get the name of the user who created this folder.
+       *       createUserName?: string
+       *       // Get the category that is assigned to this folder
+       *       category?: string
+       *       // Category color
+       *       categoryColor?: number
+       *       // The name of the life cycle state for the current folder
+       *       state?: string
+       *       // The color of the state.
+       *       stateColor?: number
+       *       // Get the number of immediate child folders.
+       *       subfolderCount?: number
+       *       children?: string
+       *       // Get whether or not this folder is a library folder
+       *       isLibrary?: boolean
+       *       // Get whether this folder can be modified by the logged in user.
+       *       isReadOnly?: boolean
+       *       // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *       isCloaked?: boolean
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
+       *       properties?: Array<{
+       *         // Unique identifier for a server-based property definition
+       *         propertyDefinitionId?: string
+       *         // [title] Property Definition
+       *         definition?: {
+       *           // Get the unique identifier for a server-based property definition
+       *           id: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // Get or sets the Display name for this Property Definition
+       *           displayName: string
+       *           // Get the System Name for this Property Definition.
+       *           systemName: string
+       *           // The value defined in SQL database.
+       *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *           // Get or sets whether this Property Definition is Active.
+       *           active?: boolean
+       *           // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *           isSystem?: boolean
+       *           // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *           initialValue?: string
+       *         }
+       *         // The property value associated with the entity and PropertyDefinition
+       *         value?: string
+       *       }>
+       *     }
+       *     // If true, then the latest version of this file is in the checked-out state
+       *     isCheckedOut?: boolean
+       *     // The Name of the user who checked-in or uploaded this file.
+       *     createUserName?: string
+       *     // The date and time that the file was checked in. This property is only valid if isCheckedOut is false.
+       *     checkinDate?: string
+       *     // The date and time that the file was last checked out
+       *     checkoutDate?: string
+       *     // User that has the file checked out
+       *     checkoutUserName?: string
+       *     // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
+       *     size?: number
+       *     // The relative URL to access this object.
+       *     url?: string
+       *     // Flag to determine if valid VizAttachmentStatus (Not None)
+       *     hasVisualizationAttachment?: boolean
+       *     // [title] File Visualization Attachment Status Enum
+       *     // The design visualization attachment status of the file.
+       *     // None,
+       *     // Syncronized,
+       *     // NotSyncronized,
+       *     // UserVerified,
+       *     // Legacy
+       *     visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
+       *     isReadOnly?: boolean
+       *     // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
+       *     isCloaked?: boolean
+       *     // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
+       *     isOnSite?: boolean
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
+       *     properties?: Array<{
+       *       // Unique identifier for a server-based property definition
+       *       propertyDefinitionId?: string
+       *       // [title] Property Definition
+       *       definition?: {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *       // The property value associated with the entity and PropertyDefinition
+       *       value?: string
+       *     }>
+       *   }[]
+       *   included?: {
+       *     folder?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for this folder
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *         name?: string
+       *         // Get the full vault path for this folder (ie. $/Folder1)
+       *         fullName?: string
+       *         // Get the date and time that the folder was created.
+       *         createDate?: string
+       *         // Get the name of the user who created this folder.
+       *         createUserName?: string
+       *         // Get the category that is assigned to this folder
+       *         category?: string
+       *         // Category color
+       *         categoryColor?: number
+       *         // The name of the life cycle state for the current folder
+       *         state?: string
+       *         // The color of the state.
+       *         stateColor?: number
+       *         // Get the number of immediate child folders.
+       *         subfolderCount?: number
+       *         children?: string
+       *         // Get whether or not this folder is a library folder
+       *         isLibrary?: boolean
+       *         // Get whether this folder can be modified by the logged in user.
+       *         isReadOnly?: boolean
+       *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
+       *     >
+       *     propertyDefinition?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -3427,13 +3632,7 @@ declare global {
       getChangeOrderAssociatedEntities<
         Config extends Alova2MethodConfig<EntityCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -3447,10 +3646,10 @@ declare global {
             'option[releasedFilesOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -3459,7 +3658,7 @@ declare global {
             'option[propDefIds]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -3483,9 +3682,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -3496,7 +3693,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -3520,6 +3717,10 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] ECO Comment
+       *   // Change Order Comment object
+       *   // [items] end
        *   results?: Array<{
        *     id?: string
        *     // The relative URL to access this object.
@@ -3530,24 +3731,46 @@ declare global {
        *     createUserName?: string
        *     state?: string
        *     numberOfAttachments?: number
+       *     // [items] start
+       *     // [title] ECO Comment2
+       *     // Change Order Comment object duplicate(ECOComment) to allow them to reference to each other
+       *     // [items] end
        *     replies?: Array<{
        *       id?: string
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *       subject?: string
        *       message?: string
        *       createDate?: string
        *       createUserName?: string
        *       state?: string
        *       numberOfAttachments?: number
-       *       replies?: Array<ECOComment>
-       *       // [title] ECO Comment
-       *       // Change Order Comment object
+       *       // [items] start
+       *       // [cycle] $.results.[]
+       *       // [items] end
+       *       replies?: ECOComment[]
+       *       // [cycle] $.results.[]
        *       parent?: ECOComment
        *     }>
        *     // [title] ECO Comment2
        *     // Change Order Comment object duplicate(ECOComment) to allow them to reference to each other
-       *     parent?: ECOComment2
+       *     parent?: {
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       subject?: string
+       *       message?: string
+       *       createDate?: string
+       *       createUserName?: string
+       *       state?: string
+       *       numberOfAttachments?: number
+       *       // [items] start
+       *       // [cycle] $.results.[]
+       *       // [items] end
+       *       replies?: ECOComment[]
+       *       // [cycle] $.results.[]
+       *       parent?: ECOComment
+       *     }
        *   }>
        * }
        * ```
@@ -3555,19 +3778,13 @@ declare global {
       getChangeOrderComments<
         Config extends Alova2MethodConfig<ECOCommentCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -3591,9 +3808,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -3606,15 +3821,15 @@ declare global {
        *   // Include only attachments that are in consumable(released) state.. default: option[releasedOnly]=false
        *   'option[releasedOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -3638,14 +3853,22 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version Extended
+       *   // file version extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
        *         // File IterationId
-       *         // [required]
        *         id: string
        *         // The name of the file. This value applies to all versions of the file
-       *         // [required]
        *         name: string
        *         // Category information about this file
        *         category?: string
@@ -3653,16 +3876,15 @@ declare global {
        *         categoryColor?: number
        *         // [title] File Classification Enum
        *         // The classification of the file.
-       *         //
-       *         //   None,
-       *         //   DesignVisualization,
-       *         //   DesignDocument,
-       *         //   ConfigurationMember,
-       *         //   ConfigurationFactory,
-       *         //   ElectricalProject,
-       *         //   DesignSubstitute,
-       *         //   DesignRepresentation,
-       *         //   DesignPresentation
+       *         // None,
+       *         // DesignVisualization,
+       *         // DesignDocument,
+       *         // ConfigurationMember,
+       *         // ConfigurationFactory,
+       *         // ElectricalProject,
+       *         // DesignSubstitute,
+       *         // DesignRepresentation,
+       *         // DesignPresentation
        *         classification?:
        *           | 'None'
        *           | 'DesignVisualization'
@@ -3691,16 +3913,14 @@ declare global {
        *         // [title] File - we cannot directly use File as class name, as it's occupied.
        *         file?: {
        *           // File MasterId
-       *           // [required]
        *           id: string
        *           // The relative URL to access this object.
-       *           // [required]
        *           url: string
        *           // [title] Version Type Enum
        *           versionType?: 'None' | 'Latest' | 'LatestReleased'
        *           // [title] File Version Extended
        *           // file version extended object
-       *           fileVersion?: FileVersionExtended
+       *           fileVersion?: object
        *         }
        *         // [title] Folder
        *         // folder object
@@ -3708,7 +3928,7 @@ declare global {
        *           // Get the unique identifier for this folder
        *           id?: string
        *           // The relative URL to access this object.
-       *           url?: Url
+       *           url?: string
        *           // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *           name?: string
        *           // Get the full vault path for this folder (ie. $/Folder1)
@@ -3734,24 +3954,23 @@ declare global {
        *           isReadOnly?: boolean
        *           // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *           isCloaked?: boolean
+       *           // [items] start
+       *           // [title] Property
+       *           // [items] end
        *           properties?: Array<{
        *             // Unique identifier for a server-based property definition
        *             propertyDefinitionId?: string
        *             // [title] Property Definition
        *             definition?: {
        *               // Get the unique identifier for a server-based property definition
-       *               // [required]
        *               id: string
        *               // The relative URL to access this object.
-       *               url?: Url
+       *               url?: string
        *               // Get or sets the Display name for this Property Definition
-       *               // [required]
        *               displayName: string
        *               // Get the System Name for this Property Definition.
-       *               // [required]
        *               systemName: string
        *               // The value defined in SQL database.
-       *               // [required]
        *               dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *               // Get or sets whether this Property Definition is Active.
        *               active?: boolean
@@ -3777,44 +3996,127 @@ declare global {
        *         // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
        *         size?: number
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Flag to determine if valid VizAttachmentStatus (Not None)
        *         hasVisualizationAttachment?: boolean
        *         // [title] File Visualization Attachment Status Enum
        *         // The design visualization attachment status of the file.
-       *         //
-       *         //   None,
-       *         //   Syncronized,
-       *         //   NotSyncronized,
-       *         //   UserVerified,
-       *         //   Legacy
+       *         // None,
+       *         // Syncronized,
+       *         // NotSyncronized,
+       *         // UserVerified,
+       *         // Legacy
        *         visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
        *         isReadOnly?: boolean
        *         // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
        *         isCloaked?: boolean
        *         // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
        *         isOnSite?: boolean
-       *         properties?: Array<Property>
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
        *       }
        *   )[]
        *   included?: {
-       *     folder?: Record<string, Folder>
+       *     folder?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for this folder
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *         name?: string
+       *         // Get the full vault path for this folder (ie. $/Folder1)
+       *         fullName?: string
+       *         // Get the date and time that the folder was created.
+       *         createDate?: string
+       *         // Get the name of the user who created this folder.
+       *         createUserName?: string
+       *         // Get the category that is assigned to this folder
+       *         category?: string
+       *         // Category color
+       *         categoryColor?: number
+       *         // The name of the life cycle state for the current folder
+       *         state?: string
+       *         // The color of the state.
+       *         stateColor?: number
+       *         // Get the number of immediate child folders.
+       *         subfolderCount?: number
+       *         children?: string
+       *         // Get whether or not this folder is a library folder
+       *         isLibrary?: boolean
+       *         // Get whether this folder can be modified by the logged in user.
+       *         isReadOnly?: boolean
+       *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
+       *     >
        *     propertyDefinition?: Record<
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -3831,13 +4133,7 @@ declare global {
       getChangeOrderCommentAttachments<
         Config extends Alova2MethodConfig<FileVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -3847,10 +4143,10 @@ declare global {
             'option[releasedOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -3859,7 +4155,7 @@ declare global {
             'option[propDefIds]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -3883,7 +4179,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -3908,17 +4203,17 @@ declare global {
        *   // If true, include only versions that are consumable (released) state. default: option[releasedFilesOnly]=false.
        *   'option[releasedFilesOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies sorting criteria for search results. Format: {propertyDefSysName} {sort-order} Accepted values for sort-order: asc, desc.  Ex: sort = Revision desc,Name asc
        *   sort?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -3942,14 +4237,22 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version Extended
+       *   // file version extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
        *         // File IterationId
-       *         // [required]
        *         id: string
        *         // The name of the file. This value applies to all versions of the file
-       *         // [required]
        *         name: string
        *         // Category information about this file
        *         category?: string
@@ -3957,16 +4260,15 @@ declare global {
        *         categoryColor?: number
        *         // [title] File Classification Enum
        *         // The classification of the file.
-       *         //
-       *         //   None,
-       *         //   DesignVisualization,
-       *         //   DesignDocument,
-       *         //   ConfigurationMember,
-       *         //   ConfigurationFactory,
-       *         //   ElectricalProject,
-       *         //   DesignSubstitute,
-       *         //   DesignRepresentation,
-       *         //   DesignPresentation
+       *         // None,
+       *         // DesignVisualization,
+       *         // DesignDocument,
+       *         // ConfigurationMember,
+       *         // ConfigurationFactory,
+       *         // ElectricalProject,
+       *         // DesignSubstitute,
+       *         // DesignRepresentation,
+       *         // DesignPresentation
        *         classification?:
        *           | 'None'
        *           | 'DesignVisualization'
@@ -3995,16 +4297,14 @@ declare global {
        *         // [title] File - we cannot directly use File as class name, as it's occupied.
        *         file?: {
        *           // File MasterId
-       *           // [required]
        *           id: string
        *           // The relative URL to access this object.
-       *           // [required]
        *           url: string
        *           // [title] Version Type Enum
        *           versionType?: 'None' | 'Latest' | 'LatestReleased'
        *           // [title] File Version Extended
        *           // file version extended object
-       *           fileVersion?: FileVersionExtended
+       *           fileVersion?: object
        *         }
        *         // [title] Folder
        *         // folder object
@@ -4012,7 +4312,7 @@ declare global {
        *           // Get the unique identifier for this folder
        *           id?: string
        *           // The relative URL to access this object.
-       *           url?: Url
+       *           url?: string
        *           // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *           name?: string
        *           // Get the full vault path for this folder (ie. $/Folder1)
@@ -4038,24 +4338,23 @@ declare global {
        *           isReadOnly?: boolean
        *           // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *           isCloaked?: boolean
+       *           // [items] start
+       *           // [title] Property
+       *           // [items] end
        *           properties?: Array<{
        *             // Unique identifier for a server-based property definition
        *             propertyDefinitionId?: string
        *             // [title] Property Definition
        *             definition?: {
        *               // Get the unique identifier for a server-based property definition
-       *               // [required]
        *               id: string
        *               // The relative URL to access this object.
-       *               url?: Url
+       *               url?: string
        *               // Get or sets the Display name for this Property Definition
-       *               // [required]
        *               displayName: string
        *               // Get the System Name for this Property Definition.
-       *               // [required]
        *               systemName: string
        *               // The value defined in SQL database.
-       *               // [required]
        *               dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *               // Get or sets whether this Property Definition is Active.
        *               active?: boolean
@@ -4081,44 +4380,127 @@ declare global {
        *         // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
        *         size?: number
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Flag to determine if valid VizAttachmentStatus (Not None)
        *         hasVisualizationAttachment?: boolean
        *         // [title] File Visualization Attachment Status Enum
        *         // The design visualization attachment status of the file.
-       *         //
-       *         //   None,
-       *         //   Syncronized,
-       *         //   NotSyncronized,
-       *         //   UserVerified,
-       *         //   Legacy
+       *         // None,
+       *         // Syncronized,
+       *         // NotSyncronized,
+       *         // UserVerified,
+       *         // Legacy
        *         visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
        *         isReadOnly?: boolean
        *         // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
        *         isCloaked?: boolean
        *         // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
        *         isOnSite?: boolean
-       *         properties?: Array<Property>
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
        *       }
        *   )[]
        *   included?: {
-       *     folder?: Record<string, Folder>
+       *     folder?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for this folder
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *         name?: string
+       *         // Get the full vault path for this folder (ie. $/Folder1)
+       *         fullName?: string
+       *         // Get the date and time that the folder was created.
+       *         createDate?: string
+       *         // Get the name of the user who created this folder.
+       *         createUserName?: string
+       *         // Get the category that is assigned to this folder
+       *         category?: string
+       *         // Category color
+       *         categoryColor?: number
+       *         // The name of the life cycle state for the current folder
+       *         state?: string
+       *         // The color of the state.
+       *         stateColor?: number
+       *         // Get the number of immediate child folders.
+       *         subfolderCount?: number
+       *         children?: string
+       *         // Get whether or not this folder is a library folder
+       *         isLibrary?: boolean
+       *         // Get whether this folder can be modified by the logged in user.
+       *         isReadOnly?: boolean
+       *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
+       *     >
        *     propertyDefinition?: Record<
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -4135,9 +4517,6 @@ declare global {
       getFileVersions<
         Config extends Alova2MethodConfig<FileVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
@@ -4171,10 +4550,10 @@ declare global {
             'option[releasedFilesOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -4187,7 +4566,7 @@ declare global {
             sort?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -4211,9 +4590,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4228,13 +4605,7 @@ declare global {
       getFileVersionById<
         Config extends Alova2MethodConfig<FileVersionExtended> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -4253,9 +4624,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4292,13 +4661,7 @@ declare global {
           url?: string;
         }> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -4342,9 +4705,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4375,13 +4736,7 @@ declare global {
       getFileVersionContent<
         Config extends Alova2MethodConfig<Blob> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -4418,9 +4773,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4445,19 +4798,13 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = unknown
+       * type Response = null
        * ```
        */
       getFileVersionContentHead<
-        Config extends Alova2MethodConfig<unknown> & {
+        Config extends Alova2MethodConfig<null> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -4481,7 +4828,7 @@ declare global {
         }
       >(
         config: Config
-      ): Alova2Method<unknown, 'vault.getFileVersionContentHead', Config>;
+      ): Alova2Method<null, 'vault.getFileVersionContentHead', Config>;
       /**
        * ---
        *
@@ -4494,9 +4841,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4525,13 +4870,7 @@ declare global {
       getFileVersionLmvRoot<
         Config extends Alova2MethodConfig<object> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -4564,9 +4903,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4581,7 +4918,7 @@ declare global {
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -4605,6 +4942,10 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Item Version
+       *   // The unique identifier for the object.
+       *   // [items] end
        *   results?: Array<{
        *     // Item Iteration Id
        *     id?: string
@@ -4635,35 +4976,31 @@ declare global {
        *     // [title] Item
        *     item?: {
        *       // MasterId of the item
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
-       *       url: Url
+       *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
-       *       // [title] Item Version
-       *       // The unique identifier for the object.
+       *       // [cycle] $.results.[]
        *       itemVersion?: ItemVersion
        *     }
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -4681,18 +5018,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -4709,13 +5042,7 @@ declare global {
       getFileVersionAssociatedItemVersions<
         Config extends Alova2MethodConfig<ItemVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -4729,7 +5056,7 @@ declare global {
             'option[propDefIds]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -4753,9 +5080,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4766,7 +5091,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -4778,6 +5103,9 @@ declare global {
        * **Response**
        * ```ts
        * type Response = {
+       *   // [items] start
+       *   // [title] Markup
+       *   // [items] end
        *   results?: Array<{
        *     id?: string
        *     parentId?: string
@@ -4791,10 +5119,9 @@ declare global {
        *       email?: string
        *       // [title] AuthType Enum
        *       // The authentication type.
-       *       //
-       *       //   ActiveDirectory,
-       *       //   Vault,
-       *       //   Autodesk
+       *       // ActiveDirectory,
+       *       // Vault,
+       *       // Autodesk
        *       authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *       systemName?: string
        *       // The date that the user was created.
@@ -4802,11 +5129,31 @@ declare global {
        *       // Is the user active
        *       isActive?: string
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *     }
        *     createDateTime?: string
        *     // [title] User
-       *     updatedByUser?: User
+       *     updatedByUser?: {
+       *       // A unique number that the Vault uses to reference the user.
+       *       id?: string
+       *       // The login name of the user.
+       *       name?: string
+       *       // The email address of the user.
+       *       email?: string
+       *       // [title] AuthType Enum
+       *       // The authentication type.
+       *       // ActiveDirectory,
+       *       // Vault,
+       *       // Autodesk
+       *       authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
+       *       systemName?: string
+       *       // The date that the user was created.
+       *       createDate?: string
+       *       // Is the user active
+       *       isActive?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *     }
        *     updateDateTime?: string
        *     data?: string
        *     thumbnail?: string
@@ -4831,19 +5178,13 @@ declare global {
       getFileVersionMarkups<
         Config extends Alova2MethodConfig<MarkupCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -4867,11 +5208,8 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
-       *   // [required]
        *   markupId: string
        * }
        * ```
@@ -4893,10 +5231,9 @@ declare global {
        *     email?: string
        *     // [title] AuthType Enum
        *     // The authentication type.
-       *     //
-       *     //   ActiveDirectory,
-       *     //   Vault,
-       *     //   Autodesk
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
        *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
        *     systemName?: string
        *     // The date that the user was created.
@@ -4904,11 +5241,31 @@ declare global {
        *     // Is the user active
        *     isActive?: string
        *     // The relative URL to access this object.
-       *     url?: Url
+       *     url?: string
        *   }
        *   createDateTime?: string
        *   // [title] User
-       *   updatedByUser?: User
+       *   updatedByUser?: {
+       *     // A unique number that the Vault uses to reference the user.
+       *     id?: string
+       *     // The login name of the user.
+       *     name?: string
+       *     // The email address of the user.
+       *     email?: string
+       *     // [title] AuthType Enum
+       *     // The authentication type.
+       *     // ActiveDirectory,
+       *     // Vault,
+       *     // Autodesk
+       *     authTypes?: 'ActiveDirectory' | 'Vault' | 'Autodesk'
+       *     systemName?: string
+       *     // The date that the user was created.
+       *     createDate?: string
+       *     // Is the user active
+       *     isActive?: string
+       *     // The relative URL to access this object.
+       *     url?: string
+       *   }
        *   updateDateTime?: string
        *   data?: string
        *   thumbnail?: string
@@ -4920,17 +5277,8 @@ declare global {
       getFileVersionMarkupById<
         Config extends Alova2MethodConfig<Markup> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
-            /**
-             * [required]
-             */
             markupId: string;
           };
         }
@@ -4949,9 +5297,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -4966,13 +5312,7 @@ declare global {
       getFileVersionThumbnailById<
         Config extends Alova2MethodConfig<Blob> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -4991,9 +5331,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -5008,13 +5346,7 @@ declare global {
       getFileVersionVisualizationAttachment<
         Config extends Alova2MethodConfig<FileVersionExtended> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -5033,9 +5365,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -5052,10 +5382,10 @@ declare global {
        *   // If true, only associations that are in consumable state are included in end result. Default value is false
        *   'option[releasedOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
@@ -5064,7 +5394,7 @@ declare global {
        *   // If true, all levels of child will be returned. If false, only the direct child will be returned. Default value is false
        *   'option[recurse]'?: boolean
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -5088,13 +5418,16 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] File Association
+       *   // [items] end
        *   results?: Array<{
        *     // [title] File Version Extended
        *     // file version extended object
        *     parentFile?: object
        *     // [title] File Version Extended
        *     // file version extended object
-       *     childFile?: FileVersionExtended
+       *     childFile?: object
        *     // [title] File Association Type Enum
        *     // File association options.
        *     fileAssocType?: 'Dependency' | 'Attachment'
@@ -5106,7 +5439,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -5132,24 +5465,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -5167,18 +5499,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -5195,13 +5523,7 @@ declare global {
       getFileVersionUses<
         Config extends Alova2MethodConfig<FileAssocCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -5219,10 +5541,10 @@ declare global {
             'option[releasedOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -5239,7 +5561,7 @@ declare global {
             'option[recurse]'?: boolean;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -5263,9 +5585,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -5282,10 +5602,10 @@ declare global {
        *   // If true, only associations that are in consumable state are included in end result. Default value is false
        *   'option[releasedOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
@@ -5294,7 +5614,7 @@ declare global {
        *   // If true, all levels of parents will be returned. If false, only the direct parents will be returned. Default value is false
        *   'option[recurse]'?: boolean
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -5318,13 +5638,16 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] File Association
+       *   // [items] end
        *   results?: Array<{
        *     // [title] File Version Extended
        *     // file version extended object
        *     parentFile?: object
        *     // [title] File Version Extended
        *     // file version extended object
-       *     childFile?: FileVersionExtended
+       *     childFile?: object
        *     // [title] File Association Type Enum
        *     // File association options.
        *     fileAssocType?: 'Dependency' | 'Attachment'
@@ -5336,7 +5659,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -5362,24 +5685,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -5397,18 +5719,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -5425,13 +5743,7 @@ declare global {
       getFileVersionWhereUsed<
         Config extends Alova2MethodConfig<FileAssocCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -5449,10 +5761,10 @@ declare global {
             'option[releasedOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -5469,7 +5781,7 @@ declare global {
             'option[recurse]'?: boolean;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -5493,9 +5805,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -5516,29 +5826,21 @@ declare global {
        * ```ts
        * type Response = {
        *   // File MasterId
-       *   // [required]
        *   id: string
        *   // The relative URL to access this object.
-       *   // [required]
        *   url: string
        *   // [title] Version Type Enum
        *   versionType?: 'None' | 'Latest' | 'LatestReleased'
        *   // [title] File Version Extended
        *   // file version extended object
-       *   fileVersion?: FileVersionExtended
+       *   fileVersion?: object
        * }
        * ```
        */
       getFileById<
         Config extends Alova2MethodConfig<FileObject> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -5563,9 +5865,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -5578,15 +5878,15 @@ declare global {
        *   // Option to skip change orders with closed or cancelled state when if includeClosedECOs is false. Default: option[includeClosedECOs] = false
        *   'option[includeClosedECOs]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -5610,6 +5910,16 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] Change Order Extended
+       *   // change order extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] Change Order
+       *   // change order object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
@@ -5638,24 +5948,23 @@ declare global {
        *         entityType?: string
        *         // Number of File Attachments
        *         numberOfAttachments?: number
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -5676,7 +5985,27 @@ declare global {
        *       }
        *   )[]
        *   included?: {
-       *     propertyDefinition?: Record<string, PropertyDefinition>
+       *     propertyDefinition?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *     >
        *   }
        * }
        * ```
@@ -5684,13 +6013,7 @@ declare global {
       getFileAssociatedChangeOrders<
         Config extends Alova2MethodConfig<ChangeOrderCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -5700,10 +6023,10 @@ declare global {
             'option[includeClosedECOs]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -5712,7 +6035,7 @@ declare global {
             'option[propDefIds]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -5736,9 +6059,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -5749,24 +6070,25 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // [title] History Options Enum
-       *   // Options for viewing file history.
+       *   // Allow option is: All, ReleasedOnly or ReleasedAndRevisionTip. Default value is All
        *   'option[history]'?: 'All' | 'ReleasedOnly' | 'ReleasedAndRevisionTip' | 'RevisionTip'
        *   // When a Revision has multiple Released versions, only show the tip one. This parameter won't take effect if option[history]=All. Default value is true
        *   'option[onlyShowTipReleasedForEachRev]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // [title] Revision Options Enum
+       *   // Allow option is: AllRevision or CurrentRevision. Default value is AllRevision
        *   'option[revision]'?: 'AllRevision' | 'CurrentRevision'
        *   // True to return latest file version at top.
        *   descending?: boolean
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -5790,14 +6112,22 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version Extended
+       *   // file version extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
        *         // File IterationId
-       *         // [required]
        *         id: string
        *         // The name of the file. This value applies to all versions of the file
-       *         // [required]
        *         name: string
        *         // Category information about this file
        *         category?: string
@@ -5805,16 +6135,15 @@ declare global {
        *         categoryColor?: number
        *         // [title] File Classification Enum
        *         // The classification of the file.
-       *         //
-       *         //   None,
-       *         //   DesignVisualization,
-       *         //   DesignDocument,
-       *         //   ConfigurationMember,
-       *         //   ConfigurationFactory,
-       *         //   ElectricalProject,
-       *         //   DesignSubstitute,
-       *         //   DesignRepresentation,
-       *         //   DesignPresentation
+       *         // None,
+       *         // DesignVisualization,
+       *         // DesignDocument,
+       *         // ConfigurationMember,
+       *         // ConfigurationFactory,
+       *         // ElectricalProject,
+       *         // DesignSubstitute,
+       *         // DesignRepresentation,
+       *         // DesignPresentation
        *         classification?:
        *           | 'None'
        *           | 'DesignVisualization'
@@ -5843,16 +6172,14 @@ declare global {
        *         // [title] File - we cannot directly use File as class name, as it's occupied.
        *         file?: {
        *           // File MasterId
-       *           // [required]
        *           id: string
        *           // The relative URL to access this object.
-       *           // [required]
        *           url: string
        *           // [title] Version Type Enum
        *           versionType?: 'None' | 'Latest' | 'LatestReleased'
        *           // [title] File Version Extended
        *           // file version extended object
-       *           fileVersion?: FileVersionExtended
+       *           fileVersion?: object
        *         }
        *         // [title] Folder
        *         // folder object
@@ -5860,7 +6187,7 @@ declare global {
        *           // Get the unique identifier for this folder
        *           id?: string
        *           // The relative URL to access this object.
-       *           url?: Url
+       *           url?: string
        *           // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *           name?: string
        *           // Get the full vault path for this folder (ie. $/Folder1)
@@ -5886,24 +6213,23 @@ declare global {
        *           isReadOnly?: boolean
        *           // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *           isCloaked?: boolean
+       *           // [items] start
+       *           // [title] Property
+       *           // [items] end
        *           properties?: Array<{
        *             // Unique identifier for a server-based property definition
        *             propertyDefinitionId?: string
        *             // [title] Property Definition
        *             definition?: {
        *               // Get the unique identifier for a server-based property definition
-       *               // [required]
        *               id: string
        *               // The relative URL to access this object.
-       *               url?: Url
+       *               url?: string
        *               // Get or sets the Display name for this Property Definition
-       *               // [required]
        *               displayName: string
        *               // Get the System Name for this Property Definition.
-       *               // [required]
        *               systemName: string
        *               // The value defined in SQL database.
-       *               // [required]
        *               dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *               // Get or sets whether this Property Definition is Active.
        *               active?: boolean
@@ -5929,44 +6255,127 @@ declare global {
        *         // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
        *         size?: number
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Flag to determine if valid VizAttachmentStatus (Not None)
        *         hasVisualizationAttachment?: boolean
        *         // [title] File Visualization Attachment Status Enum
        *         // The design visualization attachment status of the file.
-       *         //
-       *         //   None,
-       *         //   Syncronized,
-       *         //   NotSyncronized,
-       *         //   UserVerified,
-       *         //   Legacy
+       *         // None,
+       *         // Syncronized,
+       *         // NotSyncronized,
+       *         // UserVerified,
+       *         // Legacy
        *         visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
        *         isReadOnly?: boolean
        *         // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
        *         isCloaked?: boolean
        *         // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
        *         isOnSite?: boolean
-       *         properties?: Array<Property>
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
        *       }
        *   )[]
        *   included?: {
-       *     folder?: Record<string, Folder>
+       *     folder?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for this folder
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *         name?: string
+       *         // Get the full vault path for this folder (ie. $/Folder1)
+       *         fullName?: string
+       *         // Get the date and time that the folder was created.
+       *         createDate?: string
+       *         // Get the name of the user who created this folder.
+       *         createUserName?: string
+       *         // Get the category that is assigned to this folder
+       *         category?: string
+       *         // Category color
+       *         categoryColor?: number
+       *         // The name of the life cycle state for the current folder
+       *         state?: string
+       *         // The color of the state.
+       *         stateColor?: number
+       *         // Get the number of immediate child folders.
+       *         subfolderCount?: number
+       *         children?: string
+       *         // Get whether or not this folder is a library folder
+       *         isLibrary?: boolean
+       *         // Get whether this folder can be modified by the logged in user.
+       *         isReadOnly?: boolean
+       *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
+       *     >
        *     propertyDefinition?: Record<
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -5983,20 +6392,14 @@ declare global {
       getFileHistory<
         Config extends Alova2MethodConfig<FileVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * History Options Enum
              * ---
-             * Options for viewing file history.
+             * Allow option is: All, ReleasedOnly or ReleasedAndRevisionTip. Default value is All
              */
             'option[history]'?: HistoryOptionsEnum;
             /**
@@ -6005,10 +6408,10 @@ declare global {
             'option[onlyShowTipReleasedForEachRev]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -6018,6 +6421,7 @@ declare global {
             /**
              * Revision Options Enum
              * ---
+             * Allow option is: AllRevision or CurrentRevision. Default value is AllRevision
              */
             'option[revision]'?: RevisionOptionsEnum;
             /**
@@ -6026,7 +6430,7 @@ declare global {
             descending?: boolean;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -6050,10 +6454,8 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        *   // The numeric folderId. If the id is 'root', return root folder object.
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -6066,7 +6468,7 @@ declare global {
        *   // Get the unique identifier for this folder
        *   id?: string
        *   // The relative URL to access this object.
-       *   url?: Url
+       *   url?: string
        *   // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *   name?: string
        *   // Get the full vault path for this folder (ie. $/Folder1)
@@ -6092,24 +6494,23 @@ declare global {
        *   isReadOnly?: boolean
        *   // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *   isCloaked?: boolean
+       *   // [items] start
+       *   // [title] Property
+       *   // [items] end
        *   properties?: Array<{
        *     // Unique identifier for a server-based property definition
        *     propertyDefinitionId?: string
        *     // [title] Property Definition
        *     definition?: {
        *       // Get the unique identifier for a server-based property definition
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *       // Get or sets the Display name for this Property Definition
-       *       // [required]
        *       displayName: string
        *       // Get the System Name for this Property Definition.
-       *       // [required]
        *       systemName: string
        *       // The value defined in SQL database.
-       *       // [required]
        *       dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *       // Get or sets whether this Property Definition is Active.
        *       active?: boolean
@@ -6127,13 +6528,9 @@ declare global {
       getFolderById<
         Config extends Alova2MethodConfig<Folder> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
             /**
              * The numeric folderId. If the id is 'root', return root folder object.
-             * [required]
              */
             id: string;
           };
@@ -6153,10 +6550,8 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        *   // The numeric folderId. If the id is root, the $ folder contents are returned. Note: root is a special keyword
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -6183,17 +6578,17 @@ declare global {
        *   // If true, include only the latest version. Default value is true
        *   'option[latestOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies sorting criteria for search results. Format: {propertyDefSysName} {sort-order} Accepted values for sort-order: asc, desc.  Ex: sort = Revision desc,Name asc
        *   sort?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -6217,7 +6612,188 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
-       *   results?: unknown[]
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params1] end
+       *   // [items] end
+       *   results?: {
+       *     // File IterationId
+       *     id: string
+       *     // The name of the file. This value applies to all versions of the file
+       *     name: string
+       *     // Category information about this file
+       *     category?: string
+       *     // Category color
+       *     categoryColor?: number
+       *     // [title] File Classification Enum
+       *     // The classification of the file.
+       *     // None,
+       *     // DesignVisualization,
+       *     // DesignDocument,
+       *     // ConfigurationMember,
+       *     // ConfigurationFactory,
+       *     // ElectricalProject,
+       *     // DesignSubstitute,
+       *     // DesignRepresentation,
+       *     // DesignPresentation
+       *     classification?:
+       *       | 'None'
+       *       | 'DesignVisualization'
+       *       | 'DesignDocument'
+       *       | 'ConfigurationMember'
+       *       | 'ConfigurationFactory'
+       *       | 'ElectricalProject'
+       *       | 'DesignSubstitute'
+       *       | 'DesignRepresentation'
+       *       | 'DesignPresentation'
+       *     entityType?: string
+       *     // The version of the file. A file that has just been added to the Vault, will have 1 as its VerNum
+       *     version?: number
+       *     // Tells the date and time that this version of the file was created in the Vault. For the first version of a file, this date will match CkInDate. For later versions, this value will have the time when the previous version was checked out.
+       *     createDate?: string
+       *     // The last modified date of the file. This value is set by the client that uploaded the file.
+       *     lastModifiedDate?: string
+       *     // Revision information about this file.
+       *     revision?: string
+       *     // The name of the life cycle state for the current file
+       *     state?: string
+       *     // The color of the state.
+       *     stateColor?: number
+       *     // FolderId of the parent the current file  resides in
+       *     parentFolderId?: string
+       *     // [title] File - we cannot directly use File as class name, as it's occupied.
+       *     file?: {
+       *       // File MasterId
+       *       id: string
+       *       // The relative URL to access this object.
+       *       url: string
+       *       // [title] Version Type Enum
+       *       versionType?: 'None' | 'Latest' | 'LatestReleased'
+       *       // [title] File Version Extended
+       *       // file version extended object
+       *       fileVersion?: object
+       *     }
+       *     // [title] Folder
+       *     // folder object
+       *     parent?: {
+       *       // Get the unique identifier for this folder
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *       name?: string
+       *       // Get the full vault path for this folder (ie. $/Folder1)
+       *       fullName?: string
+       *       // Get the date and time that the folder was created.
+       *       createDate?: string
+       *       // Get the name of the user who created this folder.
+       *       createUserName?: string
+       *       // Get the category that is assigned to this folder
+       *       category?: string
+       *       // Category color
+       *       categoryColor?: number
+       *       // The name of the life cycle state for the current folder
+       *       state?: string
+       *       // The color of the state.
+       *       stateColor?: number
+       *       // Get the number of immediate child folders.
+       *       subfolderCount?: number
+       *       children?: string
+       *       // Get whether or not this folder is a library folder
+       *       isLibrary?: boolean
+       *       // Get whether this folder can be modified by the logged in user.
+       *       isReadOnly?: boolean
+       *       // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *       isCloaked?: boolean
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
+       *       properties?: Array<{
+       *         // Unique identifier for a server-based property definition
+       *         propertyDefinitionId?: string
+       *         // [title] Property Definition
+       *         definition?: {
+       *           // Get the unique identifier for a server-based property definition
+       *           id: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // Get or sets the Display name for this Property Definition
+       *           displayName: string
+       *           // Get the System Name for this Property Definition.
+       *           systemName: string
+       *           // The value defined in SQL database.
+       *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *           // Get or sets whether this Property Definition is Active.
+       *           active?: boolean
+       *           // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *           isSystem?: boolean
+       *           // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *           initialValue?: string
+       *         }
+       *         // The property value associated with the entity and PropertyDefinition
+       *         value?: string
+       *       }>
+       *     }
+       *     // If true, then the latest version of this file is in the checked-out state
+       *     isCheckedOut?: boolean
+       *     // The Name of the user who checked-in or uploaded this file.
+       *     createUserName?: string
+       *     // The date and time that the file was checked in. This property is only valid if isCheckedOut is false.
+       *     checkinDate?: string
+       *     // The date and time that the file was last checked out
+       *     checkoutDate?: string
+       *     // User that has the file checked out
+       *     checkoutUserName?: string
+       *     // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
+       *     size?: number
+       *     // The relative URL to access this object.
+       *     url?: string
+       *     // Flag to determine if valid VizAttachmentStatus (Not None)
+       *     hasVisualizationAttachment?: boolean
+       *     // [title] File Visualization Attachment Status Enum
+       *     // The design visualization attachment status of the file.
+       *     // None,
+       *     // Syncronized,
+       *     // NotSyncronized,
+       *     // UserVerified,
+       *     // Legacy
+       *     visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
+       *     isReadOnly?: boolean
+       *     // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
+       *     isCloaked?: boolean
+       *     // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
+       *     isOnSite?: boolean
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
+       *     properties?: Array<{
+       *       // Unique identifier for a server-based property definition
+       *       propertyDefinitionId?: string
+       *       // [title] Property Definition
+       *       definition?: {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *       // The property value associated with the entity and PropertyDefinition
+       *       value?: string
+       *     }>
+       *   }[]
        *   included?: {
        *     folder?: Record<
        *       string,
@@ -6225,7 +6801,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -6251,24 +6827,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -6286,18 +6861,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -6314,13 +6885,9 @@ declare global {
       getFolderContents<
         Config extends Alova2MethodConfig<EntityCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
             /**
              * The numeric folderId. If the id is root, the $ folder contents are returned. Note: root is a special keyword
-             * [required]
              */
             id: string;
           };
@@ -6359,10 +6926,10 @@ declare global {
             'option[latestOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -6375,7 +6942,7 @@ declare global {
             sort?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -6399,9 +6966,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -6412,15 +6977,15 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -6444,12 +7009,22 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] Folder
+       *   // folder object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] Folder Extended
+       *   // folder extended object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -6475,24 +7050,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -6508,23 +7082,80 @@ declare global {
        *     | object
        *   )[]
        *   included?: {
-       *     folder?: Record<string, Folder>
+       *     folder?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for this folder
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *         name?: string
+       *         // Get the full vault path for this folder (ie. $/Folder1)
+       *         fullName?: string
+       *         // Get the date and time that the folder was created.
+       *         createDate?: string
+       *         // Get the name of the user who created this folder.
+       *         createUserName?: string
+       *         // Get the category that is assigned to this folder
+       *         category?: string
+       *         // Category color
+       *         categoryColor?: number
+       *         // The name of the life cycle state for the current folder
+       *         state?: string
+       *         // The color of the state.
+       *         stateColor?: number
+       *         // Get the number of immediate child folders.
+       *         subfolderCount?: number
+       *         children?: string
+       *         // Get whether or not this folder is a library folder
+       *         isLibrary?: boolean
+       *         // Get whether this folder can be modified by the logged in user.
+       *         isReadOnly?: boolean
+       *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
+       *     >
        *     propertyDefinition?: Record<
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -6541,22 +7172,16 @@ declare global {
       getFolderSubFolders<
         Config extends Alova2MethodConfig<FolderCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -6565,7 +7190,7 @@ declare global {
             'option[propDefIds]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -6589,7 +7214,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -6610,7 +7234,7 @@ declare global {
        *   // Specifies sorting criteria for search results. Format: {propertyDefSysName} {sort-order} Accepted values for sort-order: asc, desc.  Ex: sort = Revision desc,Name asc
        *   sort?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -6634,6 +7258,10 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Item Version
+       *   // The unique identifier for the object.
+       *   // [items] end
        *   results?: Array<{
        *     // Item Iteration Id
        *     id?: string
@@ -6664,35 +7292,31 @@ declare global {
        *     // [title] Item
        *     item?: {
        *       // MasterId of the item
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
-       *       url: Url
+       *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
-       *       // [title] Item Version
-       *       // The unique identifier for the object.
+       *       // [cycle] $.results.[]
        *       itemVersion?: ItemVersion
        *     }
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -6710,18 +7334,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -6738,9 +7358,6 @@ declare global {
       getItemVersions<
         Config extends Alova2MethodConfig<ItemVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
@@ -6766,7 +7383,7 @@ declare global {
             sort?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -6790,9 +7407,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -6831,35 +7446,31 @@ declare global {
        *   // [title] Item
        *   item?: {
        *     // MasterId of the item
-       *     // [required]
        *     id: string
        *     // The relative URL to access this object.
-       *     // [required]
-       *     url: Url
+       *     url: string
        *     // [title] Version Type Enum
        *     versionType?: 'None' | 'Latest' | 'LatestReleased'
-       *     // [title] Item Version
-       *     // The unique identifier for the object.
+       *     // [cycle] $
        *     itemVersion?: ItemVersion
        *   }
+       *   // [items] start
+       *   // [title] Property
+       *   // [items] end
        *   properties?: Array<{
        *     // Unique identifier for a server-based property definition
        *     propertyDefinitionId?: string
        *     // [title] Property Definition
        *     definition?: {
        *       // Get the unique identifier for a server-based property definition
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *       // Get or sets the Display name for this Property Definition
-       *       // [required]
        *       displayName: string
        *       // Get the System Name for this Property Definition.
-       *       // [required]
        *       systemName: string
        *       // The value defined in SQL database.
-       *       // [required]
        *       dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *       // Get or sets whether this Property Definition is Active.
        *       active?: boolean
@@ -6877,13 +7488,7 @@ declare global {
       getItemVersionById<
         Config extends Alova2MethodConfig<ItemVersion> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -6902,9 +7507,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -6915,10 +7518,10 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
@@ -6942,6 +7545,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Item Associated File Version
+       *   // [items] end
        *   results?: Array<{
        *     // [title] Item Association Type Enum
        *     // Item File Link Types
@@ -6965,7 +7571,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -6991,24 +7597,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -7026,18 +7631,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -7054,22 +7655,16 @@ declare global {
       getItemVersionAssociatedFiles<
         Config extends Alova2MethodConfig<ItemAssociatedFileVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -7093,9 +7688,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -7106,10 +7699,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // [title] BOM Type Enum
-       *   // Enum of BOM Type
-       *   //
-       *   //   Latest,
-       *   //   Historic
+       *   // The type of BOM. Possible values: Effective, Historic, Latest, Tip. Default value is Latest
        *   'option[bomType]'?: 'Latest' | 'Historic'
        *   // The date that it was effective. Default value is DateTime.MinValue
        *   'option[date]'?: string
@@ -7138,6 +7728,10 @@ declare global {
        * ```ts
        * type Response = {
        *   // An array of Items.
+       *   // [items] start
+       *   // [title] Item Version
+       *   // The unique identifier for the object.
+       *   // [items] end
        *   itemVersions?: Array<{
        *     // Item Iteration Id
        *     id?: string
@@ -7168,35 +7762,31 @@ declare global {
        *     // [title] Item
        *     item?: {
        *       // MasterId of the item
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
-       *       url: Url
+       *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
-       *       // [title] Item Version
-       *       // The unique identifier for the object.
+       *       // [cycle] $.itemVersions.[]
        *       itemVersion?: ItemVersion
        *     }
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -7210,6 +7800,10 @@ declare global {
        *     }>
        *   }>
        *   // The associations between the Items.
+       *   // [items] start
+       *   // [title] Item Bom Link
+       *   // A dependency between two Items
+       *   // [items] end
        *   itemBomLinks?: Array<{
        *     // Id of the BOM Component (only valid when BOM row is a component - not assigned an item)
        *     bomComponentId?: string
@@ -7249,24 +7843,23 @@ declare global {
        *     isStatic?: boolean
        *     // Assigned BOM row position number
        *     positionNumber?: string
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -7282,6 +7875,10 @@ declare global {
        *   // If true, reference designators are available.
        *   referenceDesignatorsAvailable?: boolean
        *   // An array of occurrences.
+       *   // [items] start
+       *   // [title] Item Bom Occurrence
+       *   // BOM link master ID with which this occurrence is associated.
+       *   // [items] end
        *   occurrences?: Array<{
        *     // The top most Item of the BOM.
        *     rootItemId?: string
@@ -7298,18 +7895,20 @@ declare global {
        *     path?: string
        *   }>
        *   // Array of BOM components in this BOM
+       *   // [items] start
+       *   // [title] BOM Component
+       *   // [items] end
        *   bOMComponents?: Array<{
        *     // Indicates if a BOM component is cloaked
        *     isCloaked?: boolean
        *     // [title] BOM Structure Enum
        *     // An enumerated value representing the BOMStructure value of Component.
-       *     //
-       *     //   Normal = 0,
-       *     //   Purchased = 1,
-       *     //   Inseperable = 2,
-       *     //   Phantom = 3,
-       *     //   Reference = 4,
-       *     //   DynamicPhantom = 5
+       *     // Normal = 0,
+       *     // Purchased = 1,
+       *     // Inseperable = 2,
+       *     // Phantom = 3,
+       *     // Reference = 4,
+       *     // DynamicPhantom = 5
        *     bOMStructure?: 'Normal' | 'Purchased' | 'Inseperable' | 'Phantom' | 'Reference' | 'DynamicPhantom'
        *     // A numeric value quantifying a single instance of the Component. For Components with discreet quantities, "1" should always be used. For measured quantities, a positive decimal value can be used. For example, a rod cut to 3.5 feet would have a BaseUOM of "foot" and a BaseQty of "3.5".
        *     baseQty?: string
@@ -7317,22 +7916,20 @@ declare global {
        *     baseUOM?: string
        *     // [title] Component Type Enum
        *     // An enumerated value specifying the type of component.  Enum of Component Type
-       *     //
-       *     //   Part = 1,
-       *     //   Assembly = 2,
-       *     //   Virtual = 3,
-       *     //   Standard = 4,
-       *     //   Purchased = 5,
-       *     //   Document = 6
+       *     // Part = 1,
+       *     // Assembly = 2,
+       *     // Virtual = 3,
+       *     // Standard = 4,
+       *     // Purchased = 5,
+       *     // Document = 6
        *     componentType?: 'Part' | 'Assembly' | 'Virtual' | 'Standard' | 'Purchased' | 'Document'
        *     // The name of this component.
        *     name?: string
        *     // [title] XRef Type Enum
        *     // An enumerated value that specifies whether the Component is internal or external in relation to the design file.
        *     // Enum of XRefType
-       *     //
-       *     //   Internal = 0,
-       *     //   External = 1
+       *     // Internal = 0,
+       *     // External = 1
        *     xRefType?: 'Internal' | 'External'
        *     // Unique data within the scope of the design file used to identify the Component. For Inventor files, the GUID used to identify the Component is used (or GUID plus VirtualComponentDefinition._PropertySetsId for Virtual components). For DWG files, the HandleID associated with the Component is used.
        *     uniqueId?: string
@@ -7346,23 +7943,14 @@ declare global {
       getItemVersionBom<
         Config extends Alova2MethodConfig<BOMLinksAndRevisions> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * BOM Type Enum
              * ---
-             * Enum of BOM Type
-             *
-             *   Latest,
-             *   Historic
+             * The type of BOM. Possible values: Effective, Historic, Latest, Tip. Default value is Latest
              */
             'option[bomType]'?: BOMTypeEnum;
             /**
@@ -7418,9 +8006,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -7431,10 +8017,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // [title] BOM Type Enum
-       *   // Enum of BOM Type
-       *   //
-       *   //   Latest,
-       *   //   Historic
+       *   // The type of BOM. Possible values: Effective, Historic, Latest, Tip. Default value is Latest
        *   'option[bomType]'?: 'Latest' | 'Historic'
        *   // The date that it was effective
        *   'option[date]'?: string
@@ -7447,6 +8030,10 @@ declare global {
        * ```ts
        * type Response = {
        *   // An array of Items.
+       *   // [items] start
+       *   // [title] Item Version
+       *   // The unique identifier for the object.
+       *   // [items] end
        *   itemVersions?: Array<{
        *     // Item Iteration Id
        *     id?: string
@@ -7477,35 +8064,31 @@ declare global {
        *     // [title] Item
        *     item?: {
        *       // MasterId of the item
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
-       *       url: Url
+       *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
-       *       // [title] Item Version
-       *       // The unique identifier for the object.
+       *       // [cycle] $.itemVersions.[]
        *       itemVersion?: ItemVersion
        *     }
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -7519,6 +8102,10 @@ declare global {
        *     }>
        *   }>
        *   // The associations between the Items.
+       *   // [items] start
+       *   // [title] Item Bom Link
+       *   // A dependency between two Items
+       *   // [items] end
        *   itemBomLinks?: Array<{
        *     // Id of the BOM Component (only valid when BOM row is a component - not assigned an item)
        *     bomComponentId?: string
@@ -7558,24 +8145,23 @@ declare global {
        *     isStatic?: boolean
        *     // Assigned BOM row position number
        *     positionNumber?: string
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -7591,6 +8177,10 @@ declare global {
        *   // If true, reference designators are available.
        *   referenceDesignatorsAvailable?: boolean
        *   // An array of occurrences.
+       *   // [items] start
+       *   // [title] Item Bom Occurrence
+       *   // BOM link master ID with which this occurrence is associated.
+       *   // [items] end
        *   occurrences?: Array<{
        *     // The top most Item of the BOM.
        *     rootItemId?: string
@@ -7607,18 +8197,20 @@ declare global {
        *     path?: string
        *   }>
        *   // Array of BOM components in this BOM
+       *   // [items] start
+       *   // [title] BOM Component
+       *   // [items] end
        *   bOMComponents?: Array<{
        *     // Indicates if a BOM component is cloaked
        *     isCloaked?: boolean
        *     // [title] BOM Structure Enum
        *     // An enumerated value representing the BOMStructure value of Component.
-       *     //
-       *     //   Normal = 0,
-       *     //   Purchased = 1,
-       *     //   Inseperable = 2,
-       *     //   Phantom = 3,
-       *     //   Reference = 4,
-       *     //   DynamicPhantom = 5
+       *     // Normal = 0,
+       *     // Purchased = 1,
+       *     // Inseperable = 2,
+       *     // Phantom = 3,
+       *     // Reference = 4,
+       *     // DynamicPhantom = 5
        *     bOMStructure?: 'Normal' | 'Purchased' | 'Inseperable' | 'Phantom' | 'Reference' | 'DynamicPhantom'
        *     // A numeric value quantifying a single instance of the Component. For Components with discreet quantities, "1" should always be used. For measured quantities, a positive decimal value can be used. For example, a rod cut to 3.5 feet would have a BaseUOM of "foot" and a BaseQty of "3.5".
        *     baseQty?: string
@@ -7626,22 +8218,20 @@ declare global {
        *     baseUOM?: string
        *     // [title] Component Type Enum
        *     // An enumerated value specifying the type of component.  Enum of Component Type
-       *     //
-       *     //   Part = 1,
-       *     //   Assembly = 2,
-       *     //   Virtual = 3,
-       *     //   Standard = 4,
-       *     //   Purchased = 5,
-       *     //   Document = 6
+       *     // Part = 1,
+       *     // Assembly = 2,
+       *     // Virtual = 3,
+       *     // Standard = 4,
+       *     // Purchased = 5,
+       *     // Document = 6
        *     componentType?: 'Part' | 'Assembly' | 'Virtual' | 'Standard' | 'Purchased' | 'Document'
        *     // The name of this component.
        *     name?: string
        *     // [title] XRef Type Enum
        *     // An enumerated value that specifies whether the Component is internal or external in relation to the design file.
        *     // Enum of XRefType
-       *     //
-       *     //   Internal = 0,
-       *     //   External = 1
+       *     // Internal = 0,
+       *     // External = 1
        *     xRefType?: 'Internal' | 'External'
        *     // Unique data within the scope of the design file used to identify the Component. For Inventor files, the GUID used to identify the Component is used (or GUID plus VirtualComponentDefinition._PropertySetsId for Virtual components). For DWG files, the HandleID associated with the Component is used.
        *     uniqueId?: string
@@ -7655,23 +8245,14 @@ declare global {
       getItemVersionWhereUsed<
         Config extends Alova2MethodConfig<BOMLinksAndRevisions> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * BOM Type Enum
              * ---
-             * Enum of BOM Type
-             *
-             *   Latest,
-             *   Historic
+             * The type of BOM. Possible values: Effective, Historic, Latest, Tip. Default value is Latest
              */
             'option[bomType]'?: BOMTypeEnum;
             /**
@@ -7695,9 +8276,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -7712,13 +8291,7 @@ declare global {
       getItemVersionThumbnail<
         Config extends Alova2MethodConfig<Blob> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -7737,7 +8310,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -7748,7 +8320,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -7775,34 +8347,85 @@ declare global {
        *   // [title] Item
        *   results?: {
        *     // MasterId of the item
-       *     // [required]
        *     id: string
        *     // The relative URL to access this object.
-       *     // [required]
-       *     url: Url
+       *     url: string
        *     // [title] Version Type Enum
        *     versionType?: 'None' | 'Latest' | 'LatestReleased'
        *     // [title] Item Version
        *     // The unique identifier for the object.
-       *     itemVersion?: ItemVersion
+       *     itemVersion?: {
+       *       // Item Iteration Id
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       // The Item number.
+       *       number?: string
+       *       // The version number, which is a sequential number given to each version. For example, if this value is 5, then the object is the 5th version.
+       *       version?: number
+       *       // The display value for the revision.
+       *       revision?: string
+       *       comment?: string
+       *       // The display title.
+       *       title?: string
+       *       // Life cycle state of the item
+       *       state?: string
+       *       stateColor?: number
+       *       name?: string
+       *       // Category assigned to the item
+       *       category?: string
+       *       categoryColor?: number
+       *       entityType?: string
+       *       isReadOnly?: boolean
+       *       // If true, the logged-in user is restricted from seeing this item.
+       *       isCloaked?: boolean
+       *       // Flag to check if an latest Item's  version is obsolete
+       *       isLatestObsolete?: boolean
+       *       // [cycle] $.results
+       *       item?: Item
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
+       *       properties?: Array<{
+       *         // Unique identifier for a server-based property definition
+       *         propertyDefinitionId?: string
+       *         // [title] Property Definition
+       *         definition?: {
+       *           // Get the unique identifier for a server-based property definition
+       *           id: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // Get or sets the Display name for this Property Definition
+       *           displayName: string
+       *           // Get the System Name for this Property Definition.
+       *           systemName: string
+       *           // The value defined in SQL database.
+       *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *           // Get or sets whether this Property Definition is Active.
+       *           active?: boolean
+       *           // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *           isSystem?: boolean
+       *           // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *           initialValue?: string
+       *         }
+       *         // The property value associated with the entity and PropertyDefinition
+       *         value?: string
+       *       }>
+       *     }
        *   }
        *   included?: {
        *     propertyDefinition?: Record<
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -7819,15 +8442,12 @@ declare global {
       getItems<
         Config extends Alova2MethodConfig<ItemCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -7851,9 +8471,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -7874,29 +8492,78 @@ declare global {
        * ```ts
        * type Response = {
        *   // MasterId of the item
-       *   // [required]
        *   id: string
        *   // The relative URL to access this object.
-       *   // [required]
-       *   url: Url
+       *   url: string
        *   // [title] Version Type Enum
        *   versionType?: 'None' | 'Latest' | 'LatestReleased'
        *   // [title] Item Version
        *   // The unique identifier for the object.
-       *   itemVersion?: ItemVersion
+       *   itemVersion?: {
+       *     // Item Iteration Id
+       *     id?: string
+       *     // The relative URL to access this object.
+       *     url?: string
+       *     // The Item number.
+       *     number?: string
+       *     // The version number, which is a sequential number given to each version. For example, if this value is 5, then the object is the 5th version.
+       *     version?: number
+       *     // The display value for the revision.
+       *     revision?: string
+       *     comment?: string
+       *     // The display title.
+       *     title?: string
+       *     // Life cycle state of the item
+       *     state?: string
+       *     stateColor?: number
+       *     name?: string
+       *     // Category assigned to the item
+       *     category?: string
+       *     categoryColor?: number
+       *     entityType?: string
+       *     isReadOnly?: boolean
+       *     // If true, the logged-in user is restricted from seeing this item.
+       *     isCloaked?: boolean
+       *     // Flag to check if an latest Item's  version is obsolete
+       *     isLatestObsolete?: boolean
+       *     // [cycle] $
+       *     item?: Item
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
+       *     properties?: Array<{
+       *       // Unique identifier for a server-based property definition
+       *       propertyDefinitionId?: string
+       *       // [title] Property Definition
+       *       definition?: {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *       // The property value associated with the entity and PropertyDefinition
+       *       value?: string
+       *     }>
+       *   }
        * }
        * ```
        */
       getItemById<
         Config extends Alova2MethodConfig<Item> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -7921,9 +8588,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -7936,15 +8601,15 @@ declare global {
        *   // Option determines if change order with closed or cancelled state be skipped if false. Default: option[includeClosedECOs] = false
        *   'option[includeClosedECOs]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -7968,6 +8633,16 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] Change Order Extended
+       *   // change order extended object
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] Change Order
+       *   // change order object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | object
        *     | {
@@ -7996,24 +8671,23 @@ declare global {
        *         entityType?: string
        *         // Number of File Attachments
        *         numberOfAttachments?: number
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -8034,7 +8708,27 @@ declare global {
        *       }
        *   )[]
        *   included?: {
-       *     propertyDefinition?: Record<string, PropertyDefinition>
+       *     propertyDefinition?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *     >
        *   }
        * }
        * ```
@@ -8042,13 +8736,7 @@ declare global {
       getItemAssociatedChangeOrders<
         Config extends Alova2MethodConfig<ChangeOrderCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
@@ -8058,10 +8746,10 @@ declare global {
             'option[includeClosedECOs]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -8070,7 +8758,7 @@ declare global {
             'option[propDefIds]'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -8094,9 +8782,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -8107,20 +8793,20 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // [title] History Options Enum
-       *   // Options for viewing file history.
+       *   // Allow option is: All, ReleasedOnly, ReleasedAndRevisionTip or RevisionTip. Default value is All
        *   'option[history]'?: 'All' | 'ReleasedOnly' | 'ReleasedAndRevisionTip' | 'RevisionTip'
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // True to return latest file version at top.
        *   descending?: boolean
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -8144,6 +8830,10 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Item Version
+       *   // The unique identifier for the object.
+       *   // [items] end
        *   results?: Array<{
        *     // Item Iteration Id
        *     id?: string
@@ -8174,35 +8864,31 @@ declare global {
        *     // [title] Item
        *     item?: {
        *       // MasterId of the item
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
-       *       url: Url
+       *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
-       *       // [title] Item Version
-       *       // The unique identifier for the object.
+       *       // [cycle] $.results.[]
        *       itemVersion?: ItemVersion
        *     }
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -8220,18 +8906,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -8248,28 +8930,22 @@ declare global {
       getItemHistory<
         Config extends Alova2MethodConfig<ItemVersionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
           params: {
             /**
              * History Options Enum
              * ---
-             * Options for viewing file history.
+             * Allow option is: All, ReleasedOnly, ReleasedAndRevisionTip or RevisionTip. Default value is All
              */
             'option[history]'?: HistoryOptionsEnum;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -8282,7 +8958,7 @@ declare global {
             descending?: boolean;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -8306,7 +8982,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -8362,9 +9037,6 @@ declare global {
       addJob<
         Config extends Alova2MethodConfig<Job> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           data: Job;
@@ -8384,7 +9056,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -8399,9 +9070,6 @@ declare global {
       getJobQueueEnabled<
         Config extends Alova2MethodConfig<boolean> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
         }
@@ -8420,9 +9088,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -8454,13 +9120,7 @@ declare global {
       getJobsById<
         Config extends Alova2MethodConfig<Job> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -8479,7 +9139,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -8490,7 +9149,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -8514,6 +9173,10 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Link
+       *   // link object
+       *   // [items] end
        *   results?: Array<{
        *     name?: string
        *     // Get the unique identifier for this link object
@@ -8527,10 +9190,8 @@ declare global {
        *     // A generic entity object with all supported fields.
        *     toEntity?: {
        *       // A unique identifier for the object
-       *       // [required]
        *       id: string
        *       // Name of the entity
-       *       // [required]
        *       name: string
        *       // The full vault path if Entity is a folder
        *       fullName?: string
@@ -8558,7 +9219,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -8584,24 +9245,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -8620,7 +9280,7 @@ declare global {
        *       checkoutDate?: string
        *       size?: number
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *       hasVisualizationAttachment?: boolean
        *       checkoutUserName?: string
        *       isLibrary?: boolean
@@ -8629,51 +9289,103 @@ declare global {
        *       // [title] File - we cannot directly use File as class name, as it's occupied.
        *       file?: {
        *         // File MasterId
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         // [required]
        *         url: string
        *         // [title] Version Type Enum
        *         versionType?: 'None' | 'Latest' | 'LatestReleased'
        *         // [title] File Version Extended
        *         // file version extended object
-       *         fileVersion?: FileVersionExtended
+       *         fileVersion?: object
        *       }
        *       // [title] Item
        *       item?: {
        *         // MasterId of the item
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         // [required]
-       *         url: Url
+       *         url: string
        *         // [title] Version Type Enum
        *         versionType?: 'None' | 'Latest' | 'LatestReleased'
        *         // [title] Item Version
        *         // The unique identifier for the object.
-       *         itemVersion?: ItemVersion
+       *         itemVersion?: {
+       *           // Item Iteration Id
+       *           id?: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // The Item number.
+       *           number?: string
+       *           // The version number, which is a sequential number given to each version. For example, if this value is 5, then the object is the 5th version.
+       *           version?: number
+       *           // The display value for the revision.
+       *           revision?: string
+       *           comment?: string
+       *           // The display title.
+       *           title?: string
+       *           // Life cycle state of the item
+       *           state?: string
+       *           stateColor?: number
+       *           name?: string
+       *           // Category assigned to the item
+       *           category?: string
+       *           categoryColor?: number
+       *           entityType?: string
+       *           isReadOnly?: boolean
+       *           // If true, the logged-in user is restricted from seeing this item.
+       *           isCloaked?: boolean
+       *           // Flag to check if an latest Item's  version is obsolete
+       *           isLatestObsolete?: boolean
+       *           // [cycle] $.results.[].toEntity.item
+       *           item?: Item
+       *           // [items] start
+       *           // [title] Property
+       *           // [items] end
+       *           properties?: Array<{
+       *             // Unique identifier for a server-based property definition
+       *             propertyDefinitionId?: string
+       *             // [title] Property Definition
+       *             definition?: {
+       *               // Get the unique identifier for a server-based property definition
+       *               id: string
+       *               // The relative URL to access this object.
+       *               url?: string
+       *               // Get or sets the Display name for this Property Definition
+       *               displayName: string
+       *               // Get the System Name for this Property Definition.
+       *               systemName: string
+       *               // The value defined in SQL database.
+       *               dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *               // Get or sets whether this Property Definition is Active.
+       *               active?: boolean
+       *               // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *               isSystem?: boolean
+       *               // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *               initialValue?: string
+       *             }
+       *             // The property value associated with the entity and PropertyDefinition
+       *             value?: string
+       *           }>
+       *         }
        *       }
        *       subfolderCount?: number
        *       children?: string
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
        *       properties?: Array<{
        *         // Unique identifier for a server-based property definition
        *         propertyDefinitionId?: string
        *         // [title] Property Definition
        *         definition?: {
        *           // Get the unique identifier for a server-based property definition
-       *           // [required]
        *           id: string
        *           // The relative URL to access this object.
-       *           url?: Url
+       *           url?: string
        *           // Get or sets the Display name for this Property Definition
-       *           // [required]
        *           displayName: string
        *           // Get the System Name for this Property Definition.
-       *           // [required]
        *           systemName: string
        *           // The value defined in SQL database.
-       *           // [required]
        *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *           // Get or sets whether this Property Definition is Active.
        *           active?: boolean
@@ -8688,26 +9400,141 @@ declare global {
        *     }
        *     // [title] Folder
        *     // folder object
-       *     fromEntity?: Folder
+       *     fromEntity?: {
+       *       // Get the unique identifier for this folder
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *       name?: string
+       *       // Get the full vault path for this folder (ie. $/Folder1)
+       *       fullName?: string
+       *       // Get the date and time that the folder was created.
+       *       createDate?: string
+       *       // Get the name of the user who created this folder.
+       *       createUserName?: string
+       *       // Get the category that is assigned to this folder
+       *       category?: string
+       *       // Category color
+       *       categoryColor?: number
+       *       // The name of the life cycle state for the current folder
+       *       state?: string
+       *       // The color of the state.
+       *       stateColor?: number
+       *       // Get the number of immediate child folders.
+       *       subfolderCount?: number
+       *       children?: string
+       *       // Get whether or not this folder is a library folder
+       *       isLibrary?: boolean
+       *       // Get whether this folder can be modified by the logged in user.
+       *       isReadOnly?: boolean
+       *       // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *       isCloaked?: boolean
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
+       *       properties?: Array<{
+       *         // Unique identifier for a server-based property definition
+       *         propertyDefinitionId?: string
+       *         // [title] Property Definition
+       *         definition?: {
+       *           // Get the unique identifier for a server-based property definition
+       *           id: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // Get or sets the Display name for this Property Definition
+       *           displayName: string
+       *           // Get the System Name for this Property Definition.
+       *           systemName: string
+       *           // The value defined in SQL database.
+       *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *           // Get or sets whether this Property Definition is Active.
+       *           active?: boolean
+       *           // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *           isSystem?: boolean
+       *           // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *           initialValue?: string
+       *         }
+       *         // The property value associated with the entity and PropertyDefinition
+       *         value?: string
+       *       }>
+       *     }
        *   }>
        *   included?: {
-       *     folder?: Record<string, Folder>
+       *     folder?: Record<
+       *       string,
+       *       {
+       *         // Get the unique identifier for this folder
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *         name?: string
+       *         // Get the full vault path for this folder (ie. $/Folder1)
+       *         fullName?: string
+       *         // Get the date and time that the folder was created.
+       *         createDate?: string
+       *         // Get the name of the user who created this folder.
+       *         createUserName?: string
+       *         // Get the category that is assigned to this folder
+       *         category?: string
+       *         // Category color
+       *         categoryColor?: number
+       *         // The name of the life cycle state for the current folder
+       *         state?: string
+       *         // The color of the state.
+       *         stateColor?: number
+       *         // Get the number of immediate child folders.
+       *         subfolderCount?: number
+       *         children?: string
+       *         // Get whether or not this folder is a library folder
+       *         isLibrary?: boolean
+       *         // Get whether this folder can be modified by the logged in user.
+       *         isReadOnly?: boolean
+       *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
+       *     >
        *     propertyDefinition?: Record<
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -8724,15 +9551,12 @@ declare global {
       getLinks<
         Config extends Alova2MethodConfig<LinkCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -8756,9 +9580,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -8780,10 +9602,8 @@ declare global {
        *   // A generic entity object with all supported fields.
        *   toEntity?: {
        *     // A unique identifier for the object
-       *     // [required]
        *     id: string
        *     // Name of the entity
-       *     // [required]
        *     name: string
        *     // The full vault path if Entity is a folder
        *     fullName?: string
@@ -8811,7 +9631,7 @@ declare global {
        *       // Get the unique identifier for this folder
        *       id?: string
        *       // The relative URL to access this object.
-       *       url?: Url
+       *       url?: string
        *       // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *       name?: string
        *       // Get the full vault path for this folder (ie. $/Folder1)
@@ -8837,24 +9657,23 @@ declare global {
        *       isReadOnly?: boolean
        *       // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *       isCloaked?: boolean
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
        *       properties?: Array<{
        *         // Unique identifier for a server-based property definition
        *         propertyDefinitionId?: string
        *         // [title] Property Definition
        *         definition?: {
        *           // Get the unique identifier for a server-based property definition
-       *           // [required]
        *           id: string
        *           // The relative URL to access this object.
-       *           url?: Url
+       *           url?: string
        *           // Get or sets the Display name for this Property Definition
-       *           // [required]
        *           displayName: string
        *           // Get the System Name for this Property Definition.
-       *           // [required]
        *           systemName: string
        *           // The value defined in SQL database.
-       *           // [required]
        *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *           // Get or sets whether this Property Definition is Active.
        *           active?: boolean
@@ -8873,7 +9692,7 @@ declare global {
        *     checkoutDate?: string
        *     size?: number
        *     // The relative URL to access this object.
-       *     url?: Url
+       *     url?: string
        *     hasVisualizationAttachment?: boolean
        *     checkoutUserName?: string
        *     isLibrary?: boolean
@@ -8882,51 +9701,103 @@ declare global {
        *     // [title] File - we cannot directly use File as class name, as it's occupied.
        *     file?: {
        *       // File MasterId
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
        *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
        *       // [title] File Version Extended
        *       // file version extended object
-       *       fileVersion?: FileVersionExtended
+       *       fileVersion?: object
        *     }
        *     // [title] Item
        *     item?: {
        *       // MasterId of the item
-       *       // [required]
        *       id: string
        *       // The relative URL to access this object.
-       *       // [required]
-       *       url: Url
+       *       url: string
        *       // [title] Version Type Enum
        *       versionType?: 'None' | 'Latest' | 'LatestReleased'
        *       // [title] Item Version
        *       // The unique identifier for the object.
-       *       itemVersion?: ItemVersion
+       *       itemVersion?: {
+       *         // Item Iteration Id
+       *         id?: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // The Item number.
+       *         number?: string
+       *         // The version number, which is a sequential number given to each version. For example, if this value is 5, then the object is the 5th version.
+       *         version?: number
+       *         // The display value for the revision.
+       *         revision?: string
+       *         comment?: string
+       *         // The display title.
+       *         title?: string
+       *         // Life cycle state of the item
+       *         state?: string
+       *         stateColor?: number
+       *         name?: string
+       *         // Category assigned to the item
+       *         category?: string
+       *         categoryColor?: number
+       *         entityType?: string
+       *         isReadOnly?: boolean
+       *         // If true, the logged-in user is restricted from seeing this item.
+       *         isCloaked?: boolean
+       *         // Flag to check if an latest Item's  version is obsolete
+       *         isLatestObsolete?: boolean
+       *         // [cycle] $.toEntity.item
+       *         item?: Item
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
+       *         properties?: Array<{
+       *           // Unique identifier for a server-based property definition
+       *           propertyDefinitionId?: string
+       *           // [title] Property Definition
+       *           definition?: {
+       *             // Get the unique identifier for a server-based property definition
+       *             id: string
+       *             // The relative URL to access this object.
+       *             url?: string
+       *             // Get or sets the Display name for this Property Definition
+       *             displayName: string
+       *             // Get the System Name for this Property Definition.
+       *             systemName: string
+       *             // The value defined in SQL database.
+       *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *             // Get or sets whether this Property Definition is Active.
+       *             active?: boolean
+       *             // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *             isSystem?: boolean
+       *             // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *             initialValue?: string
+       *           }
+       *           // The property value associated with the entity and PropertyDefinition
+       *           value?: string
+       *         }>
+       *       }
        *     }
        *     subfolderCount?: number
        *     children?: string
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
        *     properties?: Array<{
        *       // Unique identifier for a server-based property definition
        *       propertyDefinitionId?: string
        *       // [title] Property Definition
        *       definition?: {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -8941,20 +9812,72 @@ declare global {
        *   }
        *   // [title] Folder
        *   // folder object
-       *   fromEntity?: Folder
+       *   fromEntity?: {
+       *     // Get the unique identifier for this folder
+       *     id?: string
+       *     // The relative URL to access this object.
+       *     url?: string
+       *     // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *     name?: string
+       *     // Get the full vault path for this folder (ie. $/Folder1)
+       *     fullName?: string
+       *     // Get the date and time that the folder was created.
+       *     createDate?: string
+       *     // Get the name of the user who created this folder.
+       *     createUserName?: string
+       *     // Get the category that is assigned to this folder
+       *     category?: string
+       *     // Category color
+       *     categoryColor?: number
+       *     // The name of the life cycle state for the current folder
+       *     state?: string
+       *     // The color of the state.
+       *     stateColor?: number
+       *     // Get the number of immediate child folders.
+       *     subfolderCount?: number
+       *     children?: string
+       *     // Get whether or not this folder is a library folder
+       *     isLibrary?: boolean
+       *     // Get whether this folder can be modified by the logged in user.
+       *     isReadOnly?: boolean
+       *     // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *     isCloaked?: boolean
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
+       *     properties?: Array<{
+       *       // Unique identifier for a server-based property definition
+       *       propertyDefinitionId?: string
+       *       // [title] Property Definition
+       *       definition?: {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *       // The property value associated with the entity and PropertyDefinition
+       *       value?: string
+       *     }>
+       *   }
        * }
        * ```
        */
       getLinkById<
         Config extends Alova2MethodConfig<LinkEntity> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -8973,7 +9896,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -8990,15 +9912,15 @@ declare global {
        *   // Search filter to include only propertyDefs that match Id. PropertyDefIds, separated by ','
        *   'filter[propDefIds]'?: string
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // Include BOM Association Property definitions if true. Default value is false
        *   'option[includeBOMAssociationProperty]'?: boolean
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -9022,21 +9944,26 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] Property Definition
+       *   // [params1] end
+       *   // [params2] start
+       *   // [title] Property Definition Extended
+       *   // property definition object
+       *   // [params2] end
+       *   // [items] end
        *   results?: (
        *     | {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -9053,9 +9980,6 @@ declare global {
       getPropertyDefinitions<
         Config extends Alova2MethodConfig<PropertyDefinitionCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
@@ -9073,10 +9997,10 @@ declare global {
             'filter[propDefIds]'?: string;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -9085,7 +10009,7 @@ declare global {
             'option[includeBOMAssociationProperty]'?: boolean;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -9109,9 +10033,7 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
-       *   // [required]
        *   id: string
        * }
        * ```
@@ -9122,18 +10044,14 @@ declare global {
        * ```ts
        * type Response = {
        *   // Get the unique identifier for a server-based property definition
-       *   // [required]
        *   id: string
        *   // The relative URL to access this object.
-       *   url?: Url
+       *   url?: string
        *   // Get or sets the Display name for this Property Definition
-       *   // [required]
        *   displayName: string
        *   // Get the System Name for this Property Definition.
-       *   // [required]
        *   systemName: string
        *   // The value defined in SQL database.
-       *   // [required]
        *   dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *   // Get or sets whether this Property Definition is Active.
        *   active?: boolean
@@ -9147,13 +10065,7 @@ declare global {
       getPropertyDefinitionById<
         Config extends Alova2MethodConfig<PropertyDefinition> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
-            /**
-             * [required]
-             */
             id: string;
           };
         }
@@ -9172,7 +10084,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -9195,17 +10106,17 @@ declare global {
        *   // If true, include only the latest version; Default value is true
        *   'option[latestOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
        *   // Specifies sorting criteria for search results. Format: {propertyDefSysName} {sort-order} Accepted values for sort-order: asc, desc.  Ex: sort = Revision desc,Name asc
        *   sort?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -9229,7 +10140,188 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
-       *   results?: unknown[]
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params1] end
+       *   // [items] end
+       *   results?: {
+       *     // File IterationId
+       *     id: string
+       *     // The name of the file. This value applies to all versions of the file
+       *     name: string
+       *     // Category information about this file
+       *     category?: string
+       *     // Category color
+       *     categoryColor?: number
+       *     // [title] File Classification Enum
+       *     // The classification of the file.
+       *     // None,
+       *     // DesignVisualization,
+       *     // DesignDocument,
+       *     // ConfigurationMember,
+       *     // ConfigurationFactory,
+       *     // ElectricalProject,
+       *     // DesignSubstitute,
+       *     // DesignRepresentation,
+       *     // DesignPresentation
+       *     classification?:
+       *       | 'None'
+       *       | 'DesignVisualization'
+       *       | 'DesignDocument'
+       *       | 'ConfigurationMember'
+       *       | 'ConfigurationFactory'
+       *       | 'ElectricalProject'
+       *       | 'DesignSubstitute'
+       *       | 'DesignRepresentation'
+       *       | 'DesignPresentation'
+       *     entityType?: string
+       *     // The version of the file. A file that has just been added to the Vault, will have 1 as its VerNum
+       *     version?: number
+       *     // Tells the date and time that this version of the file was created in the Vault. For the first version of a file, this date will match CkInDate. For later versions, this value will have the time when the previous version was checked out.
+       *     createDate?: string
+       *     // The last modified date of the file. This value is set by the client that uploaded the file.
+       *     lastModifiedDate?: string
+       *     // Revision information about this file.
+       *     revision?: string
+       *     // The name of the life cycle state for the current file
+       *     state?: string
+       *     // The color of the state.
+       *     stateColor?: number
+       *     // FolderId of the parent the current file  resides in
+       *     parentFolderId?: string
+       *     // [title] File - we cannot directly use File as class name, as it's occupied.
+       *     file?: {
+       *       // File MasterId
+       *       id: string
+       *       // The relative URL to access this object.
+       *       url: string
+       *       // [title] Version Type Enum
+       *       versionType?: 'None' | 'Latest' | 'LatestReleased'
+       *       // [title] File Version Extended
+       *       // file version extended object
+       *       fileVersion?: object
+       *     }
+       *     // [title] Folder
+       *     // folder object
+       *     parent?: {
+       *       // Get the unique identifier for this folder
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *       name?: string
+       *       // Get the full vault path for this folder (ie. $/Folder1)
+       *       fullName?: string
+       *       // Get the date and time that the folder was created.
+       *       createDate?: string
+       *       // Get the name of the user who created this folder.
+       *       createUserName?: string
+       *       // Get the category that is assigned to this folder
+       *       category?: string
+       *       // Category color
+       *       categoryColor?: number
+       *       // The name of the life cycle state for the current folder
+       *       state?: string
+       *       // The color of the state.
+       *       stateColor?: number
+       *       // Get the number of immediate child folders.
+       *       subfolderCount?: number
+       *       children?: string
+       *       // Get whether or not this folder is a library folder
+       *       isLibrary?: boolean
+       *       // Get whether this folder can be modified by the logged in user.
+       *       isReadOnly?: boolean
+       *       // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *       isCloaked?: boolean
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
+       *       properties?: Array<{
+       *         // Unique identifier for a server-based property definition
+       *         propertyDefinitionId?: string
+       *         // [title] Property Definition
+       *         definition?: {
+       *           // Get the unique identifier for a server-based property definition
+       *           id: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // Get or sets the Display name for this Property Definition
+       *           displayName: string
+       *           // Get the System Name for this Property Definition.
+       *           systemName: string
+       *           // The value defined in SQL database.
+       *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *           // Get or sets whether this Property Definition is Active.
+       *           active?: boolean
+       *           // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *           isSystem?: boolean
+       *           // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *           initialValue?: string
+       *         }
+       *         // The property value associated with the entity and PropertyDefinition
+       *         value?: string
+       *       }>
+       *     }
+       *     // If true, then the latest version of this file is in the checked-out state
+       *     isCheckedOut?: boolean
+       *     // The Name of the user who checked-in or uploaded this file.
+       *     createUserName?: string
+       *     // The date and time that the file was checked in. This property is only valid if isCheckedOut is false.
+       *     checkinDate?: string
+       *     // The date and time that the file was last checked out
+       *     checkoutDate?: string
+       *     // User that has the file checked out
+       *     checkoutUserName?: string
+       *     // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
+       *     size?: number
+       *     // The relative URL to access this object.
+       *     url?: string
+       *     // Flag to determine if valid VizAttachmentStatus (Not None)
+       *     hasVisualizationAttachment?: boolean
+       *     // [title] File Visualization Attachment Status Enum
+       *     // The design visualization attachment status of the file.
+       *     // None,
+       *     // Syncronized,
+       *     // NotSyncronized,
+       *     // UserVerified,
+       *     // Legacy
+       *     visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
+       *     isReadOnly?: boolean
+       *     // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
+       *     isCloaked?: boolean
+       *     // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
+       *     isOnSite?: boolean
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
+       *     properties?: Array<{
+       *       // Unique identifier for a server-based property definition
+       *       propertyDefinitionId?: string
+       *       // [title] Property Definition
+       *       definition?: {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *       // The property value associated with the entity and PropertyDefinition
+       *       value?: string
+       *     }>
+       *   }[]
        *   included?: {
        *     folder?: Record<
        *       string,
@@ -9237,7 +10329,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -9263,24 +10355,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -9298,18 +10389,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -9326,9 +10413,6 @@ declare global {
       search<
         Config extends Alova2MethodConfig<EntityCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
@@ -9358,10 +10442,10 @@ declare global {
             'option[latestOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -9374,7 +10458,7 @@ declare global {
             sort?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -9398,7 +10482,6 @@ declare global {
        * **Path Parameters**
        * ```ts
        * type PathParameters = {
-       *   // [required]
        *   vaultId: string
        * }
        * ```
@@ -9409,7 +10492,7 @@ declare global {
        * ```ts
        * type QueryParameters = {
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -9422,10 +10505,10 @@ declare global {
        *   // If true, include only the latest version. Default value is true
        *   'option[latestOnly]'?: boolean
        *   // If true, the response will include additional detailed information for each entity. Examples include:
-       *   //   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-       *   //   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-       *   //   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-       *   //   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
        *   'option[extendedModels]'?: boolean
        *   // The properties that need to be returned. property ids separated by ',', e.g. '1,2,3' 'all' means return all properties.
        *   'option[propDefIds]'?: string
@@ -9438,16 +10521,21 @@ declare global {
        * ```ts
        * type RequestBody = {
        *   // EntityTypes to search. If null or empty value is passed, it will include results from all entity types.
+       *   // [items] start
+       *   // [items] end
        *   entityTypesToSearch?: ('File' | 'Folder' | 'Item' | 'ChangeOrder')[]
        *   // URL string array for the folder entities.
+       *   // [items] start
+       *   // [items] end
        *   foldersToSearch?: string[]
        *   // The search parameters.
-       *   // [required]
+       *   // [items] start
+       *   // [title] Search Criteria
+       *   // [items] end
        *   searchCriterias: Array<{
        *     // URL string to the property definition
        *     propertyDefinitionUrl?: string
        *     // Represents the operator used for the search
-       *     // [required]
        *     operator:
        *       | 'Unknown'
        *       | 'Contains'
@@ -9464,6 +10552,9 @@ declare global {
        *     searchString?: string
        *   }>
        *   // The properties to sort on.
+       *   // [items] start
+       *   // [title] Sort Criteria
+       *   // [items] end
        *   sortCriterias?: Array<{
        *     // URL string to the property definition
        *     propertyDefinitionUrl?: string
@@ -9490,7 +10581,188 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
-       *   results?: unknown[]
+       *   // [items] start
+       *   // [params1] start
+       *   // [title] File Version
+       *   // file version basic object
+       *   // [params1] end
+       *   // [items] end
+       *   results?: {
+       *     // File IterationId
+       *     id: string
+       *     // The name of the file. This value applies to all versions of the file
+       *     name: string
+       *     // Category information about this file
+       *     category?: string
+       *     // Category color
+       *     categoryColor?: number
+       *     // [title] File Classification Enum
+       *     // The classification of the file.
+       *     // None,
+       *     // DesignVisualization,
+       *     // DesignDocument,
+       *     // ConfigurationMember,
+       *     // ConfigurationFactory,
+       *     // ElectricalProject,
+       *     // DesignSubstitute,
+       *     // DesignRepresentation,
+       *     // DesignPresentation
+       *     classification?:
+       *       | 'None'
+       *       | 'DesignVisualization'
+       *       | 'DesignDocument'
+       *       | 'ConfigurationMember'
+       *       | 'ConfigurationFactory'
+       *       | 'ElectricalProject'
+       *       | 'DesignSubstitute'
+       *       | 'DesignRepresentation'
+       *       | 'DesignPresentation'
+       *     entityType?: string
+       *     // The version of the file. A file that has just been added to the Vault, will have 1 as its VerNum
+       *     version?: number
+       *     // Tells the date and time that this version of the file was created in the Vault. For the first version of a file, this date will match CkInDate. For later versions, this value will have the time when the previous version was checked out.
+       *     createDate?: string
+       *     // The last modified date of the file. This value is set by the client that uploaded the file.
+       *     lastModifiedDate?: string
+       *     // Revision information about this file.
+       *     revision?: string
+       *     // The name of the life cycle state for the current file
+       *     state?: string
+       *     // The color of the state.
+       *     stateColor?: number
+       *     // FolderId of the parent the current file  resides in
+       *     parentFolderId?: string
+       *     // [title] File - we cannot directly use File as class name, as it's occupied.
+       *     file?: {
+       *       // File MasterId
+       *       id: string
+       *       // The relative URL to access this object.
+       *       url: string
+       *       // [title] Version Type Enum
+       *       versionType?: 'None' | 'Latest' | 'LatestReleased'
+       *       // [title] File Version Extended
+       *       // file version extended object
+       *       fileVersion?: object
+       *     }
+       *     // [title] Folder
+       *     // folder object
+       *     parent?: {
+       *       // Get the unique identifier for this folder
+       *       id?: string
+       *       // The relative URL to access this object.
+       *       url?: string
+       *       // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
+       *       name?: string
+       *       // Get the full vault path for this folder (ie. $/Folder1)
+       *       fullName?: string
+       *       // Get the date and time that the folder was created.
+       *       createDate?: string
+       *       // Get the name of the user who created this folder.
+       *       createUserName?: string
+       *       // Get the category that is assigned to this folder
+       *       category?: string
+       *       // Category color
+       *       categoryColor?: number
+       *       // The name of the life cycle state for the current folder
+       *       state?: string
+       *       // The color of the state.
+       *       stateColor?: number
+       *       // Get the number of immediate child folders.
+       *       subfolderCount?: number
+       *       children?: string
+       *       // Get whether or not this folder is a library folder
+       *       isLibrary?: boolean
+       *       // Get whether this folder can be modified by the logged in user.
+       *       isReadOnly?: boolean
+       *       // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
+       *       isCloaked?: boolean
+       *       // [items] start
+       *       // [title] Property
+       *       // [items] end
+       *       properties?: Array<{
+       *         // Unique identifier for a server-based property definition
+       *         propertyDefinitionId?: string
+       *         // [title] Property Definition
+       *         definition?: {
+       *           // Get the unique identifier for a server-based property definition
+       *           id: string
+       *           // The relative URL to access this object.
+       *           url?: string
+       *           // Get or sets the Display name for this Property Definition
+       *           displayName: string
+       *           // Get the System Name for this Property Definition.
+       *           systemName: string
+       *           // The value defined in SQL database.
+       *           dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *           // Get or sets whether this Property Definition is Active.
+       *           active?: boolean
+       *           // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *           isSystem?: boolean
+       *           // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *           initialValue?: string
+       *         }
+       *         // The property value associated with the entity and PropertyDefinition
+       *         value?: string
+       *       }>
+       *     }
+       *     // If true, then the latest version of this file is in the checked-out state
+       *     isCheckedOut?: boolean
+       *     // The Name of the user who checked-in or uploaded this file.
+       *     createUserName?: string
+       *     // The date and time that the file was checked in. This property is only valid if isCheckedOut is false.
+       *     checkinDate?: string
+       *     // The date and time that the file was last checked out
+       *     checkoutDate?: string
+       *     // User that has the file checked out
+       *     checkoutUserName?: string
+       *     // The size, in bytes, of the file. This property is only valid if CheckedOut is false.
+       *     size?: number
+       *     // The relative URL to access this object.
+       *     url?: string
+       *     // Flag to determine if valid VizAttachmentStatus (Not None)
+       *     hasVisualizationAttachment?: boolean
+       *     // [title] File Visualization Attachment Status Enum
+       *     // The design visualization attachment status of the file.
+       *     // None,
+       *     // Syncronized,
+       *     // NotSyncronized,
+       *     // UserVerified,
+       *     // Legacy
+       *     visualizationAttachmentStatus?: 'None' | 'Syncronized' | 'NotSyncronized' | 'UserVerified' | 'Legacy'
+       *     isReadOnly?: boolean
+       *     // Get if this file is cloaked. A cloaked object is one that the caller does not have permissions to view
+       *     isCloaked?: boolean
+       *     // Gets whether or not the file is on the local site (in a multi-site environment). This value will always be true on a single-site environment.
+       *     isOnSite?: boolean
+       *     // [items] start
+       *     // [title] Property
+       *     // [items] end
+       *     properties?: Array<{
+       *       // Unique identifier for a server-based property definition
+       *       propertyDefinitionId?: string
+       *       // [title] Property Definition
+       *       definition?: {
+       *         // Get the unique identifier for a server-based property definition
+       *         id: string
+       *         // The relative URL to access this object.
+       *         url?: string
+       *         // Get or sets the Display name for this Property Definition
+       *         displayName: string
+       *         // Get the System Name for this Property Definition.
+       *         systemName: string
+       *         // The value defined in SQL database.
+       *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
+       *         // Get or sets whether this Property Definition is Active.
+       *         active?: boolean
+       *         // Get whether or not this is a System Property (as opposed to a UserDefined property)
+       *         isSystem?: boolean
+       *         // Default Value that will be applied to entities that do not have an existing value associated with this PropertyDefinition
+       *         initialValue?: string
+       *       }
+       *       // The property value associated with the entity and PropertyDefinition
+       *       value?: string
+       *     }>
+       *   }[]
        *   included?: {
        *     folder?: Record<
        *       string,
@@ -9498,7 +10770,7 @@ declare global {
        *         // Get the unique identifier for this folder
        *         id?: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get the descriptive name for this Folder. This is always the Folder Name without the full path.
        *         name?: string
        *         // Get the full vault path for this folder (ie. $/Folder1)
@@ -9524,24 +10796,23 @@ declare global {
        *         isReadOnly?: boolean
        *         // Get if this folder is cloaked. A cloaked object is one that the caller does not have permissions to view.
        *         isCloaked?: boolean
+       *         // [items] start
+       *         // [title] Property
+       *         // [items] end
        *         properties?: Array<{
        *           // Unique identifier for a server-based property definition
        *           propertyDefinitionId?: string
        *           // [title] Property Definition
        *           definition?: {
        *             // Get the unique identifier for a server-based property definition
-       *             // [required]
        *             id: string
        *             // The relative URL to access this object.
-       *             url?: Url
+       *             url?: string
        *             // Get or sets the Display name for this Property Definition
-       *             // [required]
        *             displayName: string
        *             // Get the System Name for this Property Definition.
-       *             // [required]
        *             systemName: string
        *             // The value defined in SQL database.
-       *             // [required]
        *             dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *             // Get or sets whether this Property Definition is Active.
        *             active?: boolean
@@ -9559,18 +10830,14 @@ declare global {
        *       string,
        *       {
        *         // Get the unique identifier for a server-based property definition
-       *         // [required]
        *         id: string
        *         // The relative URL to access this object.
-       *         url?: Url
+       *         url?: string
        *         // Get or sets the Display name for this Property Definition
-       *         // [required]
        *         displayName: string
        *         // Get the System Name for this Property Definition.
-       *         // [required]
        *         systemName: string
        *         // The value defined in SQL database.
-       *         // [required]
        *         dataType: 'String' | 'Numeric' | 'Bool' | 'DateTime' | 'Image'
        *         // Get or sets whether this Property Definition is Active.
        *         active?: boolean
@@ -9587,15 +10854,12 @@ declare global {
       advancedSearch<
         Config extends Alova2MethodConfig<EntityCollection> & {
           pathParams: {
-            /**
-             * [required]
-             */
             vaultId: string;
           };
           params: {
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -9620,10 +10884,10 @@ declare global {
             'option[latestOnly]'?: boolean;
             /**
              * If true, the response will include additional detailed information for each entity. Examples include:
-             *   - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
-             *   - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
-             *   - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
-             *   - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
              */
             'option[extendedModels]'?: boolean;
             /**
@@ -9642,7 +10906,6 @@ declare global {
             foldersToSearch?: string[];
             /**
              * The search parameters.
-             * [required]
              */
             searchCriterias: SearchCriteria[];
             /**
@@ -9669,7 +10932,7 @@ declare global {
        *   // Filters and returns items whose names start with the specified string
        *   'filter[name]-starts'?: string
        *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-       *   //  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
        *   limit?: number
        *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
        *   cursorState?: string
@@ -9693,6 +10956,9 @@ declare global {
        *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
        *     nextUrl?: string
        *   }
+       *   // [items] start
+       *   // [title] Vault Option
+       *   // [items] end
        *   results?: Array<{
        *     id?: string
        *     // The name of the option
@@ -9714,7 +10980,7 @@ declare global {
             'filter[name]-starts'?: string;
             /**
              * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
-             *  which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
              */
             limit?: number;
             /**
@@ -9856,12 +11122,189 @@ declare global {
        *
        * **Response**
        * ```ts
-       * type Response = unknown
+       * type Response = object
        * ```
        */
-      deleteVaultOptionById<Config extends Alova2MethodConfig<unknown>>(
+      deleteVaultOptionById<Config extends Alova2MethodConfig<object>>(
         config?: Config
-      ): Alova2Method<unknown, 'vault.deleteVaultOptionById', Config>;
+      ): Alova2Method<object, 'vault.deleteVaultOptionById', Config>;
+      /**
+       * ---
+       *
+       * [GET] Get lifecycle definitions
+       *
+       * **path:** /vaults/{vaultId}/lifecycle-definitions
+       *
+       * ---
+       *
+       * **Query Parameters**
+       * ```ts
+       * type QueryParameters = {
+       *   // If true, the response will include additional detailed information for each entity. Examples include:
+       *   // - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+       *   // - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+       *   // - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+       *   // - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+       *   'option[extendedModels]'?: boolean
+       *   // Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
+       *   // which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+       *   limit?: number
+       *   // Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
+       *   cursorState?: string
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = {
+       *   // [title] Cursor-based pagination
+       *   pagination?: {
+       *     // Limit requested for the current search
+       *     limit?: number
+       *     // Number of total hits. If this value is larger than the objects returned, then multiple searches will have to be performed to get the complete result set.
+       *     totalResults?: number
+       *     // [title] Indexing Status
+       *     // The status of the indexing engine.
+       *     indexingStatus?: 'IndexingComplete' | 'IndexingProperties' | 'IndexingContent' | 'NA'
+       *     // Used to continue a search if the results are too large for a single call. Url has bookmark string embedded for subsequent calls on that search
+       *     nextUrl?: string
+       *   }
+       *   // [items] start
+       *   // [items] end
+       *   results?: Array<{
+       *     id?: string
+       *     name?: string
+       *     displayName?: string
+       *     url?: string
+       *     // [items] start
+       *     // [items] end
+       *     states?: Array<{
+       *       id?: string
+       *       name?: string
+       *       displayName?: string
+       *       url?: string
+       *     }>
+       *   }>
+       * }
+       * ```
+       */
+      getLifecycleDefinitions<
+        Config extends Alova2MethodConfig<{
+          /**
+           * Cursor-based pagination
+           * ---
+           */
+          pagination?: CursorBasedPagination;
+          results?: Array<{
+            id?: string;
+            name?: string;
+            displayName?: string;
+            url?: string;
+            states?: Array<{
+              id?: string;
+              name?: string;
+              displayName?: string;
+              url?: string;
+            }>;
+          }>;
+        }> & {
+          params: {
+            /**
+             * If true, the response will include additional detailed information for each entity. Examples include:
+             * - For folders (getFolders API), it will return `FolderExtended` instead of `Folder`, which includes additional information such as the parent folder.
+             * - For file versions (getFileVersions API), it will return `FileVersionExtended` instead of `FileVersion`, which includes extra details like the checkout user ID.
+             * - For change orders (getChangeOrders API), it will return `ChangeOrderExtended` instead of `ChangeOrder`, which provides further information such as the list of assignees.
+             * - For property definitions (getPropertyDefinitions API), it will return `PropertyDefinitionExtended` instead of `PropertyDefinition`, which includes extra details like list values.
+             */
+            'option[extendedModels]'?: boolean;
+            /**
+             * Specifies the number of results to return per page. Maximum limit is controlled by "Page size conifguration" setting
+             * which could be updated using ADMS ("Global Setting" -> "Page size conifguration").
+             */
+            limit?: number;
+            /**
+             * Indicates the state of the cursor for pagination. Use this parameter to navigate through paged results
+             */
+            cursorState?: string;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<
+        {
+          /**
+           * Cursor-based pagination
+           * ---
+           */
+          pagination?: CursorBasedPagination;
+          results?: Array<{
+            id?: string;
+            name?: string;
+            displayName?: string;
+            url?: string;
+            states?: Array<{
+              id?: string;
+              name?: string;
+              displayName?: string;
+              url?: string;
+            }>;
+          }>;
+        },
+        'vault.getLifecycleDefinitions',
+        Config
+      >;
+      /**
+       * ---
+       *
+       * [POST] Update file lifecycle states
+       *
+       * **path:** /vaults/{vaultId}/files:update-states
+       *
+       * ---
+       *
+       * **RequestBody**
+       * ```ts
+       * type RequestBody = {
+       *   // [items] start
+       *   // [items] end
+       *   updateLifecycleStateRequests: Array<{
+       *     entityUrl: string
+       *     lifecycleStateUrl: string
+       *     lifecycleDefinitionUrl?: string
+       *     revision?: string
+       *   }>
+       *   comment?: string
+       *   changeLifecycleDefinition?: boolean
+       *   specifyRevision?: boolean
+       * }
+       * ```
+       *
+       * ---
+       *
+       * **Response**
+       * ```ts
+       * type Response = Record<string, any>
+       * ```
+       */
+      updateFileLifecycleStatesByMasterIds<
+        Config extends Alova2MethodConfig<Record<string, any>> & {
+          data: {
+            updateLifecycleStateRequests: Array<{
+              entityUrl: string;
+              lifecycleStateUrl: string;
+              lifecycleDefinitionUrl?: string;
+              revision?: string;
+            }>;
+            comment?: string;
+            changeLifecycleDefinition?: boolean;
+            specifyRevision?: boolean;
+          };
+        }
+      >(
+        config: Config
+      ): Alova2Method<Record<string, any>, 'vault.updateFileLifecycleStatesByMasterIds', Config>;
     };
   }
 

@@ -17,30 +17,32 @@
  */
 import { Method } from 'alova';
 import apiDefinitions from './apiDefinitions';
-/**
- * @typedef {import('alova').AlovaGenerics} AlovaGenerics
- */
+
+const cache = Object.create(null);
 /**
  *
  * @param {(string|symbol)[]} array
- * @param {Alova<AlovaGenerics>} alovaInstance
+ * @param { import('alova').Alova<import('alova').AlovaGenerics> } alovaInstance
  * @param {any} configMap
  * @returns {()=>void}
  */
 const createFunctionalProxy = (array, alovaInstance, configMap) => {
+  const apiPathKey = array.join('.');
+  if (cache[apiPathKey]) {
+    return cache[apiPathKey];
+  }
   // create a new proxy instance
-  return new Proxy(function () {}, {
+  const proxy = new Proxy(function () {}, {
     get(_, property) {
       // record the target property, so that it can get the completed accessing paths
-      array.push(property);
+      const newArray = [...array, property];
       // always return a new proxy to continue recording accessing paths.
-      return createFunctionalProxy(array, alovaInstance, configMap);
+      return createFunctionalProxy(newArray, alovaInstance, configMap);
     },
     apply(_, __, [config]) {
-      const apiPathKey = array.join('.');
       const apiItem = apiDefinitions[apiPathKey];
       if (!apiItem) {
-        throw new Error(`the api path of \`${apiItem}\` is not found`);
+        throw new Error(`the api path of \`${apiPathKey}\` is not found`);
       }
       const mergedConfig = {
         ...configMap[apiPathKey],
@@ -58,9 +60,18 @@ const createFunctionalProxy = (array, alovaInstance, configMap) => {
         let hasBlobData = false;
         const formData = new FormData();
         for (const key in data) {
-          formData.append(key, data[key]);
-          if (data[key] instanceof Blob) {
-            hasBlobData = true;
+          if (Array.isArray(data[key])) {
+            for (const ele of data[key]) {
+              formData.append(key, ele);
+              if (ele instanceof Blob) {
+                hasBlobData = true;
+              }
+            }
+          } else {
+            formData.append(key, data[key]);
+            if (data[key] instanceof Blob) {
+              hasBlobData = true;
+            }
           }
         }
         data = hasBlobData ? formData : data;
@@ -68,10 +79,13 @@ const createFunctionalProxy = (array, alovaInstance, configMap) => {
       return new Method(method.toUpperCase(), alovaInstance, urlReplaced, mergedConfig, data);
     }
   });
+  cache[apiPathKey] = proxy;
+  return proxy;
 };
+
 /**
  *
- * @param {Alova<AlovaGenerics>} alovaInstance
+ * @param { import('alova').Alova<import('alova').AlovaGenerics> } alovaInstance
  * @param {any} configMap
  * @returns { Apis }
  */
@@ -84,16 +98,48 @@ export const createApis = (alovaInstance, configMap) => {
       }
     }
   );
-  // define global variable `Apis`
-  globalThis.Apis = Apis;
   return Apis;
 };
+
+/**
+ * @param { Apis } Apis
+ * @returns { void }
+ */
+export const mountApis = Apis => {
+  // define global variable `Apis`
+  globalThis.Apis = Apis;
+};
+
 /**
  * @template T
- * @typedef {import('alova').AlovaMethodCreateConfig<typeof import('./index')['alovaInstance'] extends import('alova').Alova<infer AG> ? AG : any, any, T>} MethodConfig
+ * @typedef {import('alova').AlovaMethodCreateConfig<
+ *  typeof import('./index')['alovaInstance'] extends import('alova').Alova<infer AG>
+ *   ? AG
+ *   : any,
+ *  any,
+ *  T
+ *>} MethodConfig
  */
 /**
- * @typedef {{ [P in keyof typeof import('./apiDefinitions').default]?: MethodConfig<P extends `${infer Tag}.${infer Url}` ? Parameters<Parameters<Apis[Tag][Url]>[0]['transform']>[0] : any> }} MethodsConfigMap
+ * @template {string} Tag
+ * @template {string} Url
+ * @typedef {Tag extends keyof Apis
+ *   ? Url extends keyof Apis[Tag]
+ *     ? Apis[Tag][Url] extends (...args: any) => any
+ *       ? Parameters<Apis[Tag][Url]>
+ *       : any
+ *     : any
+ *   : any
+ * } APISofParameters
+ */
+/**
+ * @typedef {{
+ *  [P in keyof typeof import('./apiDefinitions').default]?: MethodConfig<
+ *    P extends `${infer Tag}.${infer Url}`
+ *      ? Parameters<NonNullable<APISofParameters<Tag,Url>[0]>['transform']>[0]
+ *      : any
+ *  >
+ * }} MethodsConfigMap
  */
 /**
  * @template {MethodsConfigMap} Config
