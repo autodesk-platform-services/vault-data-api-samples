@@ -5,7 +5,11 @@ import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, message } f
 import { VAULT_API_BASE_URL } from '~/api'
 import { authStore } from '~/store/auth'
 import { filesStore, sync } from '~/store/filesStore'
-import { fetchLifecycleDefinitions, updateFileLifecycleStates } from '~/store/helper'
+import {
+  fetchLifecycleDefinitions,
+  updateFileLifecycleDefinitions,
+  updateFileLifecycleStates,
+} from '~/store/helper'
 
 const columns = [
   {
@@ -287,12 +291,23 @@ export default function Component({id='1'}) {
         }
 
         setIsSubmitting(true)
-        await updateFileLifecycleStates(session, {
-          updateLifecycleStateRequests: [request],
-          comment: values.comment,
-          changeLifecycleDefinition,
-          specifyRevision: changeLifecycleDefinition ? false : specifyRevision,
-        })
+        if(changeLifecycleDefinition){
+          await updateFileLifecycleDefinitions(session, {
+            updateLifecycleDefinitionRequests: [
+              {
+                entityUrl: request.entityUrl,
+                lifecycleDefinitionUrl: request.lifecycleDefinitionUrl,
+                lifecycleStateUrl: request.lifecycleStateUrl,
+              },
+            ],
+            comment: values.comment,
+          })
+        }else{
+          await updateFileLifecycleStates(session, {
+            updateLifecycleStateRequests: [request],
+            comment: values.comment,
+          })
+        }
         messageApi.success('Updated lifecycle state for selected file.')
         setIsDialogOpen(false)
         setSelectedFileKeys([])

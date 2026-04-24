@@ -597,9 +597,6 @@ export const updateFileLifecycleStates = async (session, payload = {}) => {
             entityUrl: String(item?.entityUrl || '').trim(),
             lifecycleStateUrl: String(item?.lifecycleStateUrl || '').trim(),
         }
-        if(item?.lifecycleDefinitionUrl){
-            request.lifecycleDefinitionUrl = String(item.lifecycleDefinitionUrl).trim()
-        }
         if(item?.revision){
             request.revision = String(item.revision)
         }
@@ -611,8 +608,6 @@ export const updateFileLifecycleStates = async (session, payload = {}) => {
     const requestBody = {
         updateLifecycleStateRequests: sanitizedRequests,
         ...(typeof payload.comment === 'string' && payload.comment.trim() ? { comment: payload.comment } : {}),
-        ...(typeof payload.changeLifecycleDefinition === 'boolean' ? { changeLifecycleDefinition: payload.changeLifecycleDefinition } : {}),
-        ...(typeof payload.specifyRevision === 'boolean' ? { specifyRevision: payload.specifyRevision } : {}),
     }
     if(!Array.isArray(requestBody.updateLifecycleStateRequests) || requestBody.updateLifecycleStateRequests.length === 0){
         throw new Error('updateLifecycleStateRequests must contain at least one request.')
@@ -631,6 +626,60 @@ export const updateFileLifecycleStates = async (session, payload = {}) => {
         throw buildVaultApiError(
             responsePayload,
             `Update lifecycle states failed (${responsePayload.statusCode})`
+        )
+    }
+    return responsePayload
+}
+
+export const updateFileLifecycleDefinitions = async (session, payload = {}) => {
+    if(!session?.vaultId || !session?.token){
+        throw new Error('No active Vault session.')
+    }
+    const rawRequests = payload.updateLifecycleDefinitionRequests
+    const requestsArray =
+        rawRequests == null ? [] :
+        Array.isArray(rawRequests) ? rawRequests :
+        null
+    if(requestsArray === null){
+        throw new Error('updateLifecycleDefinitionRequests must be an array.')
+    }
+    const sanitizedRequests = requestsArray.map((item) => {
+        const request = {
+            entityUrl: String(item?.entityUrl || '').trim(),
+            lifecycleDefinitionUrl: String(item?.lifecycleDefinitionUrl || '').trim(),
+            lifecycleStateUrl: String(item?.lifecycleStateUrl || '').trim(),
+        }
+        if(!request.entityUrl || !request.lifecycleDefinitionUrl || !request.lifecycleStateUrl){
+            throw new Error(
+                'entityUrl, lifecycleDefinitionUrl and lifecycleStateUrl are required and must be non-empty strings.'
+            )
+        }
+        return request
+    })
+    const requestBody = {
+        updateLifecycleDefinitionRequests: sanitizedRequests,
+        ...(typeof payload.comment === 'string' && payload.comment.trim() ? { comment: payload.comment } : {}),
+    }
+    if(
+        !Array.isArray(requestBody.updateLifecycleDefinitionRequests) ||
+        requestBody.updateLifecycleDefinitionRequests.length === 0
+    ){
+        throw new Error('updateLifecycleDefinitionRequests must contain at least one request.')
+    }
+    const responsePayload = await Apis.vault.updateFileLifecycleDefinitions({
+        pathParams: {
+            vaultId: session.vaultId,
+        },
+        headers: {
+            'content-type': 'application/json',
+            'authorization': session.token,
+        },
+        data: requestBody,
+    })
+    if(responsePayload?.statusCode && responsePayload.statusCode >= 400){
+        throw buildVaultApiError(
+            responsePayload,
+            `Update lifecycle definitions failed (${responsePayload.statusCode})`
         )
     }
     return responsePayload
