@@ -258,7 +258,7 @@ namespace VaultDataAPISampleApp
                     ConfigId = configId,
                     WorkflowType = workflowType,
                     Description = $"Sync to Fusion Manage ({i.Id})",
-                    SendAgentEvent = true
+                    ExecuteImmediately = true
                 }).ToList();
 
                 var tasks = await VaultAPIService.Instance.BatchCreateExtSyncTasksAsync(requests);
@@ -287,7 +287,7 @@ namespace VaultDataAPISampleApp
                     ConfigId = configId,
                     WorkflowType = workflowType,
                     Description = $"Sync to Fusion Manage ({item.Id})",
-                    SendAgentEvent = true
+                    ExecuteImmediately = true
                 };
 
                 var task = await VaultAPIService.Instance.CreateExtSyncTaskAsync(request);

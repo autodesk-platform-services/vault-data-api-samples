@@ -26,7 +26,7 @@ namespace VaultDataAPISampleApp.Models
         public string Description { get; set; }
         public string Status { get; set; }
         public Dictionary<string, string> Params { get; set; }
-        public bool SendAgentEvent { get; set; }
+        public bool ExecuteImmediately { get; set; }
         public string PredecessorTaskId { get; set; }
         public long VaultId { get; set; }
         public long UserId { get; set; }
@@ -41,7 +41,7 @@ namespace VaultDataAPISampleApp.Models
         public string WorkflowType { get; set; }
         public string Description { get; set; }
         public Dictionary<string, string> Params { get; set; }
-        public bool SendAgentEvent { get; set; }
+        public bool ExecuteImmediately { get; set; }
         public string PredecessorTaskId { get; set; }
     }
 
