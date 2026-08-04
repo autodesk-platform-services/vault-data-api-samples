@@ -92,5 +92,8 @@ export default {
   'vault.createVaultOption': ['POST', '/vaults/{vaultId}/vault-options'],
   'vault.getVaultOptionById': ['GET', '/vaults/{vaultId}/vault-options/{id}'],
   'vault.updateVaultOptionById': ['PATCH', '/vaults/{vaultId}/vault-options/{id}'],
-  'vault.deleteVaultOptionById': ['DELETE', '/vaults/{vaultId}/vault-options/{id}']
+  'vault.deleteVaultOptionById': ['DELETE', '/vaults/{vaultId}/vault-options/{id}'],
+  'vault.getLifecycleDefinitions': ['GET', '/vaults/{vaultId}/lifecycle-definitions'],
+  'vault.updateFileLifecycleStatesByMasterIds': ['POST', '/vaults/{vaultId}/files:update-states'],
+  'vault.updateFileLifecycleDefinitions': ['POST', '/vaults/{vaultId}/files:update-lifecycle-definitions']
 };

@@ -4,6 +4,8 @@ It is a Single Page Application (SPA), which renders on the client side (browser
 ## Requirements
 - Node.js (NPM)
 - Editor - VS Code
+- If you plan to use the lifecycle state update APIs, make sure a valid license is available.
+- In ADMS Console, enter the Network License server URL first so the license check can pass.
 
 ## Framework and Libraries
 - Build tool
