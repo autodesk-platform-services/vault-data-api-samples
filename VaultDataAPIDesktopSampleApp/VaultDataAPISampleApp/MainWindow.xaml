@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:local="clr-namespace:VaultDataAPISampleApp.Converters"
+        xmlns:views="clr-namespace:VaultDataAPISampleApp"
         mc:Ignorable="d"
         Title="Vault Data API Sample App" Height="900" Width="1200" Icon="/favicon-32x32.png">
     <Window.Resources>
@@ -189,6 +190,9 @@
                                 </ListView.View>
                             </ListView>
                         </Grid>
+                    </TabItem>
+                    <TabItem Header="External Sync">
+                        <views:ExternalSyncTabControl/>
                     </TabItem>
                 </TabControl>
             </Grid>
