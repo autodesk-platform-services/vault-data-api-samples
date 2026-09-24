@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace VaultDataAPISampleApp.Models
 {
@@ -12,7 +11,7 @@ namespace VaultDataAPISampleApp.Models
     {
         public string? Id { get; set; }
 
-        [JsonProperty("accessToken")]
+        [JsonPropertyName("accessToken")]
         public required string Authorization { get; set; }
 
         public DateTime CreateDate { get; set; }

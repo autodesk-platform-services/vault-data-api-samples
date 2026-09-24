@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VaultDataAPISampleApp.Models;
 
 namespace VaultDataAPISampleApp
@@ -18,10 +19,15 @@ namespace VaultDataAPISampleApp
     /// </summary>
     public partial class ExternalSyncTabControl : UserControl
     {
-        private const string DefaultExtSyncConfigId = "Adsk.Vault.ExternalSyncTask.FusionManage";
-        private const string DefaultExtSyncWorkflowType = "Adsk.UploadItem";
-        private const string FusionManageDetailsInfoName = "Adsk.FusionManage.Details";
-        private const string FusionManageStatusInfoName = "Adsk.FusionManage.Status";
+        private static readonly JsonSerializerOptions s_indentedJsonOptions = new()
+        {
+            WriteIndented = true
+        };
+
+        private const string s_defaultExtSyncConfigId = "Adsk.Vault.ExternalSyncTask.FusionManage";
+        private const string s_defaultExtSyncWorkflowType = "Adsk.UploadItem";
+        private const string s_fusionManageDetailsInfoName = "Adsk.FusionManage.Details";
+        private const string s_fusionManageStatusInfoName = "Adsk.FusionManage.Status";
 
         private enum WorkResultStatus
         {
@@ -37,41 +43,72 @@ namespace VaultDataAPISampleApp
 
         private bool _isRefreshingSyncInfo;
         private CancellationTokenSource? _syncInfoCts;
+        private string? _selectedVaultId;
 
         public ExternalSyncTabControl(VaultAPIService vaultAPIService)
         {
             InitializeComponent();
             _vaultAPIService = vaultAPIService;
+            DataContext = null;
+            ItemsGrid.DataContext = null;
+            SyncTasksGrid.DataContext = null;
             ItemsGrid.ItemsSource = _itemsData;
         }
 
-        private bool VerifyTokenAndVaultIsReady()
+        internal string? SelectedVaultId
         {
-            string? clientId = _vaultAPIService.GetClientId();
-            string? token = _vaultAPIService.GetAccessToken();
-            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(token))
+            get
             {
-                MessageBox.Show("Please login first");
-                return false;
+                return _selectedVaultId;
             }
+            set
+            {
+                if (string.Equals(_selectedVaultId, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
 
-            return true;
+                _selectedVaultId = value;
+                ResetVaultState();
+            }
         }
 
-        private VaultAPIService? GetReadyService()
+        private string? GetReadyVaultId()
         {
-            if (!VerifyTokenAndVaultIsReady()) return null;
+            if (!_vaultAPIService.HasAccessToken)
+            {
+                MessageBox.Show("Please login first");
+                return null;
+            }
 
-            return _vaultAPIService;
+            if (string.IsNullOrWhiteSpace(SelectedVaultId))
+            {
+                MessageBox.Show("Please select a vault first");
+                return null;
+            }
+
+            return SelectedVaultId;
         }
 
         private async void LoadConfigs_Click(object sender, RoutedEventArgs e)
         {
-            VaultAPIService? service = GetReadyService();
-            if (service == null) return;
+            await RunUiOperationAsync(LoadConfigsAsync);
+        }
+
+        private async Task LoadConfigsAsync()
+        {
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
 
             ExtSyncConfigsText.Text = "Loading configs...";
-            var configs = await service.GetExtSyncConfigsAsync();
+            var configs = await _vaultAPIService.GetExtSyncConfigsAsync(vaultId);
+            if (!IsCurrentVault(vaultId))
+            {
+                return;
+            }
 
             if (configs != null && configs.Count > 0)
             {
@@ -97,8 +134,16 @@ namespace VaultDataAPISampleApp
 
         private async void ListTasks_Click(object sender, RoutedEventArgs e)
         {
-            VaultAPIService? service = GetReadyService();
-            if (service == null) return;
+            await RunUiOperationAsync(ListTasksAsync);
+        }
+
+        private async Task ListTasksAsync()
+        {
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
 
             int limit = int.TryParse(TaskListLimitInput.Text, out var parsed) ? parsed : 50;
             SyncTasksGroupBox.Header = "Sync Tasks - All";
@@ -106,27 +151,55 @@ namespace VaultDataAPISampleApp
             SyncTasksEmptyText.Visibility = Visibility.Visible;
             SyncTasksGrid.ItemsSource = null;
 
-            var result = await service.GetExtSyncTasksAsync(limit: limit);
-            if (result == null) return;
+            var result = await _vaultAPIService.GetExtSyncTasksAsync(vaultId, limit: limit);
+            if (!IsCurrentVault(vaultId))
+            {
+                return;
+            }
+
+            if (result == null)
+            {
+                return;
+            }
 
             SyncTasksGrid.ItemsSource = result.Results;
             var count = result.Results?.Count ?? 0;
             SyncTasksEmptyText.Visibility = count > 0 ? Visibility.Collapsed : Visibility.Visible;
-            if (count == 0) SyncTasksEmptyText.Text = "No tasks found.";
+            if (count == 0)
+            {
+                SyncTasksEmptyText.Text = "No tasks found.";
+            }
+
             SetStatus($"Listed {count} task(s) (limit={limit}).");
         }
 
         private async void LoadItems_Click(object sender, RoutedEventArgs e)
         {
-            VaultAPIService? service = GetReadyService();
-            if (service == null) return;
+            await RunUiOperationAsync(LoadItemsAsync);
+        }
+
+        private async Task LoadItemsAsync()
+        {
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
 
             int limit = int.TryParse(ItemListLimitInput.Text, out var parsed) ? parsed : 50;
             ItemsEmptyText.Text = "Loading items...";
             ItemsEmptyText.Visibility = Visibility.Visible;
 
-            var result = await service.GetItemVersionsAsync(limit: limit);
-            if (result == null) return;
+            var result = await _vaultAPIService.GetItemVersionsAsync(vaultId, limit: limit);
+            if (!IsCurrentVault(vaultId))
+            {
+                return;
+            }
+
+            if (result == null)
+            {
+                return;
+            }
 
             _itemsData.Clear();
             foreach (var item in result.Results ?? new List<ItemVersionResponse>())
@@ -135,14 +208,22 @@ namespace VaultDataAPISampleApp
             }
 
             ItemsEmptyText.Visibility = _itemsData.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
-            if (_itemsData.Count == 0) ItemsEmptyText.Text = "No items found.";
+            if (_itemsData.Count == 0)
+            {
+                ItemsEmptyText.Text = "No items found.";
+            }
+
             SetStatus($"Loaded {_itemsData.Count} items.");
         }
 
         private async void ItemsGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = ItemsGrid.SelectedItem as ItemVersionResponse;
-            if (item == null)
+            await RunUiOperationAsync(HandleItemsGridSelectionChangedAsync);
+        }
+
+        private async Task HandleItemsGridSelectionChangedAsync()
+        {
+            if (ItemsGrid.SelectedItem is not ItemVersionResponse item)
             {
                 RefreshSyncInfoButton.IsEnabled = false;
                 ClearSyncInfoCards();
@@ -152,17 +233,28 @@ namespace VaultDataAPISampleApp
                 return;
             }
 
-            if (GetReadyService() == null) return;
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
 
             var hasMasterId = !string.IsNullOrWhiteSpace(item.Item?.Id);
             RefreshSyncInfoButton.IsEnabled = !_isRefreshingSyncInfo && hasMasterId;
             ExtSyncSelectedItemText.Text = $"Selected: {item.Number} (Id: {item.Id})";
-            await RefreshSyncInfoForItemAsync(item, $"Loading sync info for '{item.Number}'...");
+            await RefreshSyncInfoForItemAsync(
+                vaultId,
+                item,
+                $"Loading sync info for '{item.Number}'...");
         }
 
-        private async System.Threading.Tasks.Task RefreshSyncInfoForItemAsync(ItemVersionResponse item, string loadingStatusMessage)
+        private async Task RefreshSyncInfoForItemAsync(
+            string vaultId,
+            ItemVersionResponse item,
+            string loadingStatusMessage)
         {
             _syncInfoCts?.Cancel();
+            _syncInfoCts?.Dispose();
             _syncInfoCts = new CancellationTokenSource();
             var cts = _syncInfoCts;
 
@@ -181,7 +273,11 @@ namespace VaultDataAPISampleApp
                 var itemMasterId = item.Item?.Id;
                 if (string.IsNullOrWhiteSpace(itemMasterId))
                 {
-                    if (cts.IsCancellationRequested) return;
+                    if (cts.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     ClearSyncInfoCards();
                     SyncInfoEmptyText.Text = $"Item '{item.Number}' has no master id.";
                     SyncInfoEmptyText.Visibility = Visibility.Visible;
@@ -189,8 +285,13 @@ namespace VaultDataAPISampleApp
                     return;
                 }
 
-                var syncInfoResult = await _vaultAPIService.GetItemExtSyncInfosAsync(itemMasterId);
-                if (cts.IsCancellationRequested) return;
+                var syncInfoResult = await _vaultAPIService.GetItemExtSyncInfosAsync(
+                    vaultId,
+                    itemMasterId);
+                if (cts.IsCancellationRequested || !IsCurrentVault(vaultId))
+                {
+                    return;
+                }
 
                 var infos = syncInfoResult?.Results;
                 if (infos != null && infos.Count > 0)
@@ -211,45 +312,73 @@ namespace VaultDataAPISampleApp
             finally
             {
                 if (!cts.IsCancellationRequested)
+                {
                     SetSyncInfoRefreshBusy(false);
+                }
             }
         }
 
         private async void RefreshSyncInfoButton_Click(object sender, RoutedEventArgs e)
         {
-            var item = ItemsGrid.SelectedItem as ItemVersionResponse;
-            if (item == null)
+            await RunUiOperationAsync(RefreshSelectedSyncInfoAsync);
+        }
+
+        private async Task RefreshSelectedSyncInfoAsync()
+        {
+            if (ItemsGrid.SelectedItem is not ItemVersionResponse item)
             {
                 SetStatus("Select an item first, then refresh sync info.");
                 return;
             }
 
-            if (GetReadyService() == null) return;
-            await RefreshSyncInfoForItemAsync(item, $"Refreshing sync info for '{item.Number}'...");
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
+
+            await RefreshSyncInfoForItemAsync(
+                vaultId,
+                item,
+                $"Refreshing sync info for '{item.Number}'...");
         }
 
         private async void CreateTaskButton_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var item = button?.DataContext as ItemVersionResponse;
-            if (item == null) return;
-            VaultAPIService? service = GetReadyService();
-            if (service == null) return;
+            await RunUiOperationAsync(() => CreateTaskAsync(sender));
+        }
 
-            var dialog = new CreateTaskConfirmWindow(DefaultExtSyncConfigId, DefaultExtSyncWorkflowType);
+        private async Task CreateTaskAsync(object sender)
+        {
+            var button = sender as Button;
+            if (button?.DataContext is not ItemVersionResponse item)
+            {
+                return;
+            }
+
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
+
+            var dialog = new CreateTaskConfirmWindow(s_defaultExtSyncConfigId, s_defaultExtSyncWorkflowType);
             var ownerWindow = Window.GetWindow(this);
             if (ownerWindow != null)
             {
                 dialog.Owner = ownerWindow;
             }
 
-            if (dialog.ShowDialog() != true) return;
+            if (dialog.ShowDialog() != true)
+            {
+                return;
+            }
 
             var configId = string.IsNullOrWhiteSpace(dialog.ConfigId)
-                ? DefaultExtSyncConfigId
+                ? s_defaultExtSyncConfigId
                 : dialog.ConfigId.Trim();
             var workflowType = string.IsNullOrWhiteSpace(dialog.WorkflowType)
-                ? DefaultExtSyncWorkflowType
+                ? s_defaultExtSyncWorkflowType
                 : dialog.WorkflowType.Trim();
 
             var selectedItems = ItemsGrid.SelectedItems.Cast<ItemVersionResponse>().ToList();
@@ -276,8 +405,18 @@ namespace VaultDataAPISampleApp
                     });
                 }
 
-                var tasks = await service.BatchCreateExtSyncTasksAsync(requests);
-                if (tasks == null) return;
+                var tasks = await _vaultAPIService.BatchCreateExtSyncTasksAsync(
+                    vaultId,
+                    requests);
+                if (!IsCurrentVault(vaultId))
+                {
+                    return;
+                }
+
+                if (tasks == null)
+                {
+                    return;
+                }
 
                 if (tasks.Count == 0)
                 {
@@ -312,8 +451,18 @@ namespace VaultDataAPISampleApp
                     ExecuteImmediately = true
                 };
 
-                var task = await service.CreateExtSyncTaskAsync(request);
-                if (task == null) return;
+                var task = await _vaultAPIService.CreateExtSyncTaskAsync(
+                    vaultId,
+                    request);
+                if (!IsCurrentVault(vaultId))
+                {
+                    return;
+                }
+
+                if (task == null)
+                {
+                    return;
+                }
 
                 SyncTasksGrid.ItemsSource = new List<ExtSyncTaskResponse> { task };
                 SyncTasksEmptyText.Visibility = Visibility.Collapsed;
@@ -323,11 +472,22 @@ namespace VaultDataAPISampleApp
 
         private async void DeleteTaskButton_Click(object sender, RoutedEventArgs e)
         {
+            await RunUiOperationAsync(() => DeleteTaskAsync(sender));
+        }
+
+        private async Task DeleteTaskAsync(object sender)
+        {
             var button = sender as Button;
-            var taskItem = button?.DataContext as ExtSyncTaskResponse;
-            if (taskItem == null) return;
-            VaultAPIService? service = GetReadyService();
-            if (service == null) return;
+            if (button?.DataContext is not ExtSyncTaskResponse taskItem)
+            {
+                return;
+            }
+
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
 
             string? taskId = taskItem.Id;
             if (string.IsNullOrWhiteSpace(taskId))
@@ -338,22 +498,44 @@ namespace VaultDataAPISampleApp
 
             var confirm = MessageBox.Show($"Are you sure you want to delete task '{taskId}'?",
                 "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (confirm != MessageBoxResult.Yes) return;
+            if (confirm != MessageBoxResult.Yes)
+            {
+                return;
+            }
 
-            var success = await service.DeleteExtSyncTaskAsync(taskId);
-            if (!success) return;
+            var success = await _vaultAPIService.DeleteExtSyncTaskAsync(vaultId, taskId);
+            if (!IsCurrentVault(vaultId))
+            {
+                return;
+            }
+
+            if (!success)
+            {
+                return;
+            }
 
             SetStatus($"Deleted task {taskId}.");
-            await RefreshSyncTasksGridAsync();
+            await RefreshSyncTasksGridAsync(vaultId);
         }
 
         private async void ResubmitTaskButton_Click(object sender, RoutedEventArgs e)
         {
+            await RunUiOperationAsync(() => ResubmitTaskAsync(sender));
+        }
+
+        private async Task ResubmitTaskAsync(object sender)
+        {
             var button = sender as Button;
-            var taskItem = button?.DataContext as ExtSyncTaskResponse;
-            if (taskItem == null) return;
-            VaultAPIService? service = GetReadyService();
-            if (service == null) return;
+            if (button?.DataContext is not ExtSyncTaskResponse taskItem)
+            {
+                return;
+            }
+
+            string? vaultId = GetReadyVaultId();
+            if (vaultId == null)
+            {
+                return;
+            }
 
             string? taskId = taskItem.Id;
             if (string.IsNullOrWhiteSpace(taskId))
@@ -362,23 +544,99 @@ namespace VaultDataAPISampleApp
                 return;
             }
 
-            var task = await service.ResubmitExtSyncTaskAsync(taskId);
-            if (task == null) return;
+            var task = await _vaultAPIService.ResubmitExtSyncTaskAsync(vaultId, taskId);
+            if (!IsCurrentVault(vaultId))
+            {
+                return;
+            }
+
+            if (task == null)
+            {
+                return;
+            }
 
             SetStatus($"Resubmitted task {task.Id}: Status={task.Status}");
-            await RefreshSyncTasksGridAsync();
+            await RefreshSyncTasksGridAsync(vaultId);
         }
 
-        private async System.Threading.Tasks.Task RefreshSyncTasksGridAsync()
+        private async Task RefreshSyncTasksGridAsync(string vaultId)
         {
             int limit = int.TryParse(TaskListLimitInput.Text, out var parsed) ? parsed : 50;
-            var result = await _vaultAPIService.GetExtSyncTasksAsync(limit: limit);
-            if (result == null) return;
+            var result = await _vaultAPIService.GetExtSyncTasksAsync(vaultId, limit: limit);
+            if (!IsCurrentVault(vaultId))
+            {
+                return;
+            }
+
+            if (result == null)
+            {
+                return;
+            }
 
             SyncTasksGrid.ItemsSource = result.Results;
             var count = result.Results?.Count ?? 0;
             SyncTasksEmptyText.Visibility = count > 0 ? Visibility.Collapsed : Visibility.Visible;
-            if (count == 0) SyncTasksEmptyText.Text = "No tasks found.";
+            if (count == 0)
+            {
+                SyncTasksEmptyText.Text = "No tasks found.";
+            }
+        }
+
+        private bool IsCurrentVault(string vaultId)
+        {
+            return string.Equals(_selectedVaultId, vaultId, StringComparison.Ordinal);
+        }
+
+        private void ResetVaultState()
+        {
+            _syncInfoCts?.Cancel();
+            _syncInfoCts?.Dispose();
+            _syncInfoCts = null;
+
+            _itemsData.Clear();
+            ItemsGrid.SelectedItem = null;
+            SyncTasksGrid.ItemsSource = null;
+            ExtSyncConfigsText.Text = string.Empty;
+            ExtSyncSelectedItemText.Text = string.Empty;
+            ExtSyncHintText.Text = "Please configure external sync mapping in Vault Client first, then click 'Load Configs' to verify.";
+            ExtSyncHintText.Foreground = new SolidColorBrush(
+                (Color)ColorConverter.ConvertFromString("#D13438"));
+            SyncTasksGroupBox.Header = "Sync Tasks";
+
+            LoadItemsPanel.IsEnabled = false;
+            ExtSyncContentPanel.IsEnabled = false;
+            ExtSyncContentPanel.Opacity = 0.5;
+
+            ItemsEmptyText.Text = "Click 'Load Items' to get started.";
+            ItemsEmptyText.Visibility = Visibility.Visible;
+            SyncTasksEmptyText.Text = "Click 'Load Tasks' to view tasks.";
+            SyncTasksEmptyText.Visibility = Visibility.Visible;
+            SyncInfoEmptyText.Text = "Select an item to view sync info.";
+            SyncInfoEmptyText.Visibility = Visibility.Visible;
+            ClearSyncInfoCards();
+            SetSyncInfoRefreshBusy(false);
+            SetStatus(string.Empty);
+        }
+
+        private async Task RunUiOperationAsync(Func<Task> operation)
+        {
+            try
+            {
+                await operation();
+            }
+            catch (OperationCanceledException)
+            {
+                SetStatus("Operation canceled.");
+            }
+            catch (Exception exception)
+            {
+                SetStatus(exception.Message);
+                MessageBox.Show(
+                    exception.Message,
+                    "Vault Data API",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void SetStatus(string message)
@@ -406,7 +664,7 @@ namespace VaultDataAPISampleApp
                     StatusBadgeText = null
                 };
 
-                if (string.Equals(info.Name, FusionManageDetailsInfoName, StringComparison.Ordinal))
+                if (string.Equals(info.Name, s_fusionManageDetailsInfoName, StringComparison.Ordinal))
                 {
                     displayInfo.Value = ConvertSyncStatusValue(info.Value);
                     displayInfo.ValuePopupContent = BuildFusionManageDetailsPopupContent(info.Value);
@@ -415,7 +673,7 @@ namespace VaultDataAPISampleApp
                         ? displayInfo.ValuePopupContent ?? string.Empty
                         : (displayInfo.Value ?? string.Empty);
                 }
-                else if (string.Equals(info.Name, FusionManageStatusInfoName, StringComparison.Ordinal))
+                else if (string.Equals(info.Name, s_fusionManageStatusInfoName, StringComparison.Ordinal))
                 {
                     displayInfo.Value = ConvertSyncStatusValue(info.Value);
                     displayInfo.DisplayValue = displayInfo.Value ?? string.Empty;
@@ -431,7 +689,10 @@ namespace VaultDataAPISampleApp
 
         private static string? ConvertSyncStatusValue(string? rawValue)
         {
-            if (string.IsNullOrWhiteSpace(rawValue)) return rawValue;
+            if (string.IsNullOrWhiteSpace(rawValue))
+            {
+                return rawValue;
+            }
 
             if (!int.TryParse(rawValue.Trim(), out var statusCode))
             {
@@ -448,30 +709,32 @@ namespace VaultDataAPISampleApp
 
         private static string? BuildFusionManageDetailsPopupContent(string? rawValue)
         {
-            if (string.IsNullOrWhiteSpace(rawValue)) return rawValue;
-            return TryFormatJsonText(rawValue);
+            return string.IsNullOrWhiteSpace(rawValue) ? rawValue : TryFormatJsonText(rawValue);
         }
 
         private static string TryFormatJsonText(string text)
         {
-            if (string.IsNullOrWhiteSpace(text)) return text;
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return text;
+            }
 
             var candidate = text.Trim();
-            JToken? parsedToken;
+            JsonNode? parsedNode;
 
-            if (TryParseJsonToken(candidate, out parsedToken))
+            if (TryParseJsonNode(candidate, out parsedNode))
             {
-                ReplaceStatusCodesWithNames(parsedToken);
-                return parsedToken.ToString(Formatting.Indented);
+                ReplaceStatusCodesWithNames(parsedNode);
+                return parsedNode.ToJsonString(s_indentedJsonOptions);
             }
 
             try
             {
-                var jsonString = JsonConvert.DeserializeObject<string>(candidate);
-                if (!string.IsNullOrWhiteSpace(jsonString) && TryParseJsonToken(jsonString, out parsedToken))
+                var jsonString = JsonSerializer.Deserialize<string>(candidate);
+                if (!string.IsNullOrWhiteSpace(jsonString) && TryParseJsonNode(jsonString, out parsedNode))
                 {
-                    ReplaceStatusCodesWithNames(parsedToken);
-                    return parsedToken.ToString(Formatting.Indented);
+                    ReplaceStatusCodesWithNames(parsedNode);
+                    return parsedNode.ToJsonString(s_indentedJsonOptions);
                 }
             }
             catch
@@ -480,22 +743,24 @@ namespace VaultDataAPISampleApp
             }
 
             var unescapedQuotes = candidate.Replace("\\\"", "\"");
-            if (TryParseJsonToken(unescapedQuotes, out parsedToken))
+            if (TryParseJsonNode(unescapedQuotes, out parsedNode))
             {
-                ReplaceStatusCodesWithNames(parsedToken);
-                return parsedToken.ToString(Formatting.Indented);
+                ReplaceStatusCodesWithNames(parsedNode);
+                return parsedNode.ToJsonString(s_indentedJsonOptions);
             }
 
             return text;
         }
 
-        private static bool TryParseJsonToken(string candidate, [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out JToken? token)
+        private static bool TryParseJsonNode(
+            string candidate,
+            [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] out JsonNode? node)
         {
-            token = null;
+            node = null;
             try
             {
-                token = JToken.Parse(candidate);
-                return true;
+                node = JsonNode.Parse(candidate);
+                return node is not null;
             }
             catch
             {
@@ -503,25 +768,23 @@ namespace VaultDataAPISampleApp
             }
         }
 
-        private static void ReplaceStatusCodesWithNames(JToken token)
+        private static void ReplaceStatusCodesWithNames(JsonNode node)
         {
-            var obj = token as JObject;
-            if (obj != null)
+            if (node is JsonObject obj)
             {
-                foreach (var property in obj.Properties().ToList())
+                foreach (KeyValuePair<string, JsonNode?> property in obj.ToList())
                 {
-                    if (string.Equals(property.Name, "status", StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(property.Key, "status", StringComparison.OrdinalIgnoreCase))
                     {
-                        var rawStatus = property.Value == null ? null : property.Value.ToString();
+                        var rawStatus = property.Value?.ToString();
                         var mapped = ConvertSyncStatusValue(rawStatus);
                         if (!string.IsNullOrWhiteSpace(mapped) && !string.Equals(mapped, rawStatus, StringComparison.Ordinal))
                         {
-                            property.Value = mapped;
+                            obj[property.Key] = mapped;
                         }
                     }
 
-                    JToken? propertyValue = property.Value;
-                    if (propertyValue != null)
+                    if (obj[property.Key] is JsonNode propertyValue)
                     {
                         ReplaceStatusCodesWithNames(propertyValue);
                     }
@@ -530,12 +793,14 @@ namespace VaultDataAPISampleApp
                 return;
             }
 
-            var arr = token as JArray;
-            if (arr != null)
+            if (node is JsonArray array)
             {
-                foreach (var child in arr)
+                foreach (JsonNode? child in array)
                 {
-                    ReplaceStatusCodesWithNames(child);
+                    if (child is not null)
+                    {
+                        ReplaceStatusCodesWithNames(child);
+                    }
                 }
             }
         }
@@ -544,8 +809,7 @@ namespace VaultDataAPISampleApp
         {
             _isRefreshingSyncInfo = isBusy;
 
-            var iconTransform = RefreshSyncInfoIcon?.RenderTransform as RotateTransform;
-            if (iconTransform != null)
+            if (RefreshSyncInfoIcon?.RenderTransform is RotateTransform iconTransform)
             {
                 if (isBusy)
                 {
@@ -589,9 +853,9 @@ namespace VaultDataAPISampleApp
             }
 
             var statusInfo = infos.FirstOrDefault(i =>
-                string.Equals(i.Name, FusionManageStatusInfoName, StringComparison.Ordinal));
+                string.Equals(i.Name, s_fusionManageStatusInfoName, StringComparison.Ordinal));
             var detailsInfo = infos.FirstOrDefault(i =>
-                string.Equals(i.Name, FusionManageDetailsInfoName, StringComparison.Ordinal));
+                string.Equals(i.Name, s_fusionManageDetailsInfoName, StringComparison.Ordinal));
 
             if (detailsInfo == null)
             {

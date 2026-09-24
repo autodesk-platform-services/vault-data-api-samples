@@ -1,105 +1,83 @@
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using System.Windows;
-using Newtonsoft.Json;
 using VaultDataAPISampleApp.Models;
+using VaultDataAPISampleApp.Services;
 
 
 namespace VaultDataAPISampleApp
 {
-    public class VaultAPIService : IDisposable
+    public class VaultAPIService
     {
-        private VaultResponse? vaultServer;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly string apiUrl;
+        private readonly string _apiUrl;
 
-        private HttpClient client;
-        private string serverAddress = string.Empty;
-        private string? accessToken;
-        private string? clientId;
-        private bool disposed = false;
+        private string _serverAddress = string.Empty;
+        private string? _accessToken;
 
-        public VaultAPIService()
+        internal bool HasAccessToken => !string.IsNullOrWhiteSpace(_accessToken);
+
+        private Uri BaseUri
         {
-            apiUrl = GetRequiredAppSetting("ApiBaseUri");
-            client = new HttpClient();
+            get
+            {
+                string serverAddress = _serverAddress.TrimEnd('/');
+                return new Uri(serverAddress + _apiUrl, UriKind.Absolute);
+            }
         }
 
-        public void SetClientId(string id)
+        public VaultAPIService(
+            IOptions<VaultOptions> options,
+            IHttpClientFactory httpClientFactory)
         {
-            clientId = id;
+            _httpClientFactory = httpClientFactory;
+            _apiUrl = options.Value.ApiBaseUri;
         }
 
-        public string? GetClientId()
+        internal void SetAccessToken(string accessToken)
         {
-            return clientId;
+            ArgumentException.ThrowIfNullOrWhiteSpace(accessToken);
+            _accessToken = accessToken;
         }
 
-        public void SetAccessToken(string token)
+        public void ChangeServerAddress(string serverAddress)
         {
-            accessToken = token;
-            SetToken(token);
-        }
+            ArgumentException.ThrowIfNullOrWhiteSpace(serverAddress);
 
-        public string? GetAccessToken()
-        {
-            return accessToken;
-        }
-
-        public string GetServerAddress()
-        {
-            return serverAddress;
-        }
-
-        public void SetServerAddress(string server)
-        {
-            if (string.Equals(serverAddress, server, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(
+                    _serverAddress,
+                    serverAddress,
+                    StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            serverAddress = server;
-            accessToken = null;
-            vaultServer = null;
-
-            client.Dispose();
-            client = new HttpClient
-            {
-                BaseAddress = new Uri(GetBaseUrl())
-            };
-        }
-
-        public string GetBaseUrl()
-        {
-            var processedServerAddress = serverAddress.EndsWith("/") ? serverAddress.TrimEnd('/') : serverAddress;
-            return processedServerAddress + apiUrl;
-        }
-
-        public void SetVaultServer(VaultResponse vaultResponse)
-        {
-            vaultServer = vaultResponse;
+            _serverAddress = serverAddress;
+            _accessToken = null;
         }
 
         public async Task<bool> Login(string userName, string password)
         {
             var loginInput = new { input = new { vault = "Vault", userName = "administrator", password = "", appCode = "TC"  } };
-            var json = JsonConvert.SerializeObject(loginInput);
+            var json = JsonSerializer.Serialize(loginInput, JsonSerializerOptions.Web);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await client.PostAsync("sessions", content);
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync("sessions", content);
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Login successful");
                 var responseContent = await response.Content.ReadAsStringAsync();
-                SessionResponse? loginResponse = JsonConvert.DeserializeObject<SessionResponse>(responseContent);
+                SessionResponse? loginResponse = JsonSerializer.Deserialize<SessionResponse>(responseContent, JsonSerializerOptions.Web);
                 if (string.IsNullOrWhiteSpace(loginResponse?.Authorization))
                 {
-                    MessageBox.Show("The login response did not contain an access token.");
+                    Console.WriteLine("The login response did not contain an access token.");
                     return false;
                 }
 
@@ -113,356 +91,381 @@ namespace VaultDataAPISampleApp
             }
         }
 
-        public void SetToken(string token)
-        {
-            if (!string.IsNullOrEmpty(token))
-            {
-                if (client.DefaultRequestHeaders.Contains("Authorization"))
-                {
-                    client.DefaultRequestHeaders.Remove("Authorization");
-                }
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-            }
-        }
-
-
         public async Task<PaginationResponse<UserResponse>?> GetUsersAsync()
         {
-            HttpResponseMessage response = await client.GetAsync("users");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync("users");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<PaginationResponse<UserResponse>>(responseContent);
+                return JsonSerializer.Deserialize<PaginationResponse<UserResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
         public async Task<PaginationResponse<GroupResponse>?> GetGroupsAsync()
         {
-            HttpResponseMessage response = await client.GetAsync("groups");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync("groups");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<PaginationResponse<GroupResponse>>(responseContent);
+                return JsonSerializer.Deserialize<PaginationResponse<GroupResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<PaginationResponse<FileVersionResponse>?> GetFilesAsync()
+        public async Task<PaginationResponse<FileVersionResponse>?> GetFilesAsync(string vaultId)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/file-versions?limit=1000");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/file-versions?limit=1000");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<PaginationResponse<FileVersionResponse>>(responseContent);
+                return JsonSerializer.Deserialize<PaginationResponse<FileVersionResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<VaultResponse?> GetVaultServerInfoAsync()
+        public async Task<VaultResponse?> GetVaultServerInfoAsync(string vaultId)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<VaultResponse>(responseContent);
+                return JsonSerializer.Deserialize<VaultResponse>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
         public async Task<PaginationResponse<VaultResponse>?> GetVaultsAsync()
         {
-            HttpResponseMessage response = await client.GetAsync("vaults");
+            using HttpClient client = CreateClientWithoutAuth();
+            using HttpResponseMessage response = await client.GetAsync("vaults");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<PaginationResponse<VaultResponse>>(responseContent);
+                return JsonSerializer.Deserialize<PaginationResponse<VaultResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<CursorPaginationResponse<ItemVersionResponse>?> GetItemVersionsAsync(int limit = 50)
+        public async Task<CursorPaginationResponse<ItemVersionResponse>?> GetItemVersionsAsync(
+            string vaultId,
+            int limit = 50)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/item-versions?limit={limit}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/item-versions?limit={limit}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<CursorPaginationResponse<ItemVersionResponse>>(responseContent);
+                return JsonSerializer.Deserialize<CursorPaginationResponse<ItemVersionResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<Dictionary<string, string>?> GetExtSyncConfigsAsync()
+        public async Task<Dictionary<string, string>?> GetExtSyncConfigsAsync(string vaultId)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/vault-options/ext-sync-configs");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/vault-options/ext-sync-configs");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Dictionary<string, string>>(responseContent);
+                return JsonSerializer.Deserialize<Dictionary<string, string>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<ExtSyncTaskResponse?> CreateExtSyncTaskAsync(CreateExtSyncTaskRequest request)
+        public async Task<ExtSyncTaskResponse?> CreateExtSyncTaskAsync(
+            string vaultId,
+            CreateExtSyncTaskRequest request)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks", content);
+            var content = new StringContent(JsonSerializer.Serialize(request, JsonSerializerOptions.Web), Encoding.UTF8, "application/json");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<ExtSyncTaskResponse>(responseContent);
+                return JsonSerializer.Deserialize<ExtSyncTaskResponse>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<CursorPaginationResponse<ExtSyncTaskResponse>?> GetExtSyncTasksAsync(int limit = 10, string? cursorState = null)
+        public async Task<CursorPaginationResponse<ExtSyncTaskResponse>?> GetExtSyncTasksAsync(
+            string vaultId,
+            int limit = 10,
+            string? cursorState = null)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
             var url = $"vaults/{vaultId}/ext-sync-tasks?limit={limit}";
             if (!string.IsNullOrEmpty(cursorState))
+            {
                 url += $"&cursorState={Uri.EscapeDataString(cursorState)}";
-            HttpResponseMessage response = await client.GetAsync(url);
+            }
+
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<CursorPaginationResponse<ExtSyncTaskResponse>>(responseContent);
+                return JsonSerializer.Deserialize<CursorPaginationResponse<ExtSyncTaskResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<ExtSyncTaskResponse?> GetExtSyncTaskByIdAsync(string id)
+        public async Task<ExtSyncTaskResponse?> GetExtSyncTaskByIdAsync(
+            string vaultId,
+            string id)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/ext-sync-tasks/{id}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/ext-sync-tasks/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<ExtSyncTaskResponse>(responseContent);
+                return JsonSerializer.Deserialize<ExtSyncTaskResponse>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<bool> DeleteExtSyncTaskAsync(string id)
+        public async Task<bool> DeleteExtSyncTaskAsync(string vaultId, string id)
         {
-            if (!TryGetVaultId(out string? vaultId)) return false;
-            HttpResponseMessage response = await client.DeleteAsync($"vaults/{vaultId}/ext-sync-tasks/{id}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.DeleteAsync($"vaults/{vaultId}/ext-sync-tasks/{id}");
             if (response.IsSuccessStatusCode)
             {
                 return true;
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return false;
             }
         }
 
-        public async Task<ExtSyncTaskResponse?> ResubmitExtSyncTaskAsync(string id)
+        public async Task<ExtSyncTaskResponse?> ResubmitExtSyncTaskAsync(
+            string vaultId,
+            string id)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
             var content = new StringContent("{}", Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks/{id}:resubmit", content);
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks/{id}:resubmit", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<ExtSyncTaskResponse>(responseContent);
+                return JsonSerializer.Deserialize<ExtSyncTaskResponse>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<List<ExtSyncTaskResponse>?> FindExtSyncTasksByEntityIdsAsync(FindExtSyncTasksByEntityIdsRequest request)
+        public async Task<List<ExtSyncTaskResponse>?> FindExtSyncTasksByEntityIdsAsync(
+            string vaultId,
+            FindExtSyncTasksByEntityIdsRequest request)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            var content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks:find-by-entity-ids", content);
+            var content = new StringContent(JsonSerializer.Serialize(request, JsonSerializerOptions.Web), Encoding.UTF8, "application/json");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks:find-by-entity-ids", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ExtSyncTaskResponse>>(responseContent);
+                return JsonSerializer.Deserialize<List<ExtSyncTaskResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<List<ExtSyncTaskResponse>?> BatchCreateExtSyncTasksAsync(List<CreateExtSyncTaskRequest> requests)
+        public async Task<List<ExtSyncTaskResponse>?> BatchCreateExtSyncTasksAsync(
+            string vaultId,
+            List<CreateExtSyncTaskRequest> requests)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            var content = new StringContent(JsonConvert.SerializeObject(requests), Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks:batch-create", content);
+            var content = new StringContent(JsonSerializer.Serialize(requests, JsonSerializerOptions.Web), Encoding.UTF8, "application/json");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync($"vaults/{vaultId}/ext-sync-tasks:batch-create", content);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<ExtSyncTaskResponse>>(responseContent);
+                return JsonSerializer.Deserialize<List<ExtSyncTaskResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<CursorPaginationResponse<ExtSyncInfoResponse>?> GetItemVersionExtSyncInfosAsync(string itemVersionId, int limit = 10)
+        public async Task<CursorPaginationResponse<ExtSyncInfoResponse>?> GetItemVersionExtSyncInfosAsync(
+            string vaultId,
+            string itemVersionId,
+            int limit = 10)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/item-versions/{itemVersionId}/ext-sync-infos?limit={limit}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/item-versions/{itemVersionId}/ext-sync-infos?limit={limit}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<CursorPaginationResponse<ExtSyncInfoResponse>>(responseContent);
+                return JsonSerializer.Deserialize<CursorPaginationResponse<ExtSyncInfoResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<ExtSyncInfoResponse?> GetItemVersionExtSyncInfoAsync(string itemVersionId, string infoName)
+        public async Task<ExtSyncInfoResponse?> GetItemVersionExtSyncInfoAsync(
+            string vaultId,
+            string itemVersionId,
+            string infoName)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/item-versions/{itemVersionId}/ext-sync-infos/{Uri.EscapeDataString(infoName)}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/item-versions/{itemVersionId}/ext-sync-infos/{Uri.EscapeDataString(infoName)}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<ExtSyncInfoResponse>(responseContent);
+                return JsonSerializer.Deserialize<ExtSyncInfoResponse>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<CursorPaginationResponse<ExtSyncInfoResponse>?> GetItemExtSyncInfosAsync(string itemId, int limit = 10)
+        public async Task<CursorPaginationResponse<ExtSyncInfoResponse>?> GetItemExtSyncInfosAsync(
+            string vaultId,
+            string itemId,
+            int limit = 10)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/items/{itemId}/ext-sync-infos?limit={limit}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/items/{itemId}/ext-sync-infos?limit={limit}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<CursorPaginationResponse<ExtSyncInfoResponse>>(responseContent);
+                return JsonSerializer.Deserialize<CursorPaginationResponse<ExtSyncInfoResponse>>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task<ExtSyncInfoResponse?> GetItemExtSyncInfoAsync(string itemId, string infoName)
+        public async Task<ExtSyncInfoResponse?> GetItemExtSyncInfoAsync(
+            string vaultId,
+            string itemId,
+            string infoName)
         {
-            if (!TryGetVaultId(out string? vaultId)) return null;
-            HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/items/{itemId}/ext-sync-infos/{Uri.EscapeDataString(infoName)}");
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync($"vaults/{vaultId}/items/{itemId}/ext-sync-infos/{Uri.EscapeDataString(infoName)}");
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<ExtSyncInfoResponse>(responseContent);
+                return JsonSerializer.Deserialize<ExtSyncInfoResponse>(responseContent, JsonSerializerOptions.Web);
             }
             else
             {
-                await ShowErrorDialogAsync(response);
+                await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
         }
 
-        public async Task ShowErrorDialogAsync(HttpResponseMessage response)
+        private static async Task ThrowVaultApiExceptionAsync(HttpResponseMessage response)
         {
-            var errorContent = await response.Content.ReadAsStringAsync();
-            var errorDetails = JsonConvert.DeserializeObject<ErrorResponse>(errorContent);
-            if (errorDetails == null)
+            string errorContent = await response.Content.ReadAsStringAsync();
+            string message = $"Vault API returned HTTP {(int)response.StatusCode}.";
+
+            try
             {
-                MessageBox.Show($"Status code: {(int)response.StatusCode}. Error Detail: {errorContent}");
-                return;
-            }
-
-            MessageBox.Show($"Status code: {errorDetails.StatusCode}. Error Code {errorDetails.ErrorCode}. Error Detail: {errorDetails.Detail}");
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
+                ErrorResponse? errorDetails = JsonSerializer.Deserialize<ErrorResponse>(
+                    errorContent,
+                    JsonSerializerOptions.Web);
+                if (errorDetails != null)
                 {
-                    client.Dispose();
+                    message = $"Vault API returned HTTP {(int)response.StatusCode}: "
+                        + $"{errorDetails.ErrorCode}. {errorDetails.Detail}";
                 }
-                disposed = true;
             }
-        }
-
-        private static string GetRequiredAppSetting(string key)
-        {
-            string? value = ConfigurationManager.AppSettings[key];
-            if (string.IsNullOrWhiteSpace(value))
+            catch (JsonException)
             {
-                throw new ConfigurationErrorsException($"The required app setting '{key}' is missing.");
+                if (!string.IsNullOrWhiteSpace(errorContent))
+                {
+                    const int maxErrorLength = 500;
+                    string errorSummary = errorContent.Length <= maxErrorLength
+                        ? errorContent
+                        : errorContent[..maxErrorLength] + "...";
+                    message += $" {errorSummary}";
+                }
             }
 
-            return value;
+            throw new VaultApiException(response.StatusCode, message);
         }
 
-        private bool TryGetVaultId([NotNullWhen(true)] out string? vaultId)
+        private HttpClient CreateClient()
         {
-            vaultId = vaultServer?.Id;
-            return !string.IsNullOrWhiteSpace(vaultId);
+            HttpClient client = _httpClientFactory.CreateClient();
+            client.BaseAddress = BaseUri;
+
+            if (!string.IsNullOrWhiteSpace(_accessToken))
+            {
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", _accessToken);
+            }
+
+            return client;
+        }
+
+        private HttpClient CreateClientWithoutAuth()
+        {
+            HttpClient client = _httpClientFactory.CreateClient();
+            client.BaseAddress = BaseUri;
+
+            return client;
         }
 
     }

@@ -1,7 +1,9 @@
 ﻿using System.Runtime.Versioning;
 using System.Windows;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using VaultDataAPISampleApp.Services;
 using VaultDataAPISampleApp.ViewModels;
 
@@ -35,13 +37,22 @@ namespace VaultDataAPISampleApp
                     "Scope is required.")
                 .ValidateOnStart();
 
-            builder.Services.AddHttpClient();
-            builder.Services.AddSingleton<IIdentityService, IdentityService>();
+            builder.Services
+                .AddOptions<VaultOptions>()
+                .Bind(builder.Configuration.GetSection(VaultOptions.SectionName))
+                .Validate(
+                    options => VaultOptions.IsValidApiBaseUri(options.ApiBaseUri),
+                    "ApiBaseUri must be a root-relative path without query or fragment.")
+                .ValidateOnStart();
 
+            builder.Services.AddHttpClient();
+
+            builder.Services.AddSingleton<IIdentityService, IdentityService>();
             builder.Services.AddSingleton<VaultAPIService>();
-            builder.Services.AddSingleton<TabViewModel>();
-            builder.Services.AddSingleton<ExternalSyncTabControl>();
-            builder.Services.AddSingleton<MainWindow>();
+
+            builder.Services.AddTransient<TabViewModel>();
+            builder.Services.AddTransient<ExternalSyncTabControl>();
+            builder.Services.AddTransient<MainWindow>();
 
             _host = builder.Build();
         }
@@ -63,5 +74,6 @@ namespace VaultDataAPISampleApp
 
             base.OnExit(e);
         }
+
     }
 }

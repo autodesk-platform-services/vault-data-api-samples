@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Versioning;
 using LiveChartsCore;
@@ -28,6 +28,7 @@ namespace VaultDataAPISampleApp
 
         private readonly VaultAPIService _vaultAPIService;
         private readonly IIdentityService _identityService;
+        private readonly ExternalSyncTabControl _externalSyncTabControl;
 
         private string _userCount = string.Empty;
         private string _fileCount = string.Empty;
@@ -42,8 +43,10 @@ namespace VaultDataAPISampleApp
             InitializeComponent();
             _vaultAPIService = vaultAPIService;
             _identityService = identityService;
+            _externalSyncTabControl = externalSyncTabControl;
             DataContext = tabViewModel;
             ExternalSyncContent.Content = externalSyncTabControl;
+            externalSyncTabControl.DataContext = null;
 
             UserListView.ItemsSource = _userData;
             FileListView.ItemsSource = _fileData;
@@ -64,11 +67,9 @@ namespace VaultDataAPISampleApp
             UserDataBackgroundText.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private bool VerifyTokenAndVaultIsReady()
+        private bool VerifyAuthenticated()
         {
-            string? clientId = _vaultAPIService.GetClientId();
-            string? token = _vaultAPIService.GetAccessToken();
-            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(token))
+            if (!_vaultAPIService.HasAccessToken)
             {
                 MessageBox.Show("Please login first");
                 return false;
@@ -77,19 +78,25 @@ namespace VaultDataAPISampleApp
             return true;
         }
 
-        private void GetUser_Click(object sender, RoutedEventArgs e)
+        private async void GetUser_Click(object sender, RoutedEventArgs e)
         {
-            if (VerifyTokenAndVaultIsReady())
+            if (VerifyAuthenticated())
             {
-                GetUserData();
+                await RunUiOperationAsync(GetUserDataAsync);
             }
         }
 
-        private void GetFile_Click(object sender, RoutedEventArgs e)
+        private async void GetFile_Click(object sender, RoutedEventArgs e)
         {
-            if (VerifyTokenAndVaultIsReady())
+            if (VerifyAuthenticated())
             {
-                GetFileData();
+                if (GetSelectedVaultId() == null)
+                {
+                    MessageBox.Show("Please select a vault first");
+                    return;
+                }
+
+                await RunUiOperationAsync(GetFileDataAsync);
             }
         }
 
@@ -104,78 +111,57 @@ namespace VaultDataAPISampleApp
             e.Handled = true;
         }
 
-        private void GetUserData()
+        private async Task GetUserDataAsync()
         {
-            _ = _vaultAPIService.GetUsersAsync().ContinueWith((task) =>
+            PaginationResponse<UserResponse>? result = await _vaultAPIService.GetUsersAsync();
+            if (result?.Pagination == null || result.Results == null)
             {
-                PaginationResponse<UserResponse>? result =
-                    task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
-                        ? task.Result
-                        : null;
-                if (result?.Pagination != null && result.Results != null)
-                {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        _userCount = result.Pagination.TotalResults.ToString();
-                        UserCount.Content = _userCount;
+                return;
+            }
 
-                        // Clear the old data
-                        _userData.Clear();
+            _userCount = result.Pagination.TotalResults.ToString();
+            UserCount.Content = _userCount;
+            _userData.Clear();
 
-                        foreach (UserResponse user in result.Results)
-                        {
-                            _userData.Add(user);
-                        }
+            foreach (UserResponse user in result.Results)
+            {
+                _userData.Add(user);
+            }
 
-                        if (_userData.Count > 0)
-                        {
-                            SetUserListViewBackgroudVisibility(false);
-                        }
-                        else
-                        {
-                            SetUserListViewBackgroudVisibility(true);
-                        }
-                    }));
-                }
-            });
+            SetUserListViewBackgroudVisibility(_userData.Count == 0);
         }
 
-        private void GetFileData()
+        private async Task GetFileDataAsync()
         {
-            _ = _vaultAPIService.GetFilesAsync().ContinueWith((task) =>
+            string? vaultId = GetSelectedVaultId();
+            if (vaultId == null)
             {
-                PaginationResponse<FileVersionResponse>? result =
-                    task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
-                        ? task.Result
-                        : null;
-                if (result?.Pagination != null && result.Results != null)
-                {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        _fileCount = result.Pagination.TotalResults.ToString();
-                        FileCount.Content = _fileCount;
+                return;
+            }
 
-                        // Clear the old data
-                        _fileData.Clear();
+            PaginationResponse<FileVersionResponse>? result =
+                await _vaultAPIService.GetFilesAsync(vaultId);
+            if (!string.Equals(GetSelectedVaultId(), vaultId, StringComparison.Ordinal))
+            {
+                return;
+            }
 
-                        foreach (FileVersionResponse file in result.Results)
-                        {
-                            _fileData.Add(file);
-                        }
-                        // Analyze the file type
-                        AnalyzeFileType();
+            if (result?.Pagination == null || result.Results == null)
+            {
+                return;
+            }
 
-                        if (_fileData.Count > 0)
-                        {
-                            SetFileDataBackgroudVisibility(false);
-                        }
-                        else
-                        {
-                            SetFileDataBackgroudVisibility(true);
-                        }
-                    }));
-                }
-            });
+            _fileCount = result.Pagination.TotalResults.ToString();
+            FileCount.Content = _fileCount;
+            _fileData.Clear();
+
+            foreach (FileVersionResponse file in result.Results)
+            {
+                _fileData.Add(file);
+            }
+
+            AnalyzeFileType();
+            SetFileDataBackgroudVisibility(_fileData.Count == 0);
 
         }
 
@@ -213,7 +199,7 @@ namespace VaultDataAPISampleApp
             return series;
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+        private async void Login_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(ClientID.Text)
                 || string.IsNullOrWhiteSpace(BaseUrl.Text))
@@ -222,8 +208,7 @@ namespace VaultDataAPISampleApp
                 return;
             }
 
-            _vaultAPIService.SetServerAddress(BaseUrl.Text);
-            _vaultAPIService.SetClientId(ClientID.Text);
+            _vaultAPIService.ChangeServerAddress(BaseUrl.Text);
 
             var loginWindow = new ADSKLoginWindow(ClientID.Text, _identityService)
             {
@@ -233,48 +218,73 @@ namespace VaultDataAPISampleApp
                 && loginWindow.AuthenticationResult is AuthenticationResult authenticationResult)
             {
                 _vaultAPIService.SetAccessToken(authenticationResult.AccessToken);
-                GetVaults();
+                await RunUiOperationAsync(GetVaultsAsync);
             }
         }
 
-        private void GetVaults()
+        private async Task GetVaultsAsync()
         {
-            _ = _vaultAPIService.GetVaultsAsync().ContinueWith((task) =>
+            _vaultList = [];
+            VaultList.Items.Clear();
+            _externalSyncTabControl.SelectedVaultId = null;
+
+            PaginationResponse<VaultResponse>? result = await _vaultAPIService.GetVaultsAsync();
+            List<VaultResponse>? vaults = result?.Results;
+            if (vaults?.Count > 0)
             {
-                List<VaultResponse>? vaults =
-                    task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
-                        ? task.Result?.Results
-                        : null;
-                if (task.Status != System.Threading.Tasks.TaskStatus.Faulted && vaults?.Count > 0)
+                _vaultList = vaults;
+                foreach (VaultResponse vault in vaults)
                 {
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        _vaultList = vaults;
-                        foreach (VaultResponse vaultServer in vaults)
-                        {
-                            VaultList.Items.Add(vaultServer.Name);
-                        }
-                        VaultList.SelectedIndex = 0;
-                        _vaultAPIService.SetVaultServer(_vaultList[0]);
-                    }));
+                    VaultList.Items.Add(vault.Name);
                 }
-                else if (task.Exception != null && task.Exception.InnerException != null)
-                {
-                    // remove all item in the list
-                    Dispatcher.BeginInvoke((Action)(() =>
-                    {
-                        VaultList.Items.Clear();
-                        MessageBox.Show(task.Exception.GetBaseException().Message);
-                    }));
-                }
-            });
+
+                VaultList.SelectedIndex = 0;
+            }
         }
 
         private void Vault_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ResetVaultFileState();
+
             if (VaultList.SelectedIndex >= 0 && VaultList.SelectedIndex < _vaultList.Count)
             {
-                _vaultAPIService.SetVaultServer(_vaultList[VaultList.SelectedIndex]);
+                _externalSyncTabControl.SelectedVaultId =
+                    _vaultList[VaultList.SelectedIndex].Id;
+                return;
+            }
+
+            _externalSyncTabControl.SelectedVaultId = null;
+        }
+
+        private void ResetVaultFileState()
+        {
+            _fileData.Clear();
+            _fileCount = string.Empty;
+            FileCount.Content = _fileCount;
+            AnalyzeFileType();
+            SetFileDataBackgroudVisibility(true);
+        }
+
+        private string? GetSelectedVaultId()
+        {
+            if (VaultList.SelectedIndex < 0 || VaultList.SelectedIndex >= _vaultList.Count)
+            {
+                return null;
+            }
+
+            string? vaultId = _vaultList[VaultList.SelectedIndex].Id;
+            return string.IsNullOrWhiteSpace(vaultId) ? null : vaultId;
+        }
+
+        private static async Task RunUiOperationAsync(Func<Task> operation)
+        {
+            try
+            {
+                await operation();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, "Vault Data API", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
