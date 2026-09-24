@@ -1,0 +1,48 @@
+<Window
+    x:Class="VaultDataAPISampleApp.Features.Authentication.Views.ADSKLoginWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Autodesk Sign In"
+    Height="240"
+    Width="480"
+    ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
+    Icon="/Assets/Icons/favicon-32x32.png">
+  <Grid Margin="32">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <TextBlock
+        Grid.Row="0"
+        Text="Complete sign-in in your default browser"
+        FontSize="20"
+        FontWeight="SemiBold"
+        TextAlignment="Center"/>
+    <TextBlock
+        Grid.Row="1"
+        Margin="0,16,0,0"
+        Text="{Binding Status}"
+        TextAlignment="Center"
+        TextWrapping="Wrap"/>
+    <ProgressBar
+        Grid.Row="2"
+        Margin="0,20,0,0"
+        Height="4"
+        IsIndeterminate="{Binding IsBusy}"/>
+    <Button
+        Grid.Row="4"
+        Margin="0,20,0,0"
+        Width="90"
+        HorizontalAlignment="Center"
+        Content="Cancel"
+        Click="Cancel_Click"/>
+  </Grid>
+</Window>
