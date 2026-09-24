@@ -50,8 +50,6 @@ The configured `RedirectUri` must exactly match a callback URI registered for th
 
 The Autodesk application Client ID and Vault Gateway address are entered in the application window at runtime. Authentication is completed in the system browser; the sample does not embed a browser control.
 
-See [Upload and check in files with the Vault Data API](docs/file-upload-and-check-in.md) for the complete upload protocol, request sequence, and endpoint reference.
-
 ## Build and run
 
 From this directory:
