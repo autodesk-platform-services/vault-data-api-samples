@@ -25,8 +25,7 @@
                  Margin="0,0,0,8"
                  Height="24"
                  VerticalContentAlignment="Center"
-                 IsReadOnly="True"
-                 Background="#F5F5F5"/>
+                 IsReadOnly="True"/>
 
         <Label Grid.Row="1" Grid.Column="0" Content="WorkflowType:" VerticalAlignment="Center" Padding="0,0,6,0"/>
         <TextBox x:Name="WorkflowTypeTextBox"
@@ -35,12 +34,11 @@
                  Margin="0,0,0,12"
                  Height="24"
                  VerticalContentAlignment="Center"
-                 IsReadOnly="True"
-                 Background="#F5F5F5"/>
+                 IsReadOnly="True"/>
 
         <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="Cancel" Width="86" Height="24" Margin="0,0,8,0" IsCancel="True"/>
-            <Button Content="Create" Width="86" Height="24" IsDefault="True" Click="Create_Click"/>
+            <Button Content="Cancel" Width="86" Margin="0,0,8,0" IsCancel="True"/>
+            <Button Content="Create" Width="86" IsDefault="True" Click="Create_Click"/>
         </StackPanel>
     </Grid>
 </Window>

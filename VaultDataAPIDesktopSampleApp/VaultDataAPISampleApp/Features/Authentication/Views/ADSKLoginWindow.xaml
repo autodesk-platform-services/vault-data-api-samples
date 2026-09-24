@@ -30,7 +30,6 @@
         Grid.Row="1"
         Margin="0,16,0,0"
         Text="{Binding Status}"
-        Foreground="#555555"
         TextAlignment="Center"
         TextWrapping="Wrap"/>
     <ProgressBar
@@ -42,7 +41,6 @@
         Grid.Row="4"
         Margin="0,20,0,0"
         Width="90"
-        Height="28"
         HorizontalAlignment="Center"
         Content="Cancel"
         Click="Cancel_Click"/>

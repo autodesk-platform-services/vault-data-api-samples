@@ -7,38 +7,37 @@
              mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="24"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="95"/>
-            <ColumnDefinition Width="80"/>
-            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Content="Total file count:"/>
-        <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" Content="{Binding TotalCount}"/>
+        <Label Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="Total file count:"/>
+        <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Content="{Binding TotalCount}"/>
         <Button Grid.Row="0"
                 Grid.Column="3"
                 Panel.ZIndex="1"
                 Margin="8,0,8,0"
-                VerticalAlignment="Top"
+                VerticalAlignment="Center"
                 Command="{Binding LoadFilesCommand}"
                 Content="Get Files"/>
 
         <Grid Grid.Row="1" Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="1"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="93"/>
-                <ColumnDefinition Width="162"/>
-                <ColumnDefinition Width="45"/>
             </Grid.ColumnDefinitions>
 
             <ListView Grid.Column="0"
-                      Background="#FFEEEEEE"
-                      BorderBrush="{x:Null}"
-                      ItemsSource="{Binding Files}">
+                      ItemsSource="{Binding Files}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" Width="200"/>
@@ -64,37 +63,41 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        Content="No data to display"
-                       FontSize="24"
-                       Foreground="#3C3C3C"/>
+                       FontSize="24"/>
             </Grid>
 
-            <Label Grid.Column="1"
-                   Grid.ColumnSpan="3"
-                   Margin="8,0,8,0"
-                   Content="Data Visualization"
-                   FontWeight="Bold"/>
-            <lvc:PieChart Grid.Column="1"
-                          Grid.ColumnSpan="3"
-                          Background="WhiteSmoke"
-                          LegendPosition="Bottom"
-                          Series="{Binding FileTypeSeries}"/>
-            <Grid Grid.Column="1"
-                  Grid.ColumnSpan="3"
-                  Panel.ZIndex="1"
-                  IsHitTestVisible="False"
-                  Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <Image Source="/Assets/Images/EmptyStateCharts.png" Stretch="None"/>
-                <Label Margin="39,253,0,0"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Top"
-                       Content="No charts to display"
-                       FontSize="24"
-                       Foreground="#3C3C3C"/>
+            <Border Grid.Column="1"
+                    Margin="0,0,0,0"
+                    Background="{DynamicResource SeparatorBorderBrush}"/>
+
+            <Grid Grid.Column="2" Margin="12,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0"
+                       Content="Data Visualization"
+                       FontWeight="Bold"/>
+                <lvc:PieChart Grid.Row="1"
+                              Background="{DynamicResource ListViewBackground}"
+                              LegendPosition="Bottom"
+                              Series="{Binding FileTypeSeries}"/>
+                <Grid Grid.Row="1"
+                      Panel.ZIndex="1"
+                      IsHitTestVisible="False"
+                      Visibility="{Binding IsEmpty, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Image Source="/Assets/Images/EmptyStateCharts.png" Stretch="None"/>
+                    <Label Margin="0,253,0,0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
+                           Content="No charts to display"
+                           FontSize="24"/>
+                </Grid>
             </Grid>
 
-            <Grid Grid.ColumnSpan="4"
+            <Grid Grid.ColumnSpan="3"
                   Panel.ZIndex="2"
-                  Background="#DFFFFFFF"
+                  Background="{DynamicResource LayerFillColorDefaultBrush}"
                   Visibility="{Binding LoadFilesCommand.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock Margin="0,0,0,8"

@@ -6,28 +6,30 @@
              mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="24"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="95"/>
-            <ColumnDefinition Width="80"/>
-            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="1" VerticalAlignment="Top" Content="Total user count:"/>
-        <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Top" Content="{Binding TotalCount}"/>
+        <Label Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Content="Total user count:"/>
+        <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" Content="{Binding TotalCount}"/>
         <Button Grid.Row="0"
                 Grid.Column="3"
                 Panel.ZIndex="1"
                 Margin="8,0,8,0"
-                VerticalAlignment="Top"
+                VerticalAlignment="Center"
                 Command="{Binding LoadUsersCommand}"
                 Content="Get Users"/>
 
         <Grid Grid.Row="1" Grid.ColumnSpan="4">
-            <ListView Background="Transparent" ItemsSource="{Binding Users}">
+            <ListView ItemsSource="{Binding Users}"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Id" DisplayMemberBinding="{Binding Id}" Width="100"/>
@@ -49,12 +51,11 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        Content="No data to display"
-                       FontSize="24"
-                       Foreground="#3C3C3C"/>
+                       FontSize="24"/>
             </Grid>
 
             <Grid Panel.ZIndex="2"
-                  Background="#DFFFFFFF"
+                  Background="{DynamicResource LayerFillColorDefaultBrush}"
                   Visibility="{Binding LoadUsersCommand.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock Margin="0,0,0,8"

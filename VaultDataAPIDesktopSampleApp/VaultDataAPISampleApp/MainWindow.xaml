@@ -10,7 +10,7 @@
         Icon="/Assets/Icons/favicon-32x32.png">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="64"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -18,72 +18,54 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="350"/>
                     <ColumnDefinition Width="180"/>
-                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="24"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBox Grid.Row="0"
+                <Label Grid.Row="0"
+                       Grid.Column="0"
+                       Padding="0,0,0,4"
+                       Target="{Binding ElementName=ClientIdTextBox}"
+                       Content="_Client ID"/>
+                <Label Grid.Row="0"
+                       Grid.Column="1"
+                       Margin="8,0"
+                       Padding="0,0,0,4"
+                       Target="{Binding ElementName=ServerAddressTextBox}"
+                       Content="_Server"/>
+                <Label Grid.Row="0"
+                       Grid.Column="2"
+                       Margin="8,0"
+                       Padding="0,0,0,4"
+                       Target="{Binding ElementName=VaultComboBox}"
+                       Content="_Vault"/>
+
+                <TextBox x:Name="ClientIdTextBox"
+                         Grid.Row="1"
                          Grid.Column="0"
-                         Height="22"
                          Margin="0,0,8,0"
                          VerticalAlignment="Center"
+                         ToolTip="APS application client ID"
                          Text="{Binding ClientId, UpdateSourceTrigger=PropertyChanged}"
-                         TextWrapping="Wrap">
-                    <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}">
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="Background">
-                                        <Setter.Value>
-                                            <VisualBrush Stretch="None"
-                                                         AlignmentX="Left"
-                                                         AlignmentY="Center">
-                                                <VisualBrush.Visual>
-                                                    <Label Content="Client ID" Foreground="Gray"/>
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                         TextWrapping="Wrap"/>
 
-                <TextBox Grid.Row="0"
+                <TextBox x:Name="ServerAddressTextBox"
+                         Grid.Row="1"
                          Grid.Column="1"
-                         Height="22"
                          Margin="8,0,8,0"
                          VerticalAlignment="Center"
+                         ToolTip="Vault server address"
                          Text="{Binding ServerAddress, UpdateSourceTrigger=PropertyChanged}"
-                         TextWrapping="Wrap">
-                    <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}">
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="">
-                                    <Setter Property="Background">
-                                        <Setter.Value>
-                                            <VisualBrush Stretch="None"
-                                                         AlignmentX="Left"
-                                                         AlignmentY="Center">
-                                                <VisualBrush.Visual>
-                                                    <Label Content="Server" Foreground="Gray"/>
-                                                </VisualBrush.Visual>
-                                            </VisualBrush>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                         TextWrapping="Wrap"/>
 
-                <ComboBox Grid.Row="0"
+                <ComboBox x:Name="VaultComboBox"
+                          Grid.Row="1"
                           Grid.Column="2"
                           Margin="8,0,8,0"
                           VerticalAlignment="Center"
@@ -91,56 +73,19 @@
                           ItemsSource="{Binding Vaults}"
                           SelectedItem="{Binding SelectedVault}"/>
 
-                <Button Grid.Row="0"
+                <Button Grid.Row="1"
                         Grid.Column="3"
                         Margin="8,0,0,0"
-                        Background="LightBlue"
                         Command="{Binding SignInCommand}"
-                        Content="Sign In">
-                    <Button.Template>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Border x:Name="border"
-                                    Background="#0696D7"
-                                    BorderBrush="#FAFAFA"
-                                    BorderThickness="1"
-                                    CornerRadius="2">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  Content="{TemplateBinding Content}"
-                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                  TextElement.Foreground="{TemplateBinding Foreground}"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="BorderThickness" Value="2"/>
-                                </Trigger>
-                                <Trigger Property="IsPressed" Value="True">
-                                    <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="BorderThickness" Value="4"/>
-                                </Trigger>
-                                <Trigger Property="IsFocused" Value="True">
-                                    <Setter TargetName="border" Property="BorderBrush" Value="DarkGray"/>
-                                    <Setter Property="Foreground" Value="Black"/>
-                                    <Setter Property="BorderThickness" Value="2"/>
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="border" Property="Opacity" Value="0.55"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                        Content="Sign In"/>
 
-                <Label Grid.Row="1" Grid.Column="0">
+                <Label Grid.Row="2" Grid.Column="0" Padding="0,4,0,0">
                     <Hyperlink Command="{Binding OpenClientRegistrationCommand}">
                         Get Client ID
                     </Hyperlink>
                 </Label>
 
-                <StackPanel Grid.Row="1"
+                <StackPanel Grid.Row="2"
                             Grid.Column="1"
                             Grid.ColumnSpan="3"
                             Margin="8,2,0,0"
@@ -164,7 +109,6 @@
             </Grid.RowDefinitions>
 
             <ListBox Grid.Row="0"
-                     Background="Transparent"
                      BorderThickness="0,0,0,1"
                      DisplayMemberPath="Title"
                      ItemsSource="{Binding NavigationItems}"
@@ -179,16 +123,7 @@
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="{x:Type ListBoxItem}">
                         <Setter Property="Padding" Value="12,6"/>
-                        <Setter Property="BorderBrush" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="0,0,0,2"/>
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="#F4F4F4"/>
-                                <Setter Property="BorderBrush" Value="#0696D7"/>
-                                <Setter Property="FontWeight" Value="SemiBold"/>
-                            </Trigger>
-                        </Style.Triggers>
                     </Style>
                 </ListBox.ItemContainerStyle>
             </ListBox>
