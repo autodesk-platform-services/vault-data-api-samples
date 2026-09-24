@@ -357,23 +357,23 @@ namespace VaultDataAPISampleApp.Features.ExternalSync.ViewModels
             try
             {
                 Status = loadingStatusMessage;
-                string? itemMasterId = item.Item?.Id;
-                if (string.IsNullOrWhiteSpace(itemMasterId))
+                string? itemId = item.Item?.Id;
+                if (string.IsNullOrWhiteSpace(itemId))
                 {
                     if (cancellation.IsCancellationRequested)
                     {
                         return;
                     }
 
-                    SyncInfoEmptyText = $"Item '{item.Number}' has no master id.";
-                    Status = $"Item '{item.Number}' does not include a master id.";
+                    SyncInfoEmptyText = $"Item '{item.Number}' has no item ID.";
+                    Status = $"Item '{item.Number}' does not include an item ID.";
                     return;
                 }
 
                 CursorPaginationResponse<ExtSyncInfoResponse>? result =
                     await _vaultApiService.GetItemExtSyncInfosAsync(
                         vaultId,
-                        itemMasterId);
+                        itemId);
                 if (cancellation.IsCancellationRequested
                     || !IsCurrentVault(vaultId)
                     || !ReferenceEquals(SelectedItem, item))

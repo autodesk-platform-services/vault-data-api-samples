@@ -1,6 +1,6 @@
 namespace VaultDataAPISampleApp.Models
 {
-    public class ItemMasterResponse
+    public class ItemResponse
     {
         public required string Id { get; set; }
         public required string Url { get; set; }
@@ -15,7 +15,7 @@ namespace VaultDataAPISampleApp.Models
         public string? State { get; set; }
         public string? Category { get; set; }
         public string? EntityType { get; set; }
-        public ItemMasterResponse? Item { get; set; }
+        public ItemResponse? Item { get; set; }
         public string? Url { get; set; }
     }
 }

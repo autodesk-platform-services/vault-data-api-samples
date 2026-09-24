@@ -9,11 +9,15 @@ The application includes examples for:
 1. Signing in with an Autodesk ID through OAuth 2.0 Authorization Code with PKCE.
 2. Connecting to a Vault Gateway and selecting a Vault.
 3. Retrieving and visualizing file information.
-4. Retrieving user information.
-5. Reading external sync configuration, items, sync information, and tasks.
-6. Creating, deleting, and resubmitting external sync tasks.
+4. Uploading file content in parts and adding a new Vault file.
+5. Checking out and checking in a new version of an existing file.
+6. Retrieving user information.
+7. Reading external sync configuration, items, sync information, and tasks.
+8. Creating, deleting, and resubmitting external sync tasks.
 
 API operations display loading feedback. Vault API requests that do not complete within one minute are canceled and reported to the user.
+
+The file upload page loads Vault contents on demand. It initially retrieves only the root folder and loads each folder's direct children when that folder is expanded.
 
 ## Requirements
 
@@ -46,6 +50,8 @@ The configured `RedirectUri` must exactly match a callback URI registered for th
 
 The Autodesk application Client ID and Vault Gateway address are entered in the application window at runtime. Authentication is completed in the system browser; the sample does not embed a browser control.
 
+See [Upload and check in files with the Vault Data API](docs/file-upload-and-check-in.md) for the complete upload protocol, request sequence, and endpoint reference.
+
 ## Build and run
 
 From this directory:
@@ -62,6 +68,7 @@ The UI is organized by feature:
 ```text
 Features/
   Authentication/
+  FileUpload/
   Files/
   Users/
   ExternalSync/
@@ -75,6 +82,7 @@ Feature registration is explicit in `App.xaml.cs`:
 builder.Services
     .AddAuthenticationFeature()
     .AddFilesSample()
+    .AddFileUploadSample()
     .AddUsersSample()
     .AddExternalSyncSample();
 ```

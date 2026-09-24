@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 using VaultDataAPISampleApp.Configuration;
@@ -140,6 +141,218 @@ namespace VaultDataAPISampleApp.Services.Impl
                 await ThrowVaultApiExceptionAsync(response);
                 return null;
             }
+        }
+
+        public async Task<FileVersionResponse> GetFileVersionAsync(
+            string vaultId,
+            string fileVersionId,
+            CancellationToken cancellationToken = default)
+        {
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/file-versions/"
+                    + Uri.EscapeDataString(fileVersionId),
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileVersionResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FolderResponse> GetFolderAsync(
+            string vaultId,
+            string folderId,
+            CancellationToken cancellationToken = default)
+        {
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/folders/"
+                    + Uri.EscapeDataString(folderId),
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FolderResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FolderContentsResponse> GetFolderContentsAsync(
+            string vaultId,
+            string folderId,
+            CancellationToken cancellationToken = default)
+        {
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.GetAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/folders/"
+                    + $"{Uri.EscapeDataString(folderId)}/contents"
+                    + "?option[includeItemEcoLinks]=false"
+                    + "&option[latestOnly]=true&limit=1000",
+                cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                await ThrowVaultApiExceptionAsync(response);
+            }
+
+            string responseContent = await response.Content.ReadAsStringAsync(
+                cancellationToken);
+            using JsonDocument document = JsonDocument.Parse(responseContent);
+            var result = new FolderContentsResponse();
+            if (!document.RootElement.TryGetProperty(
+                    "results",
+                    out JsonElement entities))
+            {
+                return result;
+            }
+
+            foreach (JsonElement entity in entities.EnumerateArray())
+            {
+                if (entity.TryGetProperty("file", out _)
+                    || entity.TryGetProperty("version", out _))
+                {
+                    FileVersionResponse? file = entity.Deserialize<FileVersionResponse>(
+                        JsonSerializerOptions.Web);
+                    if (file != null)
+                    {
+                        result.Files.Add(file);
+                    }
+
+                    continue;
+                }
+
+                if (entity.TryGetProperty("fullName", out _))
+                {
+                    FolderResponse? folder = entity.Deserialize<FolderResponse>(
+                        JsonSerializerOptions.Web);
+                    if (folder != null)
+                    {
+                        result.Folders.Add(folder);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        public async Task<FileVersionResponse> CheckoutFileAsync(
+            string vaultId,
+            string fileId,
+            CancellationToken cancellationToken = default)
+        {
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/files/{Uri.EscapeDataString(fileId)}:checkout",
+                null,
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileVersionResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FileUploadSessionResponse> CreateFileUploadAsync(
+            string vaultId,
+            string fileName,
+            CancellationToken cancellationToken = default)
+        {
+            var request = new { fileName };
+            using var content = CreateJsonContent(request);
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/file-uploads",
+                content,
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileUploadSessionResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FileUploadSessionResponse> UploadFileContentPartAsync(
+            string vaultId,
+            string uploadId,
+            int partIndex,
+            string uploadSessionToken,
+            byte[] buffer,
+            int count,
+            CancellationToken cancellationToken = default)
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Put,
+                $"vaults/{Uri.EscapeDataString(vaultId)}/file-uploads/"
+                    + $"{Uri.EscapeDataString(uploadId)}/parts/{partIndex}");
+            request.Headers.Add("X-Vault-Upload-Session", uploadSessionToken);
+            request.Content = new ByteArrayContent(buffer, 0, count);
+            request.Content.Headers.ContentType =
+                new MediaTypeHeaderValue("application/octet-stream");
+            request.Content.Headers.ContentLength = count;
+
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileUploadSessionResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FileUploadCompletionResponse> CompleteFileUploadAsync(
+            string vaultId,
+            string uploadId,
+            string uploadSessionToken,
+            CancellationToken cancellationToken = default)
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                $"vaults/{Uri.EscapeDataString(vaultId)}/file-uploads/"
+                    + $"{Uri.EscapeDataString(uploadId)}:complete");
+            request.Headers.Add("X-Vault-Upload-Session", uploadSessionToken);
+
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.SendAsync(
+                request,
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileUploadCompletionResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FileResponse> AddFileAsync(
+            string vaultId,
+            AddFileRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            using StringContent content = CreateJsonContent(request);
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/files",
+                content,
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileResponse>(
+                response,
+                cancellationToken);
+        }
+
+        public async Task<FileVersionResponse> CheckinFileAsync(
+            string vaultId,
+            string fileId,
+            CheckinFileRequest request,
+            CancellationToken cancellationToken = default)
+        {
+            using StringContent content = CreateJsonContent(request);
+            using HttpClient client = CreateClient();
+            using HttpResponseMessage response = await client.PostAsync(
+                $"vaults/{Uri.EscapeDataString(vaultId)}/files/"
+                    + $"{Uri.EscapeDataString(fileId)}:checkin",
+                content,
+                cancellationToken);
+
+            return await ReadRequiredResponseAsync<FileVersionResponse>(
+                response,
+                cancellationToken);
         }
 
         public async Task<VaultResponse?> GetVaultServerInfoAsync(string vaultId)
@@ -447,6 +660,30 @@ namespace VaultDataAPISampleApp.Services.Impl
             }
 
             throw new VaultApiException(response.StatusCode, message);
+        }
+
+        private static StringContent CreateJsonContent<T>(T value)
+        {
+            string json = JsonSerializer.Serialize(value, JsonSerializerOptions.Web);
+            return new StringContent(json, Encoding.UTF8, "application/json");
+        }
+
+        private static async Task<T> ReadRequiredResponseAsync<T>(
+            HttpResponseMessage response,
+            CancellationToken cancellationToken)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                await ThrowVaultApiExceptionAsync(response);
+            }
+
+            string responseContent = await response.Content.ReadAsStringAsync(
+                cancellationToken);
+            T? result = JsonSerializer.Deserialize<T>(
+                responseContent,
+                JsonSerializerOptions.Web);
+            return result ?? throw new InvalidOperationException(
+                "Vault API returned an empty or invalid response.");
         }
 
         private HttpClient CreateClient()

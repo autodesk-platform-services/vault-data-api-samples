@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 using VaultDataAPISampleApp.Features.Authentication;
 using VaultDataAPISampleApp.Features.ExternalSync;
+using VaultDataAPISampleApp.Features.FileUpload;
 using VaultDataAPISampleApp.Features.Files;
 using VaultDataAPISampleApp.Features.Users;
 using VaultDataAPISampleApp.Hosting;
@@ -32,6 +33,7 @@ namespace VaultDataAPISampleApp
                 .AddNavigation()
                 .AddAuthenticationFeature()
                 .AddFilesSample()
+                .AddFileUploadSample()
                 .AddUsersSample()
                 .AddExternalSyncSample()
                 .AddShell();

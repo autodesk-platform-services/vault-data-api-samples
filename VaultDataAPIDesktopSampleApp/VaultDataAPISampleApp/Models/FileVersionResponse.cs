@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +21,7 @@ namespace VaultDataAPISampleApp.Models
         public bool HasVisualizationAttachment { get; set; }
         public string? VisualizationAttachmentStatus { get; set; }
         public int Version { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public bool IsCloaked { get; set; }
         public DateTime? CheckinDate { get; set; }
         public bool IsHidden { get; set; }

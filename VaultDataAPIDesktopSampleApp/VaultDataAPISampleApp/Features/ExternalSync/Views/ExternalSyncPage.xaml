@@ -363,11 +363,15 @@
             </GroupBox>
         </Grid>
 
-        <Border Grid.Row="2" Background="{DynamicResource LayerFillColorDefaultBrush}" Padding="8,3">
-            <DockPanel>
-                <TextBlock Text="{Binding SelectedItemText}" DockPanel.Dock="Right" FontSize="11" Margin="12,0,0,0"/>
-                <TextBlock Text="{Binding Status}" FontSize="11"/>
-            </DockPanel>
-        </Border>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem DockPanel.Dock="Right">
+                <TextBlock Text="{Binding SelectedItemText}"/>
+            </StatusBarItem>
+            <Separator DockPanel.Dock="Right"/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Status}"
+                           TextTrimming="CharacterEllipsis"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Page>

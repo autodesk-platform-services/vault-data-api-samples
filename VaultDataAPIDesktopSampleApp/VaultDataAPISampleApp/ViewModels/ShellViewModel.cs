@@ -57,6 +57,7 @@ namespace VaultDataAPISampleApp.ViewModels
         public IReadOnlyList<NavigationItem> NavigationItems { get; } =
         [
             new(SamplePageId.Files, "File information"),
+            new(SamplePageId.FileUpload, "File upload"),
             new(SamplePageId.Users, "User information"),
             new(SamplePageId.ExternalSync, "External Sync")
         ];
