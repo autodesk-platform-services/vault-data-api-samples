@@ -108,25 +108,28 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <ListBox Grid.Row="0"
+            <TabControl Grid.Row="0"
                      BorderThickness="0,0,0,1"
-                     DisplayMemberPath="Title"
                      ItemsSource="{Binding NavigationItems}"
                      SelectedItem="{Binding SelectedNavigationItem}"
                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
                      ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                <ListBox.ItemsPanel>
+                <TabControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal"/>
                     </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListBoxItem}">
-                        <Setter Property="Padding" Value="12,6"/>
-                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
+                </TabControl.ItemsPanel>
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Title}" />
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <Grid/>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
 
             <Frame x:Name="PageFrame"
                    Grid.Row="1"
