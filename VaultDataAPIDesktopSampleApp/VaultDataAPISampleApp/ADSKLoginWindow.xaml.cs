@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Web;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Security.Cryptography;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Configuration;
+using System.Runtime.Versioning;
 using Microsoft.Web.WebView2.Core;
 using VaultDataAPISampleApp.Models;
 
@@ -18,24 +19,30 @@ namespace VaultDataAPISampleApp
     /// <summary>
     /// Interaction logic for ADSKLoginWindow.xaml
     /// </summary>
+    [SupportedOSPlatform("windows10.0.19041.0")]
     public partial class ADSKLoginWindow : Window
     {
-        private string clientId;
+        private readonly string clientId;
 
-        private string codeVerifier;
-        private string codeChallenge; 
-        private string auth_code;
-        private string redirectUri = ConfigurationManager.AppSettings["RedirectUri"];
+        private readonly string codeVerifier;
+        private readonly string codeChallenge;
+        private string? auth_code;
+        private readonly string redirectUri = GetRequiredAppSetting("RedirectUri");
 
-        private string getAccessTokenUrl = ConfigurationManager.AppSettings["GetAccessTokenUrl"];
-        private string loginUrl = ConfigurationManager.AppSettings["LoginUrl"];
+        private readonly string getAccessTokenUrl = GetRequiredAppSetting("GetAccessTokenUrl");
+        private readonly string loginUrl = GetRequiredAppSetting("LoginUrl");
 
-        public ADSKLoginWindow(string clientId)
+        private readonly VaultAPIService _vaultAPIService;
+
+        public ADSKLoginWindow(
+            string clientId,
+            VaultAPIService vaultAPIService)
         {
             InitializeComponent();
-            codeVerifier = GenerateRandomString();
-            CalculateCodeChallenge();
             this.clientId = clientId;
+            _vaultAPIService = vaultAPIService;
+            codeVerifier = GenerateRandomString();
+            codeChallenge = CalculateCodeChallenge();
 
             webBrowser.NavigationStarting += WebBrowser_Navigating;
             //webBrowser.NavigationCompleted += WebBrowser_Navigated;
@@ -45,7 +52,7 @@ namespace VaultDataAPISampleApp
             InitializeAsync();
         }
 
-        private void WebView_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             if (e.IsSuccess)
             {
@@ -71,7 +78,7 @@ namespace VaultDataAPISampleApp
             webBrowser.CoreWebView2.Navigate(loginUrlString);
         }
 
-        private void WebBrowser_Navigating(object sender, CoreWebView2NavigationStartingEventArgs e)
+        private void WebBrowser_Navigating(object? sender, CoreWebView2NavigationStartingEventArgs e)
         {
             var url = e.Uri;
 
@@ -80,16 +87,36 @@ namespace VaultDataAPISampleApp
             {
                 //get code parameter from redirect uri  
                 var uri = new Uri(e.Uri.ToString());
-                auth_code = HttpUtility.ParseQueryString(uri.Query).Get("code");
+                auth_code = null;
+                foreach (var parameter in uri.Query.TrimStart('?').Split('&'))
+                {
+                    var parts = parameter.Split(new[] { '=' }, 2);
+                    if (WebUtility.UrlDecode(parts[0]) == "code")
+                    {
+                        auth_code = parts.Length == 2 ? WebUtility.UrlDecode(parts[1]) : "";
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(auth_code))
+                {
+                    return;
+                }
 
                 var token = GetAccessToken(auth_code);
-                VaultAPIService.Instance.SetAccessToken(token);
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    MessageBox.Show("Authentication completed without a valid access token.");
+                    return;
+                }
+
+                _vaultAPIService.SetAccessToken(token);
 
                 this.DialogResult = true;
             }
         }
 
-        private string GetAccessToken(string auth_code)
+        private string? GetAccessToken(string auth_code)
         {
             // Post request to get access token
             var client = new HttpClient()
@@ -123,13 +150,13 @@ namespace VaultDataAPISampleApp
                 var responseContent = response.Content.ReadAsStringAsync().Result;
                 //get access token from response
                 var token = JsonConvert.DeserializeObject<AccessTokenResponse>(responseContent);
-                return token.access_token;
+                return token?.access_token;
             }
 
             return null;
         }
 
-        private void CalculateCodeChallenge()
+        private string CalculateCodeChallenge()
         {
             using (var sha256 = SHA256.Create())
             {
@@ -138,8 +165,20 @@ namespace VaultDataAPISampleApp
 
                 // and produce the "Code Challenge" from it by base64Url encoding it.
                 string base64 = Convert.ToBase64String(challengeBytes);
-                codeChallenge = base64.TrimEnd('=').Replace('+', '-').Replace('/', '_'); 
+                string result = base64.TrimEnd('=').Replace('+', '-').Replace('/', '_');
+                return result;
             }
+        }
+
+        private static string GetRequiredAppSetting(string key)
+        {
+            string? value = ConfigurationManager.AppSettings[key];
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ConfigurationErrorsException($"The required app setting '{key}' is missing.");
+            }
+
+            return value;
         }
 
         private string GenerateRandomString()

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using LiveCharts.Wpf;
+using System.Runtime.Versioning;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -15,30 +19,30 @@ namespace VaultDataAPISampleApp
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [SupportedOSPlatform("windows10.0.19041.0")]
     public partial class MainWindow : Window
     {
-        private ObservableCollection<UserResponse> _userData = new ObservableCollection<UserResponse>();
-        private ObservableCollection<FileVersionResponse> _fileData = new ObservableCollection<FileVersionResponse>();
+        private readonly ObservableCollection<UserResponse> _userData = [];
+        private readonly ObservableCollection<FileVersionResponse> _fileData = [];
 
-        private string _userCount;
-        private string _fileCount;
-        private List<VaultResponse> _vaultList;
+        private readonly VaultAPIService _vaultAPIService;
 
-        public MainWindow()
+        private string _userCount = string.Empty;
+        private string _fileCount = string.Empty;
+        private List<VaultResponse> _vaultList = [];
+
+        public MainWindow(
+            VaultAPIService vaultAPIService,
+            TabViewModel tabViewModel,
+            ExternalSyncTabControl externalSyncTabControl)
         {
             InitializeComponent();
-            this.Closing += MainWindow_Closing;
-            this.DataContext = new TabViewModel();
+            _vaultAPIService = vaultAPIService;
+            DataContext = tabViewModel;
+            ExternalSyncContent.Content = externalSyncTabControl;
 
-            UserListView.Items.Clear();
             UserListView.ItemsSource = _userData;
-            FileListView.Items.Clear();
             FileListView.ItemsSource = _fileData;
-        }
-
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Application.Current.Shutdown();
         }
 
         private void SetFileDataBackgroudVisibility(bool isVisible)
@@ -58,23 +62,15 @@ namespace VaultDataAPISampleApp
 
         private bool VerifyTokenAndVaultIsReady()
         {
-            try
-            {
-                string clientId = VaultAPIService.Instance.GetClientId();
-                string token = VaultAPIService.Instance.GetAccessToken();
-                if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(token))
-                {
-                    MessageBox.Show("Please login first");
-                    return false;
-                }
-                return true;
-            }
-            catch (Exception)
+            string? clientId = _vaultAPIService.GetClientId();
+            string? token = _vaultAPIService.GetAccessToken();
+            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(token))
             {
                 MessageBox.Show("Please login first");
                 return false;
             }
 
+            return true;
         }
 
         private void GetUser_Click(object sender, RoutedEventArgs e)
@@ -106,19 +102,23 @@ namespace VaultDataAPISampleApp
 
         private void GetUserData()
         {
-            _ = VaultAPIService.Instance.GetUsersAsync().ContinueWith((task) =>
+            _ = _vaultAPIService.GetUsersAsync().ContinueWith((task) =>
             {
-                if (task.Result != null)
+                PaginationResponse<UserResponse>? result =
+                    task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
+                        ? task.Result
+                        : null;
+                if (result?.Pagination != null && result.Results != null)
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        _userCount = task.Result.Pagination.TotalResults.ToString();
+                        _userCount = result.Pagination.TotalResults.ToString();
                         UserCount.Content = _userCount;
 
                         // Clear the old data
                         _userData.Clear();
 
-                        foreach (var user in task.Result.Results)
+                        foreach (UserResponse user in result.Results)
                         {
                             _userData.Add(user);
                         }
@@ -138,19 +138,23 @@ namespace VaultDataAPISampleApp
 
         private void GetFileData()
         {
-            _ = VaultAPIService.Instance.GetFilesAsync().ContinueWith((task) =>
+            _ = _vaultAPIService.GetFilesAsync().ContinueWith((task) =>
             {
-                if (task.Result != null)
+                PaginationResponse<FileVersionResponse>? result =
+                    task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
+                        ? task.Result
+                        : null;
+                if (result?.Pagination != null && result.Results != null)
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        _fileCount = task.Result.Pagination.TotalResults.ToString();
+                        _fileCount = result.Pagination.TotalResults.ToString();
                         FileCount.Content = _fileCount;
 
                         // Clear the old data
                         _fileData.Clear();
 
-                        foreach (var file in task.Result.Results)
+                        foreach (FileVersionResponse file in result.Results)
                         {
                             _fileData.Add(file);
                         }
@@ -173,104 +177,50 @@ namespace VaultDataAPISampleApp
 
         private void AnalyzeFileType()
         {
-            double iptFileCount = 0;
-            double iamFileCount = 0;
-            double dwgFileCount = 0;
-            double dwfFileCount = 0;
-            double otherFileCount = 0;
+            var iptFileCount = _fileData.Count(file => file.Name?.Contains(".ipt", StringComparison.OrdinalIgnoreCase) == true);
+            var iamFileCount = _fileData.Count(file => file.Name?.Contains(".iam", StringComparison.OrdinalIgnoreCase) == true);
+            var dwgFileCount = _fileData.Count(file => file.Name?.Contains(".dwg", StringComparison.OrdinalIgnoreCase) == true);
+            var dwfFileCount = _fileData.Count(file => file.Name?.Contains(".dwf", StringComparison.OrdinalIgnoreCase) == true);
+            var otherFileCount = _fileData.Count - (iptFileCount + iamFileCount + dwgFileCount + dwfFileCount);
 
-            // ipt file count
-            PieSeries iptSeries = PieChart.Series.FirstOrDefault(s => ((PieSeries)s).Title == "Ipt file") as PieSeries;
+            ISeries[] series =
+            [
+                CreateFileTypeSeries("Ipt file", iptFileCount, new SKColor(0xE0, 0xAF, 0x4B)),
+                CreateFileTypeSeries("Iam file", iamFileCount, new SKColor(0xE1, 0xE1, 0x54)),
+                CreateFileTypeSeries("Dwg file", dwgFileCount, new SKColor(0x68, 0x9E, 0xD4)),
+                CreateFileTypeSeries("Dwf file", dwfFileCount, new SKColor(0x9C, 0x6B, 0xCE)),
+                CreateFileTypeSeries("Other file", otherFileCount, new SKColor(0xB2, 0xB2, 0xB5))
+            ];
+            PieChart.Series = series;
+        }
 
-            if (iptSeries != null)
+        private static PieSeries<double> CreateFileTypeSeries(
+            string name,
+            double value,
+            SKColor color)
+        {
+            var series = new PieSeries<double>
             {
-                // Calculate the file type in _fileData
-                iptFileCount = _fileData.Count(f => f.Name.ToLowerInvariant().Contains(".ipt"));
-                // Clear the old values and add the new value.
-                iptSeries.Values.Clear();
-                iptSeries.Values.Add(iptFileCount);
-                iptSeries.LabelPoint = point => point.Y.ToString();
-                iptSeries.DataLabels = true;
-            }
-
-            // iam file count
-            PieSeries iamSeries = PieChart.Series.FirstOrDefault(s => ((PieSeries)s).Title == "Iam file") as PieSeries;
-
-            if (iamSeries != null)
-            {
-                // Calculate the file type in _fileData
-                iamFileCount = _fileData.Count(f => f.Name.ToLowerInvariant().Contains(".iam"));
-                // Clear the old values and add the new value.
-                iamSeries.Values.Clear();
-                iamSeries.Values.Add(iamFileCount);
-                iamSeries.LabelPoint = point => point.Y.ToString();
-                iamSeries.DataLabels = true;
-            }
-
-            // dwg file count
-            PieSeries dwgSeries = PieChart.Series.FirstOrDefault(s => ((PieSeries)s).Title == "Dwg file") as PieSeries;
-
-            if (dwgSeries != null)
-            {
-                // Calculate the file type in _fileData
-                dwgFileCount = _fileData.Count(f => f.Name.ToLowerInvariant().Contains(".dwg"));
-                // Clear the old values and add the new value.
-                dwgSeries.Values.Clear();
-                dwgSeries.Values.Add(dwgFileCount);
-                dwgSeries.LabelPoint = point => point.Y.ToString();
-                dwgSeries.DataLabels = true;
-            }
-
-            // dwf file count
-            PieSeries dwfSeries = PieChart.Series.FirstOrDefault(s => ((PieSeries)s).Title == "Dwf file") as PieSeries;
-
-            if (dwfSeries != null)
-            {
-                // Calculate the file type in _fileData
-                dwfFileCount = _fileData.Count(f => f.Name.ToLowerInvariant().Contains(".dwf"));
-                // Clear the old values and add the new value.
-                dwfSeries.Values.Clear();
-                dwfSeries.Values.Add(dwfFileCount);
-                dwfSeries.LabelPoint = point => point.Y.ToString();
-                dwfSeries.DataLabels = true;
-            }
-
-            // other file count
-            PieSeries otherSeries = PieChart.Series.FirstOrDefault(s => ((PieSeries)s).Title == "Other file") as PieSeries;
-            if (otherSeries != null)
-            {
-                otherFileCount = _fileData.Count - (iptFileCount + iamFileCount + dwgFileCount + dwfFileCount);
-                otherSeries.Values.Clear();
-                otherSeries.Values.Add(otherFileCount);
-                otherSeries.LabelPoint = point => point.Y.ToString();
-                otherSeries.DataLabels = true;
-            }
+                Name = name,
+                Values = [value],
+                Fill = new SolidColorPaint(color),
+                DataLabelsPaint = new SolidColorPaint(SKColors.Black)
+            };
+            return series;
         }
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ClientID.Text) && string.IsNullOrEmpty(BaseUrl.Text))
+            if (string.IsNullOrEmpty(ClientID.Text) || string.IsNullOrEmpty(BaseUrl.Text))
             {
                 MessageBox.Show("Please input the client ID and Vault Gateway address");
                 return;
             }
 
-            if (VaultAPIService.Instance == null)
-            {
-                VaultAPIService.Initialize(BaseUrl.Text);
-            }
-            else
-            {
-                if (VaultAPIService.Instance.GetServerAddress() != BaseUrl.Text)
-                {
-                    VaultAPIService.ResetInstance();
-                    VaultAPIService.Initialize(BaseUrl.Text);
-                }
-            }
+            _vaultAPIService.SetServerAddress(BaseUrl.Text);
+            _vaultAPIService.SetClientId(ClientID.Text);
 
-            VaultAPIService.Instance.SetClientId(ClientID.Text);
-
-            var loginWindow = new ADSKLoginWindow(ClientID.Text);
+            var loginWindow = new ADSKLoginWindow(ClientID.Text, _vaultAPIService);
             if (loginWindow.ShowDialog() == true)
             {
                 GetVaults();
@@ -279,19 +229,23 @@ namespace VaultDataAPISampleApp
 
         private void GetVaults()
         {
-            _ = VaultAPIService.Instance.GetVaultsAsync().ContinueWith((task) =>
+            _ = _vaultAPIService.GetVaultsAsync().ContinueWith((task) =>
             {
-                if ((task.Status != System.Threading.Tasks.TaskStatus.Faulted) && (task.Result != null))
+                List<VaultResponse>? vaults =
+                    task.Status == System.Threading.Tasks.TaskStatus.RanToCompletion
+                        ? task.Result?.Results
+                        : null;
+                if (task.Status != System.Threading.Tasks.TaskStatus.Faulted && vaults?.Count > 0)
                 {
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
-                        _vaultList = task.Result.Results;
-                        foreach (var vaultServer in task.Result.Results)
+                        _vaultList = vaults;
+                        foreach (VaultResponse vaultServer in vaults)
                         {
                             VaultList.Items.Add(vaultServer.Name);
                         }
                         VaultList.SelectedIndex = 0;
-                        VaultAPIService.Instance.SetVaultServer(_vaultList[0]);
+                        _vaultAPIService.SetVaultServer(_vaultList[0]);
                     }));
                 }
                 else if (task.Exception != null && task.Exception.InnerException != null)
@@ -300,7 +254,7 @@ namespace VaultDataAPISampleApp
                     Dispatcher.BeginInvoke((Action)(() =>
                     {
                         VaultList.Items.Clear();
-                        MessageBox.Show(task.Exception.InnerException.InnerException.Message);
+                        MessageBox.Show(task.Exception.GetBaseException().Message);
                     }));
                 }
             });
@@ -310,7 +264,7 @@ namespace VaultDataAPISampleApp
         {
             if (VaultList.SelectedIndex >= 0 && VaultList.SelectedIndex < _vaultList.Count)
             {
-                VaultAPIService.Instance.SetVaultServer(_vaultList[VaultList.SelectedIndex]);
+                _vaultAPIService.SetVaultServer(_vaultList[VaultList.SelectedIndex]);
             }
         }
 

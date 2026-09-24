@@ -3,9 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
-        xmlns:local="clr-namespace:VaultDataAPISampleApp.Converters"
-        xmlns:views="clr-namespace:VaultDataAPISampleApp"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:local="clr-namespace:VaultDataAPISampleApp.Converters" 
+        xmlns:viewmodels="clr-namespace:VaultDataAPISampleApp.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:TabViewModel}"
         mc:Ignorable="d"
         Title="Vault Data API Sample App" Height="900" Width="1200" Icon="/favicon-32x32.png">
     <Window.Resources>
@@ -68,15 +69,16 @@
                     </TextBox.Style>
                 </TextBox>
                 <ComboBox x:Name="VaultList" Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" SelectionChanged="Vault_SelectionChanged" Margin="8, 0, 8, 0" />
-                <Button Grid.Row="0" Grid.Column="3" Click="Login_Click" Margin="8, 0, 0, 0" Background="LightBlue">
+                <Button Grid.Row="0" Grid.Column="3" Content="Sign In" Click="Login_Click" Margin="8, 0, 0, 0" Background="LightBlue">
                     <Button.Template>
-                        <ControlTemplate TargetType="Button">
+                        <ControlTemplate TargetType="{x:Type Button}">
                             <Border x:Name="border" Background="#0696D7" BorderBrush="#FAFAFA" BorderThickness="1" CornerRadius="2">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <ContentPresenter.Content>
-                                        <TextBlock x:Name="buttonText" Text="Sign In" Foreground="#FFFFFF"/>
-                                    </ContentPresenter.Content>
-                                </ContentPresenter>
+                                <ContentPresenter 
+                                    HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -157,15 +159,7 @@
                             <Label Content="Data Visualization" Grid.Column="1" Margin="8,0,8,0" Grid.ColumnSpan="3" FontWeight="Bold"/>
                             <Label x:Name="ChartBackgroundText" Panel.ZIndex="1" Grid.Column="1" Grid.ColumnSpan="3" Content="No charts to display" FontSize="24" Foreground="#3C3C3C" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="39,253,0,0" Visibility="Visible"/>
                             <Image x:Name="ChartBackgroundImage" Panel.ZIndex="1" Grid.Column="1" Grid.ColumnSpan="3" Source="/Resources/EmptyStateCharts.png" Stretch="None" Visibility="Visible"/>
-                            <lvc:PieChart Name="PieChart" Grid.Column="1" LegendLocation="Bottom" Grid.ColumnSpan="3" Background="WhiteSmoke" >
-                                <lvc:PieChart.Series>
-                                    <lvc:PieSeries Title="Ipt file" Values="0" Fill="#E0AF4B" />
-                                    <lvc:PieSeries Title="Iam file" Values="0" Fill="#E1E154" />
-                                    <lvc:PieSeries Title="Dwg file" Values="0" Fill="#689ED4" />
-                                    <lvc:PieSeries Title="Dwf file" Values="0" Fill="#9C6BCE" />
-                                    <lvc:PieSeries Title="Other file" Values="0" Fill="#B2B2B5" />
-                                </lvc:PieChart.Series>
-                            </lvc:PieChart>
+                            <lvc:PieChart x:Name="PieChart" Grid.Column="1" LegendPosition="Bottom" Grid.ColumnSpan="3" Background="WhiteSmoke"/>
                         </Grid>
                     </TabItem>
                     <TabItem Header="User information">
@@ -192,7 +186,7 @@
                         </Grid>
                     </TabItem>
                     <TabItem Header="External Sync">
-                        <views:ExternalSyncTabControl/>
+                        <ContentControl x:Name="ExternalSyncContent"/>
                     </TabItem>
                 </TabControl>
             </Grid>
