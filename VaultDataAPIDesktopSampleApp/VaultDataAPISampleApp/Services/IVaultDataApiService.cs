@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using VaultDataAPISampleApp.Models;
@@ -20,6 +21,57 @@ namespace VaultDataAPISampleApp.Services
         Task<PaginationResponse<GroupResponse>?> GetGroupsAsync();
 
         Task<PaginationResponse<FileVersionResponse>?> GetFilesAsync(string vaultId);
+
+        Task<FileVersionResponse> GetFileVersionAsync(
+            string vaultId,
+            string fileVersionId,
+            CancellationToken cancellationToken = default);
+
+        Task<FolderResponse> GetFolderAsync(
+            string vaultId,
+            string folderId,
+            CancellationToken cancellationToken = default);
+
+        Task<FolderContentsResponse> GetFolderContentsAsync(
+            string vaultId,
+            string folderId,
+            CancellationToken cancellationToken = default);
+
+        Task<FileVersionResponse> CheckoutFileAsync(
+            string vaultId,
+            string fileId,
+            CancellationToken cancellationToken = default);
+
+        Task<FileUploadSessionResponse> CreateFileUploadAsync(
+            string vaultId,
+            string fileName,
+            CancellationToken cancellationToken = default);
+
+        Task<FileUploadSessionResponse> UploadFileContentPartAsync(
+            string vaultId,
+            string uploadId,
+            int partIndex,
+            string uploadSessionToken,
+            byte[] buffer,
+            int count,
+            CancellationToken cancellationToken = default);
+
+        Task<FileUploadCompletionResponse> CompleteFileUploadAsync(
+            string vaultId,
+            string uploadId,
+            string uploadSessionToken,
+            CancellationToken cancellationToken = default);
+
+        Task<FileResponse> AddFileAsync(
+            string vaultId,
+            AddFileRequest request,
+            CancellationToken cancellationToken = default);
+
+        Task<FileVersionResponse> CheckinFileAsync(
+            string vaultId,
+            string fileId,
+            CheckinFileRequest request,
+            CancellationToken cancellationToken = default);
 
         Task<VaultResponse?> GetVaultServerInfoAsync(string vaultId);
 
