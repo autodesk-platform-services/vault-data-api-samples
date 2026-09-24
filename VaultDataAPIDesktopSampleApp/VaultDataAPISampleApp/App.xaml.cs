@@ -2,6 +2,7 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using VaultDataAPISampleApp.Services;
 using VaultDataAPISampleApp.ViewModels;
 
 namespace VaultDataAPISampleApp
@@ -17,6 +18,25 @@ namespace VaultDataAPISampleApp
         public App()
         {
             var builder = Host.CreateApplicationBuilder();
+            builder.Services
+                .AddOptions<IdentityOptions>()
+                .Bind(builder.Configuration.GetSection(IdentityOptions.SectionName))
+                .Validate(options =>
+                    IdentityOptions.IsAbsoluteHttps(options.AuthorizationEndpoint),
+                    "AuthorizationEndpoint must be an absolute HTTPS URL.")
+                .Validate(options =>
+                    IdentityOptions.IsAbsoluteHttps(options.TokenEndpoint),
+                    "TokenEndpoint must be an absolute HTTPS URL.")
+                .Validate(options =>
+                    IdentityOptions.IsLoopbackHttp(options.RedirectUri),
+                    "RedirectUri must be a loopback HTTP URL without query or fragment.")
+                .Validate(
+                    options => !string.IsNullOrWhiteSpace(options.Scope),
+                    "Scope is required.")
+                .ValidateOnStart();
+
+            builder.Services.AddHttpClient();
+            builder.Services.AddSingleton<IIdentityService, IdentityService>();
 
             builder.Services.AddSingleton<VaultAPIService>();
             builder.Services.AddSingleton<TabViewModel>();

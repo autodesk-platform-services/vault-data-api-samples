@@ -1,16 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace VaultDataAPISampleApp.Models
 {
     public class AccessTokenResponse
     {
-        public required string access_token { get; set; }
-        public required string token_type { get; set; }
-        public int expires_in { get; set; }
-        public string? refresh_token { get; set; }
+        [JsonPropertyName("access_token")]
+        public required string AccessToken { get; set; }
+
+        [JsonPropertyName("token_type")]
+        public required string TokenType { get; set; }
+
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        [JsonPropertyName("refresh_token")]
+        public string? RefreshToken { get; set; }
     }
 }

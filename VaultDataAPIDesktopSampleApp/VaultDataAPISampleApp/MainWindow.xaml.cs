@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using VaultDataAPISampleApp.Models;
+using VaultDataAPISampleApp.Services;
 using VaultDataAPISampleApp.ViewModels;
 
 namespace VaultDataAPISampleApp
@@ -26,6 +27,7 @@ namespace VaultDataAPISampleApp
         private readonly ObservableCollection<FileVersionResponse> _fileData = [];
 
         private readonly VaultAPIService _vaultAPIService;
+        private readonly IIdentityService _identityService;
 
         private string _userCount = string.Empty;
         private string _fileCount = string.Empty;
@@ -33,11 +35,13 @@ namespace VaultDataAPISampleApp
 
         public MainWindow(
             VaultAPIService vaultAPIService,
+            IIdentityService identityService,
             TabViewModel tabViewModel,
             ExternalSyncTabControl externalSyncTabControl)
         {
             InitializeComponent();
             _vaultAPIService = vaultAPIService;
+            _identityService = identityService;
             DataContext = tabViewModel;
             ExternalSyncContent.Content = externalSyncTabControl;
 
@@ -211,7 +215,8 @@ namespace VaultDataAPISampleApp
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrEmpty(ClientID.Text) || string.IsNullOrEmpty(BaseUrl.Text))
+            if (string.IsNullOrWhiteSpace(ClientID.Text)
+                || string.IsNullOrWhiteSpace(BaseUrl.Text))
             {
                 MessageBox.Show("Please input the client ID and Vault Gateway address");
                 return;
@@ -220,11 +225,16 @@ namespace VaultDataAPISampleApp
             _vaultAPIService.SetServerAddress(BaseUrl.Text);
             _vaultAPIService.SetClientId(ClientID.Text);
 
-            var loginWindow = new ADSKLoginWindow(ClientID.Text, _vaultAPIService);
-            if (loginWindow.ShowDialog() == true)
+            var loginWindow = new ADSKLoginWindow(ClientID.Text, _identityService)
             {
+                Owner = this
+            };
+            if (loginWindow.ShowDialog() == true
+                && loginWindow.AuthenticationResult is AuthenticationResult authenticationResult)
+            {
+                _vaultAPIService.SetAccessToken(authenticationResult.AccessToken);
                 GetVaults();
-            }   
+            }
         }
 
         private void GetVaults()

@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Security.Cryptography;
-using System.Net.Http;
-using Newtonsoft.Json;
-using System.Configuration;
+using System;
 using System.Runtime.Versioning;
-using Microsoft.Web.WebView2.Core;
-using VaultDataAPISampleApp.Models;
+using System.Windows;
+
+using VaultDataAPISampleApp.Services;
+using VaultDataAPISampleApp.ViewModels;
 
 namespace VaultDataAPISampleApp
 {
@@ -22,177 +13,67 @@ namespace VaultDataAPISampleApp
     [SupportedOSPlatform("windows10.0.19041.0")]
     public partial class ADSKLoginWindow : Window
     {
-        private readonly string clientId;
+        private readonly LoginViewModel _viewModel;
 
-        private readonly string codeVerifier;
-        private readonly string codeChallenge;
-        private string? auth_code;
-        private readonly string redirectUri = GetRequiredAppSetting("RedirectUri");
-
-        private readonly string getAccessTokenUrl = GetRequiredAppSetting("GetAccessTokenUrl");
-        private readonly string loginUrl = GetRequiredAppSetting("LoginUrl");
-
-        private readonly VaultAPIService _vaultAPIService;
+        private bool _authenticationStarted;
 
         public ADSKLoginWindow(
             string clientId,
-            VaultAPIService vaultAPIService)
+            IIdentityService identityService)
         {
             InitializeComponent();
-            this.clientId = clientId;
-            _vaultAPIService = vaultAPIService;
-            codeVerifier = GenerateRandomString();
-            codeChallenge = CalculateCodeChallenge();
-
-            webBrowser.NavigationStarting += WebBrowser_Navigating;
-            //webBrowser.NavigationCompleted += WebBrowser_Navigated;
-
-            webBrowser.CoreWebView2InitializationCompleted += WebView_CoreWebView2InitializationCompleted;
-
-            InitializeAsync();
+            _viewModel = new LoginViewModel(identityService, clientId);
+            _viewModel.AuthenticationCompleted += AuthenticationCompleted;
+            DataContext = _viewModel;
         }
 
-        private void WebView_CoreWebView2InitializationCompleted(object? sender, CoreWebView2InitializationCompletedEventArgs e)
+        public bool IsAuthenticated
         {
-            if (e.IsSuccess)
+            get
             {
-                // Initialization succeeded, now you can use the CoreWebView2.
-            }
-            else
-            {
-                // Initialization failed, check `e.InitializationException` for more details.
+                return _viewModel.IsAuthenticated;
             }
         }
 
-
-        private async void InitializeAsync()
+        public AuthenticationResult? AuthenticationResult
         {
-            await webBrowser.EnsureCoreWebView2Async();
-
-            string responseType = "response_type=code";
-            string clientIdString = $"client_id={clientId}";
-            string redirectUriString = $"redirect_uri={redirectUri}";
-            string codeChallengeString = $"code_challenge={codeChallenge}";
-            string codeChallengeMethod = "code_challenge_method=S256";
-            string loginUrlString = $"{loginUrl}?{responseType}&{clientIdString}&{redirectUriString}&nonce=1232132&scope=data:read&prompt=login&state=12321321&{codeChallengeString}&{codeChallengeMethod}";
-            webBrowser.CoreWebView2.Navigate(loginUrlString);
-        }
-
-        private void WebBrowser_Navigating(object? sender, CoreWebView2NavigationStartingEventArgs e)
-        {
-            var url = e.Uri;
-
-            // If the URL is the redirect URL, parse the token from the URL.
-            if (url.StartsWith(redirectUri))
+            get
             {
-                //get code parameter from redirect uri  
-                var uri = new Uri(e.Uri.ToString());
-                auth_code = null;
-                foreach (var parameter in uri.Query.TrimStart('?').Split('&'))
-                {
-                    var parts = parameter.Split(new[] { '=' }, 2);
-                    if (WebUtility.UrlDecode(parts[0]) == "code")
-                    {
-                        auth_code = parts.Length == 2 ? WebUtility.UrlDecode(parts[1]) : "";
-                        break;
-                    }
-                }
-
-                if (string.IsNullOrEmpty(auth_code))
-                {
-                    return;
-                }
-
-                var token = GetAccessToken(auth_code);
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    MessageBox.Show("Authentication completed without a valid access token.");
-                    return;
-                }
-
-                _vaultAPIService.SetAccessToken(token);
-
-                this.DialogResult = true;
+                return _viewModel.AuthenticationResult;
             }
         }
 
-        private string? GetAccessToken(string auth_code)
+        protected override void OnContentRendered(EventArgs e)
         {
-            // Post request to get access token
-            var client = new HttpClient()
+            base.OnContentRendered(e);
+            if (_authenticationStarted)
             {
-                BaseAddress = new Uri(getAccessTokenUrl)
-            };
-
-            // Example of a curl request
-            //curl -v 'https://developer.api.autodesk.com/authentication/v2/token'
-            //-X 'POST'
-            //- H 'Content-Type: application/x-www-form-urlencoded''
-            //- H 'accept: application/json' \'
-            //- d 'grant_type=authorization_code'
-            //- d 'client_id=GCi5oTYLE36CTUlcL7wWbhq9mC5DzG9w'
-            //- d 'code_verifier=ZGI6X4QR3FFXh3Bs9zNMgazTYDHEb_GqTt_fue4tFKYjRNR9N32bCqr~Hsxl673Ssf0RqyxC0avKNo_AKlE_7tj6cm4i5XbmjuGrCsu7X9rE~MqmoBLrLjvmvQscCfi2'
-            //- d 'code=wroM1vFA4E-Aj241-quh_LVjm7UldawnNgYEHQ8I'
-            //- d 'redirect_uri=http://localhost:8080/oauth/callback/'
-
-            client.DefaultRequestHeaders.Add("accept", "application/json");
-            var content = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("grant_type", "authorization_code"),
-                new KeyValuePair<string, string>("client_id", clientId),
-                new KeyValuePair<string, string>("code_verifier", codeVerifier),
-                new KeyValuePair<string, string>("code", auth_code),
-                new KeyValuePair<string, string>("redirect_uri", redirectUri)
-            });
-            var response = client.PostAsync(getAccessTokenUrl, content).Result;
-            if (response.IsSuccessStatusCode)
-            {
-                var responseContent = response.Content.ReadAsStringAsync().Result;
-                //get access token from response
-                var token = JsonConvert.DeserializeObject<AccessTokenResponse>(responseContent);
-                return token?.access_token;
+                return;
             }
 
-            return null;
+            _authenticationStarted = true;
+            _viewModel.StartAuthentication();
         }
 
-        private string CalculateCodeChallenge()
+        protected override void OnClosed(EventArgs e)
         {
-            using (var sha256 = SHA256.Create())
-            {
-                // Here we create a hash of the code verifier
-                var challengeBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(codeVerifier));
+            _viewModel.AuthenticationCompleted -= AuthenticationCompleted;
+            _viewModel.Dispose();
+            base.OnClosed(e);
+        }
 
-                // and produce the "Code Challenge" from it by base64Url encoding it.
-                string base64 = Convert.ToBase64String(challengeBytes);
-                string result = base64.TrimEnd('=').Replace('+', '-').Replace('/', '_');
-                return result;
+        private void AuthenticationCompleted(object? sender, EventArgs e)
+        {
+            if (_viewModel.IsAuthenticated)
+            {
+                DialogResult = true;
             }
         }
 
-        private static string GetRequiredAppSetting(string key)
+        private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            string? value = ConfigurationManager.AppSettings[key];
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ConfigurationErrorsException($"The required app setting '{key}' is missing.");
-            }
-
-            return value;
-        }
-
-        private string GenerateRandomString()
-        {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-            var stringChars = new char[new Random().Next(43, 129)];
-            var random = new Random();
-
-            for (int i = 0; i < stringChars.Length; i++)
-            {
-                stringChars[i] = chars[random.Next(chars.Length)];
-            }
-
-            return new String(stringChars);
+            _viewModel.Cancel();
+            DialogResult = false;
         }
     }
 }
