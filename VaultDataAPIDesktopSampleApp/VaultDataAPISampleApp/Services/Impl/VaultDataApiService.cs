@@ -160,7 +160,7 @@ namespace VaultDataAPISampleApp.Services.Impl
 
         public async Task<PaginationResponse<VaultResponse>?> GetVaultsAsync()
         {
-            using HttpClient client = CreateClientWithoutAuth();
+            using HttpClient client = CreateClient();
             using HttpResponseMessage response = await client.GetAsync("vaults");
             if (response.IsSuccessStatusCode)
             {
@@ -460,15 +460,6 @@ namespace VaultDataAPISampleApp.Services.Impl
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", _accessToken);
             }
-
-            return client;
-        }
-
-        private HttpClient CreateClientWithoutAuth()
-        {
-            HttpClient client =
-                _httpClientFactory.CreateClient(VaultApiHttpClient.Name);
-            client.BaseAddress = BaseUri;
 
             return client;
         }
