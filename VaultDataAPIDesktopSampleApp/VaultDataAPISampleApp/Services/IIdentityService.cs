@@ -1,6 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+using VaultDataAPISampleApp.Models;
+
 namespace VaultDataAPISampleApp.Services
 {
     /// <summary>

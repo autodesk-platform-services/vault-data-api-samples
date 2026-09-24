@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
@@ -9,13 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Resource Include="favicon-32x32.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Resources\EmptyStateCharts.png" />
-    <Resource Include="Resources\EmptyStateData.png" />
-    <Resource Include="Resources\favicon-32x32.png" />
+    <Resource Include="Assets\Icons\favicon-32x32.png" />
+    <Resource Include="Assets\Images\EmptyStateCharts.png" />
+    <Resource Include="Assets\Images\EmptyStateData.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.5" />
   </ItemGroup>
 </Project>
