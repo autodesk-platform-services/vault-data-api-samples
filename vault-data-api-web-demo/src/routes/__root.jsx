@@ -1,8 +1,8 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { Flex, Spin } from 'antd';
 import { useSnapshot } from 'valtio'
-import { authStore, AuthStatus } from '~/store/auth'
-import Login from '~/components/Login'
+import { authStore, AuthStatus } from '~/features/authentication/authStore'
+import Login from '~/features/authentication/Login'
 
 const boxStyle = {
     height: '100%'

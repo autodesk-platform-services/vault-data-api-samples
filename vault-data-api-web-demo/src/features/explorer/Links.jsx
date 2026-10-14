@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
 import { useSnapshot } from 'valtio'
-import { filesStore } from '~/store/filesStore'
+import { filesStore } from '~/features/explorer/filesStore'
+import { resolveFolderId } from '~/features/explorer/folderTree'
 import { Table } from 'antd';
-import * as aq from 'arquero';
 
 const columns = [
   {
@@ -43,22 +43,25 @@ const columns = [
 ];
 
 const linkTypes = ['FileVersionLink', 'FolderLink', 'ChangeOrderLink', 'ItemVersionLink']
-export default function Component({id='1'}){
+export default function Component({id='root'}){
 
-    const { doneSync, links } = useSnapshot(filesStore)
+    const { doneSync, links, rootFolder, rootLoading, rootError, directoryStates } = useSnapshot(filesStore)
+    const folderId = resolveFolderId(id, rootFolder)
+    const folderState = directoryStates[String(folderId)]
     const [data, setData] = useState([])
     
     useEffect(()=>{
         if(doneSync){
           const fl = links
-          .params({fromEntityId: id})
-          .filter((d) => d.fromEntityId == fromEntityId)
+          .params({ folderId })
+          .filter((d, $) => d.fromEntityId == $.folderId)
           .objects()
           setData(fl)
         }
-    }, [doneSync, id, links])
+    }, [doneSync, folderId, links])
 
   return <Table
+    loading={rootLoading || !!(folderId && !rootError && !folderState?.error && (folderState?.loading || !folderState?.loaded))}
     pagination={false} 
     rowKey="id"
     scroll={{ x: "max-content", y: 600 }}

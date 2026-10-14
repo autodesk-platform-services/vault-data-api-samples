@@ -1,9 +1,9 @@
 import {useEffect, useState} from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useSnapshot } from 'valtio'
-import { filesStore } from '~/store/filesStore'
+import { filesStore } from '~/features/explorer/filesStore'
+import { resolveFolderId } from '~/features/explorer/folderTree'
 import { Table } from 'antd';
-import * as aq from 'arquero';
 
 const columns = [
   {
@@ -98,23 +98,26 @@ ellipsis: true,
 ellipsis: true,
   },
 ];
-export default function Component({id='1'}){
+export default function Component({id='root'}){
 
     const navigate = useNavigate()
-    const { doneSync, folders } = useSnapshot(filesStore)
+    const { doneSync, folders, rootFolder, rootLoading, rootError, directoryStates } = useSnapshot(filesStore)
+    const folderId = resolveFolderId(id, rootFolder)
+    const folderState = directoryStates[String(folderId)]
     const [data, setData] = useState([])
     
     useEffect(()=>{
         if(doneSync){
           const fl = folders
-          .params({parentId: id})
-          .filter((d) => d.parentId == parentId)
+          .params({ folderId })
+          .filter((d, $) => d.parentId == $.folderId)
           .objects()
           setData(fl)
         }
-    }, [doneSync, id, folders])
+    }, [doneSync, folderId, folders])
 
     return <Table
+      loading={rootLoading || !!(folderId && !rootError && !folderState?.error && (folderState?.loading || !folderState?.loaded))}
       pagination={false} 
       rowKey="id"
       scroll={{ x: "max-content", y: 600 }}

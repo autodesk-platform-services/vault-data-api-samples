@@ -1,0 +1,41 @@
+import 'rapidoc';
+import { authStore } from '~/features/authentication/authStore';
+import { useSnapshot } from 'valtio'
+import { Alert } from 'antd';
+import { VAULT_API_BASE_URL } from '~/api';
+
+export default function PlaygroundPage() {
+  const {session} = useSnapshot(authStore)
+  return (<>
+        <Alert
+            message={`Session Info: ${session.userName}(id=${session.userId}) - ${session.vaultName}(id=${session.vaultId}) - ${session.authMethod === 'autodesk' ? 'Autodesk ID' : 'Vault credentials'}`}
+            banner
+            type="info"
+            showIcon
+        />
+    <rapi-doc
+      server-url={VAULT_API_BASE_URL}
+      default-api-server={VAULT_API_BASE_URL}
+      allow-server-selection="false"
+      spec-url = "/Vault%20REST%20Public%20API.yml"
+      show-header = "false"
+      bg-color = "#f9f9fa"
+      nav-bg-color = "#3f4d67"
+      nav-text-color = "#a9b7d0"
+      nav-hover-bg-color = "#333f54"
+      nav-hover-text-color = "#fff"
+      nav-accent-color = "#f87070"
+      primary-color = "#5c7096"
+      theme = "light"
+      render-style = "focused"
+      show-method-in-nav-bar = "as-colored-block"
+      use-path-in-nav-bar="true"
+      style = {{ height: "calc(100vh - 60px)", width: "100%" }}
+      api-key-name="authorization"
+      api-key-location="header"
+      api-key-value={session.token}
+    >
+    </rapi-doc>
+    </>
+  );
+}

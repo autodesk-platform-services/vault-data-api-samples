@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import Files from './-explorer/files'
+import Files from '~/features/explorer/Files'
 
 export const Route = createFileRoute('/_workspace/explorer/$id/files')({
   component: Component

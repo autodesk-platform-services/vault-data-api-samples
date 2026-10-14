@@ -7,6 +7,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
+import vaultProxy from './dev/vaultProxy.js'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,6 +15,7 @@ export default defineConfig({
   // base: "/",
   
   plugins: [
+    vaultProxy(),
     basicSsl(),
     TanStackRouterVite(),
     react()
@@ -21,11 +23,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src/'),
-    },
-  },
-  server: {
-    proxy: {
-      '/AutodeskDM': 'http://ecs-799f9ad3.ecs.ads.autodesk.com',
     },
   },
 })

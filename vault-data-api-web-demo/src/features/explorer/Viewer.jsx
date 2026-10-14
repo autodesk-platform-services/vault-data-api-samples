@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useRetriableRequest } from 'alova/client'
 import { alovaInstance } from '~/api'
+import { connectionStore, toVaultProxyUrl } from '~/features/connection/connection'
 
 const frameStyles = {
     width: 'calc(100% + 48px)',
@@ -18,11 +19,13 @@ export default function Viewer({urn, session}){
         if(frame.current && urn){
             const w = frame.current.contentWindow
             const msg = {
-                documentId:urn,
+                documentId: toVaultProxyUrl(urn),
+                proxyPrefix: `/__vault/${connectionStore.connection.connectionId}`,
+                serverAddress: connectionStore.connection.serverAddress,
                 accessToken: session.token.split(' ')[1],
                 type: 'viewer',
             }
-            w.postMessage(msg)
+            w.postMessage(msg, window.location.origin)
         }
     }
 
@@ -36,7 +39,7 @@ export default function Viewer({urn, session}){
         // onSuccess,
         // onComplete
       } = useRetriableRequest(
-        alovaInstance.Get(urn.replace(alovaInstance.options.baseURL,''), {
+        alovaInstance.Get(toVaultProxyUrl(urn).replace(alovaInstance.options.baseURL,''), {
             headers:{
                 'authorization': session.token,
             }

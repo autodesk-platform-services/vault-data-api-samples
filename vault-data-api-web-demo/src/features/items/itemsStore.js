@@ -1,11 +1,7 @@
 import { proxy } from 'valtio'
-import { authStore } from './auth'
-import { 
-    itemTransformer,
-    fetchItemContentsRecursive,
-    propertiesTransformer, 
-    propertyDefinitionsTransformer 
-} from './helper'
+import { authStore } from '~/features/authentication/authStore'
+import { itemTransformer, fetchItemContentsRecursive } from './itemsApi'
+import { propertiesTransformer, propertyDefinitionsTransformer } from '~/api/properties'
 
 export const itemsStore = proxy({
     loading: false,
@@ -17,7 +13,11 @@ export const itemsStore = proxy({
 
 export const sync = async () => {
     itemsStore.loading = true
-    const response = await fetchItemContentsRecursive(authStore.session);
+    const session = authStore.session;
+    const response = await fetchItemContentsRecursive(session);
+    if (authStore.session !== session) {
+        return;
+    }
     const items = response.results.map(itemTransformer)
     const properties = response.results.map(propertiesTransformer).reduce((acc, props)=>([...acc, ...props]))
     const propertyDefinitions = Object.values(response.included.propertyDefinition).map(propertyDefinitionsTransformer)
