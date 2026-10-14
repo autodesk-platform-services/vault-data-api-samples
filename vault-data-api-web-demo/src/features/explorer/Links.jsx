@@ -53,8 +53,8 @@ export default function Component({id='root'}){
     useEffect(()=>{
         if(doneSync){
           const fl = links
-          .params({fromEntityId: folderId})
-          .filter((d) => d.fromEntityId == fromEntityId)
+          .params({ folderId })
+          .filter((d, $) => d.fromEntityId == $.folderId)
           .objects()
           setData(fl)
         }

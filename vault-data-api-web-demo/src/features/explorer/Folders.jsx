@@ -109,8 +109,8 @@ export default function Component({id='root'}){
     useEffect(()=>{
         if(doneSync){
           const fl = folders
-          .params({parentId: folderId})
-          .filter((d) => d.parentId == parentId)
+          .params({ folderId })
+          .filter((d, $) => d.parentId == $.folderId)
           .objects()
           setData(fl)
         }
