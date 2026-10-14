@@ -1,7 +1,7 @@
 export default {
     generator: [
       {
-        input: 'src/api/spec.json',
+        input: 'public/Vault REST Public API.yml',
         output: 'src/api',
         global: 'Apis',
       }

@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { useSnapshot } from 'valtio'
-import { Button, Checkbox, Form, Input, Modal, Select, Space, Table, message } from 'antd'
+import { Alert, Button, Checkbox, Form, Input, Modal, Select, Space, Table, message } from 'antd'
 import { VAULT_API_BASE_URL } from '~/api'
 import { authStore } from '~/store/auth'
 import { filesStore, sync } from '~/store/filesStore'
+import FileUploadDialog from '~/features/fileUpload/FileUploadDialog'
+import { createFileUploadService } from '~/features/fileUpload/fileUploadService'
+import { resolveFolderId } from '~/features/explorer/folderTree'
+import { CANONICAL_API_BASE, connectionFetch } from '~/features/connection/connection'
 import {
   fetchLifecycleDefinitions,
   updateFileLifecycleDefinitions,
@@ -24,6 +28,12 @@ ellipsis: true,
     dataIndex: 'id',
     width: 250,
 ellipsis: true,
+  },
+  {
+    title: 'Version',
+    dataIndex: 'version',
+    width: 100,
+    ellipsis: true,
   },
   {
     title: 'Parent Id',
@@ -119,13 +129,20 @@ ellipsis: true,
 ];
 
 
-export default function Component({id='1'}) {
+export default function Component({id='root'}) {
     
     const navigate = useNavigate()
     const [modal, modalContextHolder] = Modal.useModal()
     const [messageApi, messageContextHolder] = message.useMessage()
     const { session } = useSnapshot(authStore)
-    const { doneSync, files } = useSnapshot(filesStore)
+    const { doneSync, files, folders, rootFolder, rootLoading, rootError, directoryStates } = useSnapshot(filesStore)
+    const [needsRefresh, setNeedsRefresh] = useState(false)
+    const folderId = resolveFolderId(id, rootFolder)
+    const folderState = directoryStates[String(folderId)]
+    const loading = !!folderState?.loading
+    const [uploadTarget, setUploadTarget] = useState(null)
+    const [isFolderLoading, setIsFolderLoading] = useState(false)
+    const currentFolder = doneSync ? folders.objects().find((folder) => String(folder.id) === String(folderId)) : null
     const [form] = Form.useForm()
     const [tableData, setTableData] = useState([])
     const [selectedFileKeys, setSelectedFileKeys] = useState([])
@@ -134,16 +151,19 @@ export default function Component({id='1'}) {
     const [isDefinitionsLoading, setIsDefinitionsLoading] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [availableLifecycleDefinitions, setAvailableLifecycleDefinitions] = useState([])
+    useEffect(() => {
+      setNeedsRefresh(false)
+    }, [folderId, folderState?.version])
     
     useEffect(()=>{
         if(doneSync){
           const fs = files
-            .params({parentId: id})
+            .params({parentId: folderId})
             .filter((d) => d.parentId == parentId)
             .objects()
           setTableData(fs)
         }
-    }, [doneSync, id, files])
+    }, [doneSync, folderId, files])
 
     useEffect(() => {
       setSelectedFileKeys([])
@@ -280,7 +300,7 @@ export default function Component({id='1'}) {
           throw new Error('Revision is required when Specify Revision is enabled and lifecycle definition is not changed.')
         }
         const request = {
-          entityUrl: `${VAULT_API_BASE_URL}/vaults/${session.vaultId}/files/${selectedFile.masterId}`,
+          entityUrl: `${CANONICAL_API_BASE}/vaults/${session.vaultId}/files/${selectedFile.masterId}`,
           lifecycleStateUrl: values.lifecycleStateUrl,
         }
         if(changeLifecycleDefinition){
@@ -312,7 +332,7 @@ export default function Component({id='1'}) {
         setIsDialogOpen(false)
         setSelectedFileKeys([])
         setSelectedFile(null)
-        await sync()
+        await sync(folderId)
       }catch(error){
         if(error?.errorFields){
           return
@@ -326,15 +346,65 @@ export default function Component({id='1'}) {
       }
     }
     
+    const openAddFile = async () => {
+      setIsFolderLoading(true)
+      const operationSession = { ...session }
+      try {
+        let folder = currentFolder ? { ...currentFolder } : null
+        if (!folder) {
+          const service = createFileUploadService({ baseURL: VAULT_API_BASE_URL, session: operationSession, fetcher: connectionFetch })
+          folder = await service.getFolder(folderId || 'root')
+        }
+        if (folder.isReadOnly || folder.isCloaked) {
+          throw new Error('The selected folder is not writable.')
+        }
+        setUploadTarget({ mode: 'add', folder, session: operationSession })
+      } catch (error) {
+        messageApi.error(error.message)
+      } finally {
+        setIsFolderLoading(false)
+      }
+    }
+
+    const refreshFiles = async () => {
+      try {
+        await sync(folderId)
+        setSelectedFileKeys([])
+        setSelectedFile(null)
+      } catch (error) {
+        messageApi.error(error.message || 'Could not refresh the file list.')
+      }
+    }
+
     return <>
       {modalContextHolder}
       {messageContextHolder}
       <Space style={{ marginBottom: 8 }}>
-        <Button type="primary" disabled={selectedFileKeys.length === 0} onClick={openDialog}>
+        <Button loading={loading} disabled={!folderId || !!uploadTarget || isSubmitting || isFolderLoading} onClick={refreshFiles}>
+          Refresh
+        </Button>
+        <Button loading={isFolderLoading} disabled={!doneSync || !folderId || loading || currentFolder?.isReadOnly || currentFolder?.isCloaked || !!uploadTarget}
+          onClick={openAddFile}>
+          Add File
+        </Button>
+        <Button disabled={loading || !selectedFile?.masterId || selectedFile.isReadOnly || selectedFile.isCloaked || !!uploadTarget}
+          onClick={() => setUploadTarget({ mode: 'update', file: { ...selectedFile }, session: { ...session } })}>
+          Update File
+        </Button>
+        <Button type="primary" disabled={loading || selectedFileKeys.length === 0} onClick={openDialog}>
           Change State
         </Button>
       </Space>
+      {needsRefresh && <Alert type="info" showIcon style={{ marginBottom: 8 }}
+        message="The file list may be outdated. Select Refresh to load the current Vault state." />}
+      {uploadTarget && <FileUploadDialog target={uploadTarget} session={uploadTarget.session}
+        onClose={() => setUploadTarget(null)} onChanged={() => {
+          setNeedsRefresh(true)
+          setSelectedFileKeys([])
+          setSelectedFile(null)
+        }} />}
       <Table
+        loading={rootLoading || !!(folderId && !rootError && !folderState?.error && (loading || !folderState?.loaded))}
         pagination={false} 
         rowKey="id"
         scroll={{ x: "max-content", y: 600 }}

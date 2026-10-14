@@ -3,6 +3,7 @@ import 'rapidoc';
 import { authStore } from '~/store/auth';
 import { useSnapshot } from 'valtio'
 import { Alert } from 'antd';
+import { VAULT_API_BASE_URL } from '~/api';
 
 export const Route = createFileRoute('/_workspace/playground')({
   component: ApiDoc
@@ -12,13 +13,16 @@ function ApiDoc() {
   const {session} = useSnapshot(authStore)
   return (<>
         <Alert
-            message={`Session Info: ${session.userName}(id=${session.userId}) -  ${session.vaultName}(id=${session.vaultId}) - Token(${session.token})`}
+            message={`Session Info: ${session.userName}(id=${session.userId}) - ${session.vaultName}(id=${session.vaultId}) - ${session.authMethod === 'autodesk' ? 'Autodesk ID' : 'Vault credentials'}`}
             banner
             type="info"
             showIcon
         />
     <rapi-doc
-      spec-url = "/spec.json"
+      server-url={VAULT_API_BASE_URL}
+      default-api-server={VAULT_API_BASE_URL}
+      allow-server-selection="false"
+      spec-url = "/Vault%20REST%20Public%20API.yml"
       show-header = "false"
       bg-color = "#f9f9fa"
       nav-bg-color = "#3f4d67"

@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, Link, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, Outlet, Link, useRouterState, useNavigate } from '@tanstack/react-router'
 import { Menu, Layout, Button } from 'antd';
 const { Header, Sider, Content } = Layout;
 import {
@@ -6,7 +6,8 @@ import {
 } from '@ant-design/icons';
 
 import { useSnapshot } from 'valtio'
-import { filesStore, sync as filesSync } from '~/store/filesStore'
+import { logout, changeServer } from '~/store/auth'
+import { connectionStore } from '~/features/connection/connection'
 
 const headerStyle  = {
   height: 60,
@@ -39,12 +40,10 @@ const layoutStyle1 = {
 };
 
 const Layoutt = () => {  
+  const navigate = useNavigate();
   const routerState = useRouterState();
-  const {loading, doneSync} = useSnapshot(filesStore)
+  const { connection } = useSnapshot(connectionStore)
   
-  const handleSync = () => {
-    filesSync()
-  }
 
   const items = [
     {icon: <LinkOutlined />, label : <Link to="/explorer">Explorer</Link>, key: '/explorer'},
@@ -57,9 +56,8 @@ const Layoutt = () => {
       <Link to="/">
         <img src="./vault-logo-light.png" />
       </Link>
-      {
-        !doneSync && <Button type="primary" loading={loading} style={{marginLeft: 'auto'}} onClick={handleSync} >Sync</Button>
-      }
+      <Button style={{ marginLeft: 'auto' }} onClick={() => { logout(); navigate({ to: '/' }); }}>Sign out</Button>
+      <Button onClick={() => { changeServer(); navigate({ to: '/' }); }} title={connection?.serverAddress}>Change Server</Button>
       
       </Header>
     <Layout style={layoutStyle1}>

@@ -17,7 +17,11 @@ export const changeOrdersStore = proxy({
 
 export const sync = async () => {
     changeOrdersStore.loading = true
-    const response = await fetchCoContentsRecursive(authStore.session);
+    const session = authStore.session;
+    const response = await fetchCoContentsRecursive(session);
+    if (authStore.session !== session) {
+        return;
+    }
     const changeOrders = response.results.map(changeOrderTransformer)
     const properties = response.results.map(propertiesTransformer).reduce((acc, props)=>([...acc, ...props]))
     const propertyDefinitions = Object.values(response.included.propertyDefinition).map(propertyDefinitionsTransformer)

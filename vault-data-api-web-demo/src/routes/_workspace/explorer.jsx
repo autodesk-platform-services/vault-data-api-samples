@@ -1,83 +1,64 @@
-import { createFileRoute, Outlet, Link, useNavigate, useLocation } from '@tanstack/react-router'
-import { Tabs } from 'antd';
-import { useEffect } from 'react'
-import { useSnapshot } from 'valtio'
-import { filesStore, sync, explorer } from '~/store/filesStore';
-import Split from 'react-split'
-import { Tree } from 'antd';
-const { DirectoryTree } = Tree;
+import { createFileRoute, Outlet, Link, useNavigate, useLocation, useParams } from '@tanstack/react-router';
+import { Alert, Button, Spin, Tabs, Tree } from 'antd';
+import { useEffect, useState } from 'react';
+import { useSnapshot } from 'valtio';
+import { filesStore, initializeExplorer, loadFolder, explorer } from '~/store/filesStore';
+import { resolveFolderId } from '~/features/explorer/folderTree';
+import Split from 'react-split';
 
-export const Route = createFileRoute('/_workspace/explorer')({
-  component: Layout
-})
+export const Route = createFileRoute('/_workspace/explorer')({ component: Layout });
+function Layout() {
+  const navigate = useNavigate();
+  const { rootFolder, rootLoading, rootError, directoryStates } = useSnapshot(filesStore);
+  const { tree } = useSnapshot(explorer);
+  const { id } = useParams({ strict: false });
+  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [treeError, setTreeError] = useState(null);
+  const selectedFolderId = resolveFolderId(id, rootFolder);
+  const current = directoryStates[String(selectedFolderId)];
+  const { pathname } = useLocation();
+  const fromPath = id ? `${Route.fullPath}/$id` : Route.fullPath;
+  const lastSegment = pathname.split('/').pop();
+  const selectedTab = ['folders', 'files', 'links'].includes(lastSegment) ? lastSegment : 'folders';
 
-function Layout () {
+  useEffect(() => { initializeExplorer().catch(() => {}); }, []);
+  useEffect(() => {
+    if (rootFolder?.id) setExpandedKeys([String(rootFolder.id)]);
+  }, [rootFolder?.id]);
+  useEffect(() => {
+    if (selectedFolderId) loadFolder(selectedFolderId).catch(() => {});
+  }, [selectedFolderId]);
 
-  const navigate = useNavigate()
-  const {loading, doneSync} = useSnapshot(filesStore)
-  const {id} = Route.useParams()
-  const { pathname } = useLocation()
-  const fromPath = id ? Route.fullPath + '/'+ '$id' : Route.fullPath
-  let selectedTab = pathname.split('/').reverse().shift()
-  switch (selectedTab){
-    case 'folders':
-    case 'files':
-    case 'links':
-      break
-    default:
-      selectedTab = 'folders' 
-  }
-  // console.log(selectedTab)
-  useEffect(()=>{
-    if(!doneSync && !loading){
-      sync()
+  const error = rootError || current?.error || treeError?.message;
+  const retry = () => {
+    if (rootError) {
+      initializeExplorer().catch(() => {});
+    } else {
+      const retryId = current?.error ? selectedFolderId : treeError?.id;
+      setTreeError(null);
+      loadFolder(retryId, { refresh: true }).catch(failure => setTreeError({ id: retryId, message: failure.message }));
     }
-  }, [loading, doneSync])
-  
-  const items = [
-    {
-      key: 'folders',
-      label: <Link from={fromPath} to="./folders">Folders</Link>,
-      children: <Outlet />,
-    },
-    {
-      key: 'files',
-      label: <Link from={fromPath} to="./files">Files</Link>,
-      children: <Outlet />,
-    },
-    {
-      key: 'links',
-      label: <Link from={fromPath} to="./links">Links</Link>,
-      children: <Outlet />,
-    },
-  ];
-  const onSelect = (selectedKeys, info) => {
-    navigate({
-      to: '/explorer/$id',
-      params: { id: info.node.id } 
-    })
   };
-
-  return <Split
-            className="split"
-            sizes={[25, 75]}
-            expandToMin={true}
-            gutterSize={10}
-            snapOffset={30}
-            dragInterval={1}
-            direction="horizontal"
-            cursor="col-resize"
-            gutterAlign="start"
-          >
-            <div style={{backgroundColor: '#fff', height: '100%', overflow: 'auto'}}>
-            <DirectoryTree
-              multiple
-              onSelect={onSelect}
-              treeData={explorer.tree}
-            />
-            </div>
-            <div style={{paddingLeft: '8px'}}>
-              <Tabs items={items} activeKey={selectedTab}/>
-            </div>
-          </Split>
+  return <Split className="split" sizes={[25, 75]} expandToMin minSize={100} gutterSize={10}
+    snapOffset={30} dragInterval={1} direction="horizontal" cursor="col-resize" gutterAlign="start">
+    <div style={{ backgroundColor: '#fff', height: '100%', overflow: 'auto', padding: 8 }}>
+      {error && <Alert type="error" message={error} action={<Button size="small" onClick={retry}>Retry</Button>} />}
+      {rootLoading && <Spin tip="Loading root folder..."><div style={{ height: 60 }} /></Spin>}
+      <Tree.DirectoryTree treeData={tree} expandedKeys={expandedKeys} onExpand={setExpandedKeys}
+        loadedKeys={Object.keys(directoryStates).filter(key => directoryStates[key].loaded)}
+        loadData={node => loadFolder(node.id).catch(failure => {
+          setTreeError({ id: node.id, message: failure.message });
+          throw failure;
+        })}
+        selectedKeys={selectedFolderId ? [String(selectedFolderId)] : []}
+        onSelect={(keys, info) => navigate({ to: `/explorer/$id/${selectedTab}`, params: { id: info.node.id } })} />
+    </div>
+    <div style={{ paddingLeft: 8 }}>
+      {current?.loading && <div role="status" style={{ padding: 8 }}><Spin size="small" /> Loading folder… {current.received || 0} entries received</div>}
+      <Tabs activeKey={selectedTab} items={['folders', 'files', 'links'].map(tab => ({
+        key: tab, label: <Link from={fromPath} to={`./${tab}`}>{tab[0].toUpperCase() + tab.slice(1)}</Link>,
+        children: <Outlet />,
+      }))} />
+    </div>
+  </Split>;
 }

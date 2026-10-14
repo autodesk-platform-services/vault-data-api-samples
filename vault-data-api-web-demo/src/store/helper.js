@@ -1,6 +1,7 @@
 import { invalidateCache } from 'alova'
 import Apis from '~/api'
 import * as aq from 'arquero';
+import { connectionStore } from '~/features/connection/connection'
 
 const buildVaultApiError = (payload, fallbackMessage) => {
     const parts = []
@@ -423,22 +424,25 @@ export const propertiesTransformer = ({
     return []
 }
 
-export const fetchFolderContentsRecursive = async (session, folderId='root') => {
+export const fetchFolderContents = async (session, folderId='root', onProgress = () => {}) => {
     let cursor = ''
     const response = initialResponse()
     do{
+        if (session.connectionId && session.connectionId !== connectionStore.connection?.connectionId) {
+            throw new Error('The server connection changed.')
+        }
         const res = await Apis.vault.getFolderContents({
+            cacheFor: 0,
             pathParams:{
                 vaultId: session.vaultId,
                 id: folderId,
             },
             params:{
-                'option[searchSubFolders]': true,
+                'option[searchSubFolders]': false,
                 'option[includeItemEcoLinks]': true,
                 'option[releasedFilesOnly]': false,
                 'option[latestOnly]': true,
                 'option[extendedModels]': true,
-                'option[propDefIds]': 'all',
                 // 'filter[Hidden]': 'all', 
                 limit: 1000,
                 ...(cursor?{cursorState: cursor} : {})
@@ -447,8 +451,8 @@ export const fetchFolderContentsRecursive = async (session, folderId='root') => 
                 'authorization': session.token,
             },
         })
-        invalidateCache()
         mergeResonse(response, res)
+        onProgress(response.results.length)
         cursor =''
         if(res.pagination?.nextUrl){
             const url = new URL(res.pagination?.nextUrl, location.origin)
@@ -707,4 +711,3 @@ export const loginUser = async ({ userName, password, vault}) => {
         return null
     }
 }
-  

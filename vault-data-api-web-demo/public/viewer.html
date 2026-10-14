@@ -28,9 +28,33 @@
     <!-- The Viewer JS -->
     <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.99.*/viewer3D.min.js"></script>
     <script>
+        var proxyContext = null;
+        function vaultResourceUrl(value) {
+            if (!proxyContext) return value;
+            var url = new URL(value, window.location.href);
+            if ((url.origin === window.location.origin || url.origin === proxyContext.serverAddress)
+                && url.pathname.startsWith('/AutodeskDM/')) {
+                return proxyContext.proxyPrefix + url.pathname + url.search;
+            }
+            return value;
+        }
+        var originalFetch = window.fetch.bind(window);
+        window.fetch = function(input, options) {
+            if (input instanceof Request) {
+                return originalFetch(new Request(vaultResourceUrl(input.url), input), options);
+            }
+            return originalFetch(vaultResourceUrl(input), options);
+        };
+        var originalOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url) {
+            var args = Array.from(arguments);
+            args[1] = vaultResourceUrl(url);
+            return originalOpen.apply(this, args);
+        };
         window.addEventListener("message", (event) => {
-            if (event.origin !== window.location.origin) return;
-            if(typeof event.data === 'object' && event.data.type == 'viewer'){
+            if (event.origin !== window.location.origin || event.source !== window.parent) return;
+            if(event.data && typeof event.data === 'object' && event.data.type == 'viewer'){
+                proxyContext = event.data;
                 initViewer(event.data)
             }
         });
