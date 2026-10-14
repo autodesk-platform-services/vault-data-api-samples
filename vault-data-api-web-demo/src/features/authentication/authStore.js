@@ -1,5 +1,5 @@
 import { proxy } from 'valtio';
-import { fetchCurrentUserInfo, loginUser } from './helper';
+import { fetchCurrentUserInfo, loginUser } from './authenticationApi';
 import { VAULT_API_BASE_URL } from '~/api';
 import { completeAuthorization, createAuthorizationUrl, createAutodeskSession } from '~/features/authentication/apsOAuth';
 import { connectionStore, connectionFetch, disconnectServer } from '~/features/connection/connection';

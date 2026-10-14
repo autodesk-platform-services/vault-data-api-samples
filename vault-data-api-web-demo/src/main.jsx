@@ -2,11 +2,11 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { ConfigProvider } from 'antd';
 
-import { AuthProvider } from '~/provider/auth';
-import { initializeAuth, setSessionReset } from '~/store/auth';
-import { resetExplorer } from '~/store/filesStore';
-import { itemsStore } from '~/store/itemsStore';
-import { changeOrdersStore } from '~/store/changeOrdersStore';
+import { AuthProvider } from '~/features/authentication/AuthProvider';
+import { initializeAuth, setSessionReset } from '~/features/authentication/authStore';
+import { resetExplorer } from '~/features/explorer/filesStore';
+import { itemsStore } from '~/features/items/itemsStore';
+import { changeOrdersStore } from '~/features/changeOrders/changeOrdersStore';
 import { restoreConnection } from '~/features/connection/connection';
 
 // Import the generated route tree

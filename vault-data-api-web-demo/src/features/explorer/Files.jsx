@@ -3,8 +3,8 @@ import { useNavigate } from '@tanstack/react-router'
 import { useSnapshot } from 'valtio'
 import { Alert, Button, Checkbox, Form, Input, Modal, Select, Space, Table, message } from 'antd'
 import { VAULT_API_BASE_URL } from '~/api'
-import { authStore } from '~/store/auth'
-import { filesStore, sync } from '~/store/filesStore'
+import { authStore } from '~/features/authentication/authStore'
+import { filesStore, sync } from '~/features/explorer/filesStore'
 import FileUploadDialog from '~/features/fileUpload/FileUploadDialog'
 import { createFileUploadService } from '~/features/fileUpload/fileUploadService'
 import { resolveFolderId } from '~/features/explorer/folderTree'
@@ -13,7 +13,7 @@ import {
   fetchLifecycleDefinitions,
   updateFileLifecycleDefinitions,
   updateFileLifecycleStates,
-} from '~/store/helper'
+} from '~/features/explorer/lifecycleApi'
 
 const columns = [
   {

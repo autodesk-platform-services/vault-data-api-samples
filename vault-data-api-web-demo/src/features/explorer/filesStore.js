@@ -1,10 +1,11 @@
 import { proxy } from 'valtio';
 import { derive } from 'derive-valtio';
-import { authStore } from './auth';
+import { authStore } from '~/features/authentication/authStore';
 import Apis from '~/api';
 import { buildFolderTree } from '~/features/explorer/folderTree';
 import { createFolderLoader } from '~/features/explorer/folderLoader';
-import { fetchFolderContents, folderTransformer1, fileTransformer1, linkTransformer1 } from './helper';
+import { fetchFolderContents } from './explorerApi';
+import { folderTransformer1, fileTransformer1, linkTransformer1 } from './transformers';
 
 export const filesStore = proxy({
   loading: false, doneSync: false, rootFolder: null, rootLoading: false, rootError: null,

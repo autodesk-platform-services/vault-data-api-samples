@@ -37,6 +37,14 @@ Alova.js helps with the generation of API client code based on the OpenAPI speci
 [Alova VS Code Extension](https://alova.js.org/tutorial/getting-started/extension-integration)
 
 
+## Source layout
+
+- `src/features/`: feature UI, state, and API operations, grouped into authentication, connection, explorer, fileUpload, items, changeOrders, and playground.
+- `src/routes/`: TanStack route definitions and route parameter adapters.
+- `src/layouts/`: shared workspace layout and navigation.
+- `src/api/`: shared Alova client, generated API definitions, response merging, and property transformations.
+- `dev/`: local Vite proxy middleware.
+
 ## Features
 
 - Vault Login

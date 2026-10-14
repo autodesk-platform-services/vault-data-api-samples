@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Alert, Button, Form, Input, Select, Space, Tabs, Typography } from 'antd';
 import { useSnapshot } from 'valtio';
-import { authStore, listVaults, login, logout, selectAutodeskVault, signInAutodesk } from '~/store/auth';
-import { changeServer } from '~/store/auth';
+import { authStore, listVaults, login, logout, selectAutodeskVault, signInAutodesk } from '~/features/authentication/authStore';
+import { changeServer } from '~/features/authentication/authStore';
 import { connectionStore, connectServer } from '~/features/connection/connection';
 
 export default function Login() {

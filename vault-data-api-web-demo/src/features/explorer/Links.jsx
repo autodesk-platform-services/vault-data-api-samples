@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import { useSnapshot } from 'valtio'
-import { filesStore } from '~/store/filesStore'
+import { filesStore } from '~/features/explorer/filesStore'
 import { resolveFolderId } from '~/features/explorer/folderTree'
 import { Table } from 'antd';
 

@@ -1,11 +1,7 @@
 import { proxy } from 'valtio'
-import { authStore } from './auth'
-import { 
-    itemTransformer,
-    fetchItemContentsRecursive,
-    propertiesTransformer, 
-    propertyDefinitionsTransformer 
-} from './helper'
+import { authStore } from '~/features/authentication/authStore'
+import { itemTransformer, fetchItemContentsRecursive } from './itemsApi'
+import { propertiesTransformer, propertyDefinitionsTransformer } from '~/api/properties'
 
 export const itemsStore = proxy({
     loading: false,
